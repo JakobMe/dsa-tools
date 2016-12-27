@@ -1,2 +1,2 @@
-# dsa-tools
+# DSA-Tools
 Kommandozeilen-Tools für DSA

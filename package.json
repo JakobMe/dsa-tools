@@ -1,0 +1,21 @@
+{
+  "name": "dsa-tools",
+  "version": "1.0.0",
+  "description": "Kommandozeilen-Tools für DSA",
+  "author": "Jakob Metzger",
+  "license": "MIT",
+  "private": true,
+  "homepage": "https://github.com/JakobMe/dsa-tools#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JakobMe/dsa-tools.git"
+  },
+  "entry-point": "index.js",
+  "bin": {
+    "dsa": "./index.js"
+  },
+  "dependencies": {
+    "colors": "^1.1.2",
+    "commander": "^2.9.0"
+  }
+}
