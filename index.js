@@ -6,8 +6,10 @@ var colors = require("colors");
 
 // Constants
 const VERSION               = "1.0.0";
-const DICE_20               = 20;
-const DICE_6                = 6;
+const DICE_20               = "w20";
+const DICE_6                = "w6";
+const DICE_20_VALUE         = 20;
+const DICE_6_VALUE          = 6;
 const ROLLS_MIN             = 1;
 const ROLL_RESULT_MIN       = 1;
 const ROLL_CRIT_THRESH      = 2;
@@ -19,6 +21,24 @@ const SKILL_LEVEL_LENGTH    = 2;
 const ATTR_ROLLS            = 3;
 const ATTR_MIN              = 8;
 const ATTR_DELIMITER        = "/";
+const CHAR_TAB              = "\t";
+const CHAR_BREAK            = "\r";
+const CHAR_NEWLINE          = "\n";
+const CHAR_PLACEHOLDER      = "%s";
+const CHAR_DOT              = ".";
+const CHAR_SPACE            = " ";
+const CHAR_PLUS             = "+";
+const CHAR_PLUSMINUS        = "±";
+const CHAR_TIMES            = "×";
+const CHAR_SUM              = "Σ";
+const CHAR_COLON            = ":";
+const CHAR_PAREN_LEFT       = "(";
+const CHAR_PAREN_RIGHT      = ")";
+const CHAR_BRACKET_LEFT     = "[";
+const CHAR_BRACKET_RIGHT    = "]";
+const CHAR_LEVEL            = "QS";
+const TEXT_ERROR_ATTR       = "Wrong attribute format!";
+const TEXT_HINT_ATTR        = "e.g. 11/13/12";
 
 /**
  * Functions module; encapsulates all helper functions.
@@ -81,12 +101,35 @@ program
         // Fix rolls argument
         rolls = Functions.convertToInt(rolls, ROLLS_MIN);
 
-        // Print result
-        console.log("\n\t" + "%s".yellow + "w20\n", rolls);
-        Functions.rollDice(DICE_20, rolls).forEach(function(roll, i) {
-            console.log("\t%s.".grey.dim + " %s", (i + 1), roll);
+        // Print title
+        console.log(
+            CHAR_NEWLINE + CHAR_TAB + CHAR_PLACEHOLDER.yellow +
+            DICE_20 + CHAR_NEWLINE,
+            rolls
+        );
+
+        // Roll dice, print results
+        Functions.rollDice(DICE_20_VALUE, rolls).forEach(function(roll, i) {
+
+            // Color roll string
+            var rollString = CHAR_PLACEHOLDER;
+            if (roll === DICE_20_VALUE) {
+                rollString = rollString.red;
+            }
+            else if (roll === ROLL_RESULT_MIN) {
+                rollString = rollString.green;
+            }
+
+            // Print result
+            console.log(
+                CHAR_TAB + (CHAR_PLACEHOLDER + CHAR_DOT).grey.dim +
+                CHAR_SPACE + rollString,
+                (i + 1), roll
+            );
         });
-        console.log("\r");
+
+        // Print linebreak
+        console.log(CHAR_BREAK);
     });
 
 /*
@@ -100,36 +143,53 @@ program
     .option("-m, --minus <malus>", "malus to sum of rolls")
     .action(function(rolls, options) {
 
-        // Fix rolls and plus/minus arguments, initialize sum
+        // Fix rolls and plus/minus arguments, initialize sum and mod
         rolls = Functions.convertToInt(rolls, ROLLS_MIN);
         var plus = Functions.convertToInt(options.plus, MOD_DEFAULT);
         var minus = Functions.convertToInt(options.minus, MOD_DEFAULT);
-        var sum = (plus - minus);
+        var mod = (plus - minus);
+        var sum = mod + 0;
 
-        // Initialize sum and mod output strings
-        var mod = "";
-        if (sum < 0) { mod = "%s".red; }
-        else if (sum > 0) { mod = "+%s".green; }
-        else { mod = "±%s".grey; }
+        // Initialize mod output strings
+        var modString = CHAR_PLACEHOLDER;
+        if (mod < 0) { modString = modString.red; }
+        else if (mod > 0) { modString = (CHAR_PLUS + modString).green; }
+        else { modString = (CHAR_PLUSMINUS + modString).grey.dim; }
 
         // Print title
         console.log(
-            "\n\t" + "%s".yellow + "w6 " + mod + "\n",
-            rolls, (plus - minus)
+            CHAR_NEWLINE + CHAR_TAB + CHAR_PLACEHOLDER.yellow +
+            DICE_6 + CHAR_SPACE + modString + CHAR_NEWLINE,
+            rolls, mod
         );
 
-        // Print results
-        Functions.rollDice(DICE_6, rolls).forEach(function(roll, i) {
-            console.log("\t%s.".grey.dim + " %s", (i + 1), roll);
+        // Roll dice
+        Functions.rollDice(DICE_6_VALUE, rolls).forEach(function(roll, i) {
+
+            // Color roll string
+            var rollString = CHAR_SPACE + CHAR_PLACEHOLDER;
+            if (roll === DICE_6_VALUE) { rollString = rollString.green; }
+            else if (roll === ROLL_RESULT_MIN) { rollString = rollString.red; }
+
+            // Print result
+            console.log(
+                CHAR_TAB + (CHAR_PLACEHOLDER + CHAR_DOT).grey.dim + rollString,
+                (i + 1), roll
+            );
+
+            // Add result to sum
             sum += roll;
         });
 
         // Print sum
-        if ((rolls > ROLLS_MIN) || (plus - minus !== MOD_DEFAULT)) {
-            console.log("\n\tΣ: ".grey.dim + "%s\n".cyan, sum);
-        } else {
-            console.log("\r");
-        }
+        if ((rolls > ROLLS_MIN) || (mod !== MOD_DEFAULT)) {
+            console.log(
+                CHAR_NEWLINE + CHAR_TAB +
+                (CHAR_SUM + CHAR_COLON).grey.dim + CHAR_SPACE +
+                CHAR_PLACEHOLDER.cyan + CHAR_NEWLINE,
+                sum
+            );
+        } else { console.log(CHAR_BREAK); }
     });
 
 /*
@@ -145,7 +205,7 @@ program
     .option("-p, --plus <bonus>", "make skill-check easier by bonus")
     .action(function(attr, value, options) {
 
-        // Fix value, initialize plus, minus and repeat options
+        // Fix value, initialize plus, minus, mod and repeat options
         value = Functions.convertToInt(value, SKILL_MIN);
         var plus = Functions.convertToInt(options.plus, MOD_DEFAULT);
         var minus = Functions.convertToInt(options.minus, MOD_DEFAULT);
@@ -157,8 +217,8 @@ program
 
         // Check if attributes are invalid
         if (attr.length < ATTR_ROLLS) {
-            console.log("\n\t" + "Wrong attribute format!".red);
-            console.log("\te.g. 10/10/10".grey + "\n");
+            console.log(CHAR_NEWLINE + CHAR_TAB + TEXT_EROR_ATTR.red);
+            console.log(CHAR_TAB + TEXT_HINT_ATTR.grey + CHAR_NEWLINE);
 
         // Continue with valid attributes
         } else {
@@ -168,11 +228,11 @@ program
                 attr[i] = Functions.convertToInt(val, ATTR_MIN);
             });
 
-            // Initialize mod output string
-            var modString = "%s";
+            // Initialize and color mod output string
+            var modString = CHAR_PLACEHOLDER;
             if (mod < 0) { modString = modString.red; }
-            else if (mod > 0) { modString = ("+" + modString).green; }
-            else { modString = ("±" + modString).grey.dim; }
+            else if (mod > 0) { modString = (CHAR_PLUS + modString).green; }
+            else { modString = (CHAR_PLUSMINUS + modString).grey.dim; }
 
             // Initialize total quality-levels and additional mod
             var levelsTotal = 0;
@@ -180,8 +240,12 @@ program
 
             // Print title
             console.log(
-                "\n\t" + "3".yellow + "w20 (" + "%s".magenta + ") "
-                + modString + " [" + "%s".magenta + "] " + "×%s".grey.dim + "\n",
+                CHAR_NEWLINE + CHAR_TAB + ATTR_ROLLS.toString().yellow +
+                DICE_20 + CHAR_SPACE + CHAR_PAREN_LEFT +
+                CHAR_PLACEHOLDER.magenta + CHAR_PAREN_RIGHT + CHAR_SPACE +
+                modString + CHAR_SPACE + CHAR_BRACKET_LEFT +
+                CHAR_PLACEHOLDER.magenta + CHAR_BRACKET_RIGHT + CHAR_SPACE +
+                (CHAR_TIMES + CHAR_PLACEHOLDER).grey.dim + CHAR_NEWLINE,
                 attr.join(ATTR_DELIMITER), mod, value, repeat
             );
 
@@ -192,23 +256,24 @@ program
                 var points = value + 0;
                 var results = [];
                 var resultsString = [];
-                var levelsCurrent = 0;
-                var levelsCurrentString = "QS %s";
                 var countSuccess = 0;
                 var countFailure = 0;
+                var levelsCurrent = 0;
+                var levelsCurrentString =
+                    CHAR_LEVEL + CHAR_SPACE + CHAR_PLACEHOLDER;
 
                 // Make rolls, save result, calculate points
                 attr.forEach(function(val, j) {
 
                     // Roll and save result, subtract points
-                    var roll = Functions.rollDice(DICE_20, ROLLS_MIN)[0];
+                    var roll = Functions.rollDice(DICE_20_VALUE, ROLLS_MIN)[0];
                     results.push(roll);
                     points -= Math.max(
                         0, roll - Math.max(0, val + mod + modAddtional));
 
                     // Color results string
-                    var rollString = "%s";
-                    if (roll === DICE_20) {
+                    var rollString = CHAR_PLACEHOLDER;
+                    if (roll === DICE_20_VALUE) {
                         countFailure++;
                         resultsString.push(rollString.red);
                     } else if (roll === ROLL_RESULT_MIN) {
@@ -231,7 +296,7 @@ program
                 levelsTotal += levelsResult;
 
                 // Color remaining points string
-                var pointsString = "%s";
+                var pointsString = CHAR_PLACEHOLDER;
                 if (points >= 0) { pointsString = pointsString.green; }
                 else { pointsString = pointsString.red; }
 
@@ -261,16 +326,18 @@ program
                 // Add spaces to remaining points
                 points = points.toString();
                 var spaces = SKILL_REST_LENGTH - points.length;
-                for (let j = 0; j < spaces; j++) { points = " " + points; }
+                for (let j = 0; j < spaces; j++) {
+                    points = CHAR_SPACE + points;
+                }
 
                 // Print result
                 console.log(
-                    "\t%s. ".grey.dim +
-                    resultsString[0] + ATTR_DELIMITER.grey +
-                    resultsString[1] + ATTR_DELIMITER.grey +
-                    resultsString[2] + "\t" + pointsString +
-                    "\t" + levelsCurrentString +
-                    "\tΣ ".grey.dim + "%s".cyan,
+                    CHAR_TAB + (CHAR_PLACEHOLDER + CHAR_DOT).grey.dim +
+                    CHAR_SPACE + resultsString[0] + ATTR_DELIMITER.grey +
+                    resultsString[1] + ATTR_DELIMITER.grey + resultsString[2] +
+                    CHAR_TAB + pointsString + CHAR_TAB + levelsCurrentString +
+                    CHAR_TAB + CHAR_SUM.grey.dim + CHAR_SPACE +
+                    CHAR_PLACEHOLDER.cyan,
                     (i + 1), results[0], results[1], results[2], points,
                     levelsCurrent, levelsTotal
                 );
@@ -280,7 +347,7 @@ program
             }
 
             // Print linebreak
-            console.log("\r");
+            console.log(CHAR_BREAK);
         }
     });
 
