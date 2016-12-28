@@ -121,7 +121,7 @@ var Commands = (function() {
 
         // Check if attributes are invalid
         if (attr.length < ATTR_ROLLS) {
-            console.log(CHAR_NEWLINE + CHAR_TAB + TEXT_EROR_ATTR.red);
+            console.log(CHAR_NEWLINE + CHAR_TAB + TEXT_ERROR_ATTR.red);
             console.log(CHAR_TAB + TEXT_HINT_ATTR.grey + CHAR_NEWLINE);
 
         // Continue with valid attributes
