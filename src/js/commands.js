@@ -11,6 +11,13 @@
  */
 var Commands = (function() {
 
+    // Constants
+    const _MSG_HINT    = "(z.B. 11/13/12)";
+    const _MSG_ERROR   = "Probe im falschen Format!";
+    const _MSG_SLIPPED = "Patzer (automatisch misslungen)";
+    const _MSG_FAILED  = "Misslungen (bei Sammelprobe Malus +1)";
+    const _MSG_CRITTED = "Krit. Erfolg (bei Sammelprobe QS×2, Malus 0)";
+
     /**
      * Default function for dice commands.
      * @param {Number} n Sides of dice
@@ -20,28 +27,28 @@ var Commands = (function() {
     function roll(n, rolls, options) {
 
         // Initialize and convert arguments and values
-        rolls     = _.toInt(rolls, 1);
-        var plus  = _.toInt(options.plus, 0);
-        var minus = _.toInt(options.minus, 0);
+            rolls = _.toInt(rolls, ROLLS_MIN);
+        var plus  = _.toInt(options.plus, MOD_MIN);
+        var minus = _.toInt(options.minus, MOD_MIN);
         var sum   = plus - minus;
         var max   = n * rolls + sum;
 
         // Print title
         _.printLine();
-        _.printLine(_.getDice(rolls, n) + _.getMod(plus - minus));
+        _.printLine(_.strDice(rolls, n) + _.strMod(plus - minus));
         _.printLine();
 
         // Roll dice, add to sum, print results
         _.rollDice(n, rolls).forEach(function(roll, i) {
             sum += roll;
-            var content = _.getRoll(_.indent(roll, max), roll, 1, n);
+            var content = _.strRoll(_.indent(roll, max), roll, ROLL_CRIT, n);
             _.printList(i + 1, rolls, content);
         });
         _.printLine();
 
         // Print sum if necessary
-        if (rolls > 1 || plus > 0 || minus > 0) {
-            _.printLine(_.getSum(sum, true, rolls, max));
+        if (rolls > ROLLS_MIN || plus > MOD_MIN || minus > MOD_MIN) {
+            _.printLine(_.strSum(sum, true, rolls, max));
             _.printLine();
         }
     }
@@ -49,167 +56,91 @@ var Commands = (function() {
     /**
      * Command: skill; makes a skill-check.
      * @param {String} attr Skill attributes (e.g. 10/12/11)
-     * @param {String} value Skill value
+     * @param {String} val Skill value
      * @param {Object} options Command options
      */
-    function skill(attr, value, options) {
+    function skill(attr, val, options) {
 
-        // Fix value, initialize plus, minus, mod and repeat options
-        value = _.toInt(value, SKILL_MIN);
-        var plus = _.toInt(options.plus, MOD_DEFAULT);
-        var minus = _.toInt(options.minus, MOD_DEFAULT);
-        var repeat = _.toInt(options.sammel, ROLLS_MIN);
-        var mod = (plus - minus);
+        // Initialize and convert arguments and values
+            attr     = _.splitAttr(attr);
+            val      = _.toInt(val, SKILL_MIN);
+        var plus     = _.toInt(options.plus, MOD_MIN);
+        var minus    = _.toInt(options.minus, MOD_MIN);
+        var repeat   = _.toInt(options.sammel, ROLLS_MIN);
+        var repeated = repeat > ROLLS_MIN;
+        var mod      = plus - minus;
+        var failed   = false;
+        var slipped  = false;
+        var critted  = false;
+        var malus    = 0;
+        var level    = 0;
 
-        // Split attributes argument
-        attr = attr.split(ATTR_DELIMITER);
+        // Print error on invalid attributes
+        if (attr.length !== ROLLS_ATTR) {
+            _.printLine();
+            _.printLine(_MSG_ERROR.red);
+            _.printLine(_MSG_HINT.grey);
+            _.printLine();
 
-        // Check if attributes are invalid
-        if (attr.length < ATTR_ROLLS) {
-            console.log(CHAR_NEWLINE + CHAR_TAB + TEXT_ERROR_ATTR.red);
-            console.log(CHAR_TAB + TEXT_HINT_ATTR.grey + CHAR_NEWLINE);
-
-        // Continue with valid attributes
+        // Else continue with valid attributes
         } else {
 
-            // Fix attribute values
-            attr.forEach(function(val, i) {
-                attr[i] = _.toInt(val, ATTR_MIN);
-            });
-
-            // Initialize and color mod output string
-            var modStr = CHAR_PLACEHOLDER;
-            if (mod < 0) { modStr = modStr.red; }
-            else if (mod > 0) { modStr = (CHAR_PLUS + modStr).green; }
-            else { modStr = (CHAR_PLUSMINUS + modStr).grey.dim; }
-
-            // Initialize total quality-levels and additional mod
-            var modAddtional = 0;
-            var levelsTotal = 0;
-            var levelsTotalStr = CHAR_PLACEHOLDER;
-
-            // Color levels total string
-            if (repeat > ROLLS_MIN) { levelsTotalStr = levelsTotalStr.cyan; }
-            else { levelsTotalStr = levelsTotalStr.grey.dim; }
-
             // Print title
-            console.log(
-                CHAR_NEWLINE + CHAR_TAB + ATTR_ROLLS.toString().yellow +
-                DICE_20 + CHAR_SPACE + CHAR_PAREN_LEFT +
-                CHAR_PLACEHOLDER.magenta + CHAR_PAREN_RIGHT + CHAR_SPACE +
-                modStr + CHAR_SPACE + CHAR_BRACKET_LEFT +
-                CHAR_PLACEHOLDER.magenta + CHAR_BRACKET_RIGHT + CHAR_SPACE +
-                (CHAR_TIMES + CHAR_PLACEHOLDER).grey.dim + CHAR_NEWLINE,
-                attr.join(ATTR_DELIMITER), mod, value, repeat
+            _.printLine();
+            _.printLine(
+                _.strDice(ROLLS_ATTR, D_20) +
+                _.strAttr(attr) +
+                _.strMod(mod) +
+                _.strVal(val) +
+                _.strRepeat(repeat)
             );
+            _.printLine();
 
-            // Repeat checks
+            // Make skill-checks
             for (let i = 0; i < repeat; i++) {
 
-                // Initialize skill-points and results
-                var points = value + 0;
-                var results = [];
-                var resultsStr = [];
-                var countSuccess = 0;
-                var countFailure = 0;
-                var levelsCurrent = 0;
-                var levelsCurrentStr =
-                    CHAR_LEVEL + CHAR_SPACE + CHAR_PLACEHOLDER;
-
-                // Make rolls, save result, calculate points
+                // Make rolls, calculate points
+                var rolls = [];
+                var points = val + 0;
                 for (let j = 0; j < attr.length; j++) {
-
-                    // Roll and save result, subtract points
-                    var val = attr[j];
-                    var roll = _.rollDice(DICE_20_VALUE, ROLLS_MIN)[0];
-                    results.push(roll);
-                    points -= Math.max(
-                        0, roll - Math.max(0, val + mod + modAddtional));
-
-                    // Color results string
-                    var rollStr = CHAR_PLACEHOLDER;
-                    if (roll === DICE_20_VALUE) {
-                        countFailure++;
-                        resultsStr.push(rollStr.red);
-                    } else if (roll === ROLL_RESULT_MIN) {
-                        countSuccess++;
-                        resultsStr.push(rollStr.green);
-                    } else {
-                        resultsStr.push(rollStr.grey);
-                    }
+                    rolls[j] = _.rollDice(D_20, ROLLS_MIN)[0];
+                    var goal = Math.max(ATTR_MIN, attr[j] + mod - malus);
+                    var diff = Math.max(ATTR_MIN, rolls[j] - goal);
+                    points  -= diff;
                 }
 
-                // Calculate levels
-                var levelsResult = 0;
-                if (points === 0) { levelsResult = 1; }
-                else if (points > 0) {
-                    levelsResult = Math.ceil(points / SKILL_LEVEL_THRESH);
-                }
+                // Analyse rolls, set/calculate values
+                var slip = _.countRolls(rolls, ROLL_SLIP) >= ROLLS_TO_CRIT;
+                var crit = _.countRolls(rolls, ROLL_CRIT) >= ROLLS_TO_CRIT;
+                var qual = _.calcQuality(points, crit, slip, repeated);
+                var mult = Math.min(QUAL_MAX, qual * QUAL_MULTIPLY);
+                var fail = qual < QUAL_SUCCESS;
 
-                // Add current levels
-                levelsCurrent = levelsResult;
-                levelsTotal += levelsResult;
+                // Set global values
+                slipped = slipped ?  true : slip;
+                critted = critted ?  true : crit;
+                failed  = failed  ?  true : fail;
+                malus   = crit ?  MOD_MIN : fail ? malus + 1    : malus;
+                level   = slip ? QUAL_MIN : crit ? level + mult : level + qual;
 
-                // Color remaining points string
-                var pointsStr = CHAR_PLACEHOLDER;
-                if (points >= 0) { pointsStr = pointsStr.green; }
-                else { pointsStr = pointsStr.red; }
-
-                // Add effects of critical successes
-                if (countSuccess >= ROLL_CRIT_THRESH) {
-                    levelsResult = Math.max(1, levelsResult);
-                    levelsCurrent += levelsResult;
-                    levelsTotal += levelsResult;
-                    modAddtional = 0;
-                }
-
-                // Add effects to critical failures
-                if (countFailure >= ROLL_CRIT_THRESH) {
-                    levelsCurrent = 0;
-                    levelsTotal = 0;
-                }
-
-                // Add effect to failures
-                if (points < 0) { modAddtional--; }
-
-                // Color current level string
-                if (levelsResult <= 0) {
-                    levelsCurrentStr = levelsCurrentStr.dim.grey.dim;
-                }
-
-                // Add spaces to remaining points
-                points = points.toString();
-                var spaces = SKILL_REST_LENGTH - points.length;
-                for (let j = 0; j < spaces; j++) {
-                    points = CHAR_SPACE + points;
-                }
-
-                // Print result
-                console.log(
-                    CHAR_TAB + (CHAR_PLACEHOLDER + CHAR_DOT).grey.dim +
-                    CHAR_SPACE + resultsStr[0] + ATTR_DELIMITER.grey +
-                    resultsStr[1] + ATTR_DELIMITER.grey + resultsStr[2] +
-                    CHAR_TAB + pointsStr + CHAR_TAB + levelsCurrentStr +
-                    CHAR_TAB + CHAR_SUM.grey.dim + CHAR_SPACE + levelsTotalStr,
-                    (i + 1), results[0], results[1], results[2], points,
-                    levelsCurrent, levelsTotal
+                // Print results
+                _.printList(
+                    i + 1, repeat,
+                    _.strRolls(rolls, ROLL_CRIT, ROLL_SLIP) +
+                    _.strPoints(points) + _.strQuality(qual, crit, slip) +
+                    _.strSum(level, false, 0, QUAL_MAX * repeat)
                 );
 
-                // Abort on critical failure
-                if (countFailure >= ROLL_CRIT_THRESH) { break; }
+                // Break on critical slip
+                if (slip) { break; }
             }
 
-            // Print hints
-            if (repeat > ROLLS_MIN) {
-                console.log((
-                    CHAR_NEWLINE + CHAR_TAB + TEXT_HINT_FLOP +
-                    CHAR_NEWLINE + CHAR_TAB + TEXT_HINT_SUCCESS +
-                    CHAR_NEWLINE + CHAR_TAB + TEXT_HINT_FAILURE
-                ).grey.dim);
-            }
-
-            // Print linebreak
-            console.log(CHAR_BREAK);
+            // Print messages
+            _.printLine();
+            if (failed && !slipped) { _.printMsg(_MSG_FAILED, repeat); }
+            if (critted) { _.printMsg(_MSG_CRITTED, repeat, false, true); }
+            if (slipped) { _.printMsg(_MSG_SLIPPED, repeat, true, false); }
+            if (failed || slipped || critted) { _.printLine(); }
         }
     }
 

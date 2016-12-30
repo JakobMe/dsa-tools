@@ -10,3 +10,4 @@
 
 // Modules
 var Program = require("commander");
+var Colors  = require("colors");

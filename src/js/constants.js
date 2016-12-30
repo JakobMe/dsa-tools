@@ -1,38 +1,25 @@
-// Constants
-const VERSION               = "1.0.0";
-const DICE_20               = "w20";
-const DICE_6                = "w6";
-const DICE_20_VALUE         = 20;
-const DICE_6_VALUE          = 6;
-const ROLLS_MIN             = 1;
-const ROLL_RESULT_MIN       = 1;
-const ROLL_CRIT_THRESH      = 2;
-const MOD_DEFAULT           = 0;
-const SKILL_MIN             = 0;
-const SKILL_REST_LENGTH     = 3;
-const SKILL_LEVEL_THRESH    = 3;
-const SKILL_LEVEL_LENGTH    = 2;
-const ATTR_ROLLS            = 3;
-const ATTR_MIN              = 8;
-const ATTR_DELIMITER        = "/";
-const CHAR_TAB              = "\t";
-const CHAR_BREAK            = "\r";
-const CHAR_NEWLINE          = "\n";
-const CHAR_PLACEHOLDER      = "%s";
-const CHAR_DOT              = ".";
-const CHAR_SPACE            = " ";
-const CHAR_PLUS             = "+";
-const CHAR_PLUSMINUS        = "±";
-const CHAR_TIMES            = "×";
-const CHAR_SUM              = "Σ";
-const CHAR_COLON            = ":";
-const CHAR_PAREN_LEFT       = "(";
-const CHAR_PAREN_RIGHT      = ")";
-const CHAR_BRACKET_LEFT     = "[";
-const CHAR_BRACKET_RIGHT    = "]";
-const CHAR_LEVEL            = "QS";
-const TEXT_ERROR_ATTR       = "Wrong attribute format!";
-const TEXT_HINT_ATTR        = "e.g. 11/13/12";
-const TEXT_HINT_FLOP        = "Misslungen: Folgeproben kumulativ -1.";
-const TEXT_HINT_FAILURE     = "Patzer: Sammelprobe misslungen.";
-const TEXT_HINT_SUCCESS     = "Krit. Erfolg: QS × 2, Erschwernis abgebaut.";
+/**
+ * DSA-Tools CLI.
+ * @author Jakob Metzger <jakob.me@gmail.com>
+ * @copyright 2017 Jakob Metzger
+ * @license MIT
+ */
+
+// Begin IIFE
+(function() {
+
+    // Constants
+    const MOD_MIN               = 0;
+    const SKILL_MIN             = 0;
+    const ATTR_MIN              = 0;
+    const ROLLS_MIN             = 1;
+    const ROLLS_ATTR            = 3;
+    const ROLLS_TO_CRIT         = 2;
+    const D_20                  = 20;
+    const ROLL_SLIP             = 20;
+    const ROLL_CRIT             = 1;
+    const QUAL_MULTIPLY         = 2;
+    const QUAL_DIVIDE           = 3;
+    const QUAL_MAX              = 6;
+    const QUAL_MIN              = 0;
+    const QUAL_SUCCESS          = 1;
