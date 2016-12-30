@@ -4,27 +4,27 @@
  * Functions module; encapsulates all helper functions.
  * @returns {Object} Public interface
  */
-var Functions = (function() {
+var Func = (function() {
 
     /**
      * Convert string to integer with default fallback.
      * @param {String} string String to convert
-     * @param {Number} defaultNumber Default fallback number
-     * @returns {Number} Converted number
+     * @param {Number} fallback Default fallback integer
+     * @returns {Number} Converted integer
      */
-    function convertToInt(string, defaultNumber) {
-        string = parseInt(string);
-        if (isNaN(string)) { string = defaultNumber; }
-        return string;
+    function toInt(string, fallback) {
+        var number = parseInt(string);
+        if (isNaN(number)) { number = fallback; }
+        return number;
     }
 
     /**
-     * Return a random number between 'min' and 'max' (inclusive).
-     * @param {Number} min Smallest allowed number
-     * @param {Number} max Biggest allowed number
-     * @returns {Number} Random number
+     * Return a random integer between 'min' and 'max' (inclusive).
+     * @param {Number} min Smallest allowed integer
+     * @param {Number} max Biggest allowed integer
+     * @returns {Number} Random integer
      */
-    function _randomNumber(min, max) {
+    function _randInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
@@ -35,16 +35,16 @@ var Functions = (function() {
      */
     function rollDice(sides, rolls) {
         var results = [];
-        for (let i = 0; i < convertToInt(rolls, ROLLS_MIN); i++) {
-            results.push(_randomNumber(ROLL_RESULT_MIN, sides));
+        for (let i = 0; i < toInt(rolls, ROLLS_MIN); i++) {
+            results.push(_randInt(ROLL_RESULT_MIN, sides));
         }
         return results;
     }
 
     // Public interface
     return {
-        rollDice     : rollDice,
-        convertToInt : convertToInt
+        rollDice : rollDice,
+        toInt    : toInt
     };
 
 })();

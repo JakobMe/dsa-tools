@@ -2,35 +2,35 @@
 
 /*
  * Command:
- * w20 [rolls]
+ * w20 [würfel]
  */
 program
-    .command("w20 [rolls]")
-    .description("roll w20 dice")
+    .command("w20 [würfel]")
+    .description("Anzahl an W20 würfeln")
     .action(Commands.w20);
 
 /*
  * Command:
- * w6 [-p, --plus <bonus>] [-m, --minus <malus>] [rolls]
+ * w6 [-p, --plus <bonus>] [-m, --minus <malus>] [würfel]
  */
 program
-    .command("w6 [rolls]")
-    .description("roll w6 dice")
-    .option("-p, --plus <bonus>", "bonus to sum of rolls")
-    .option("-m, --minus <malus>", "malus to sum of rolls")
+    .command("w6 [würfel]")
+    .description("Anzahl an W6 würfeln")
+    .option("-p, --plus <bonus>", "Bonus zur Summe der Würfel")
+    .option("-m, --minus <malus>", "Malus zur Summe der Würfel")
     .action(Commands.w6);
 
 /*
  * Command:
- * skill [-m, --minus <malus>] [-p, --plus <bonus>]
- * [-r, --repeat <times>] <attr> <value>
+ * probe [-m, --minus <malus>] [-p, --plus <bonus>]
+ * [-s, --sammel <versuche>] <eigenschaften> <fw>
  */
 program
-    .command("skill <attr> <value>")
-    .description("make a skill-check")
-    .option("-r, --repeat <times>", "repeat skill-check")
-    .option("-m, --minus <malus>", "make skill-check harder by malus")
-    .option("-p, --plus <bonus>", "make skill-check easier by bonus")
+    .command("probe <eigenschaften> <fw>")
+    .description("Eine Fertigkeitsprobe würfeln")
+    .option("-s, --sammel <versuche>", "Sammelprobe mit Anzahl an Versuchen")
+    .option("-m, --minus <malus>", "Erschwernis auf Probe")
+    .option("-p, --plus <bonus>", "Erleichterung auf Probe")
     .action(Commands.skill);
 
 // Add version and parse
