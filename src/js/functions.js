@@ -1,10 +1,15 @@
-/*jshint esversion: 6 */
+/**
+ * DSA-Tools CLI.
+ * @author Jakob Metzger <jakob.me@gmail.com>
+ * @copyright 2017 Jakob Metzger
+ * @license MIT
+ */
 
 /**
  * Functions module; encapsulates all helper functions.
  * @returns {Object} Public interface
  */
-var Func = (function() {
+var _ = (function() {
 
     /**
      * Return a random integer between 'min' and 'max' (inclusive).
@@ -58,7 +63,7 @@ var Func = (function() {
      * Print a line in console, indent by tab.
      * @param {String} content Content of line
      */
-    function printLn(content) {
+    function printLine(content) {
         console.log("\t" + (content || ""));
     }
 
@@ -68,8 +73,8 @@ var Func = (function() {
      * @param {Number} size Size of list
      * @param {String} content Content of list-element
      */
-    function li(i, size, content) {
-        printLn((indent(i, size) + ". ").grey.dim + content);
+    function printList(i, size, content) {
+        printLine((indent(i, size) + ". ").grey.dim + content);
     }
 
     /**
@@ -80,7 +85,7 @@ var Func = (function() {
      * @param {Number} bad Definition of a bad roll
      * @returns {String} Colored string of roll result
      */
-    function colorRoll(text, roll, good, bad) {
+    function getRoll(text, roll, good, bad) {
         text = text.toString();
         return roll === good ? text.green
                              : roll === bad ? text.red
@@ -93,7 +98,7 @@ var Func = (function() {
      * @param {Number} sides Number of sides of dice
      * @returns {String} String of dice (e.g. 3w20)
      */
-    function colorDice(rolls, sides) {
+    function getDice(rolls, sides) {
         return rolls.toString().yellow + "w" + sides.toString() + " ";
     }
 
@@ -102,7 +107,7 @@ var Func = (function() {
      * @param {Number} mod Mod integer
      * @returns {String} Colored string of mod
      */
-    function colorMod(mod) {
+    function getMod(mod) {
         var output = mod.toString();
         return mod < 0 ? output.red
                        : mod > 0 ? ("+" + output).green
@@ -117,22 +122,22 @@ var Func = (function() {
      * @param {Number} [max] Number of max sum for indentation
      * @returns {String} Colored string of sum
      */
-    function colorSum(sum, colon, items, max) {
+    function getSum(sum, colon, items, max) {
         var sym = indent("Σ", items || 0) + ((colon || false) ? ": " : " ");
         return sym.grey.dim + indent(sum, max || 0).cyan;
     }
 
     // Public interface
     return {
-        li        : li,
+        printLine : printLine,
+        printList : printList,
         rollDice  : rollDice,
-        colorDice : colorDice,
-        colorRoll : colorRoll,
-        colorSum  : colorSum,
-        colorMod  : colorMod,
+        getDice   : getDice,
+        getRoll   : getRoll,
+        getSum    : getSum,
+        getMod    : getMod,
         toInt     : toInt,
-        indent    : indent,
-        printLn   : printLn
+        indent    : indent
     };
 
 })();

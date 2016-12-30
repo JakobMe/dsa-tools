@@ -14,22 +14,8 @@ gulp.task("watch", function() {
     gulp.watch("src/js/*.js", ["js"]);
 });
 
-// JSHint-Task
-gulp.task("jshint", function() {
-    return gulp.src("src/js/*.js")
-        .pipe(jshint())
-        .pipe(jshint.reporter("jshint-stylish"))
-        .pipe(jshint.reporter("fail"))
-        .on("error", notify.onError({
-            title: "Gulp",
-            message: "<%= error.message %>",
-            sound: "Basso",
-            icon: "Terminal Icon",
-        }));
-});
-
 // JavaScript-Task
-gulp.task("js", ["jshint"], function() {
+gulp.task("js", function() {
     return gulp.src([
             "src/js/modules.js",
             "src/js/constants.js",
@@ -38,8 +24,17 @@ gulp.task("js", ["jshint"], function() {
             "src/js/program.js"
         ])
         .pipe(concat("cli.js"))
-        //.pipe(babel({ presets: ["es2015"] }))
-        //.pipe(uglify())
+        .pipe(jshint())
+        .pipe(jshint.reporter("jshint-stylish"))
+        .pipe(jshint.reporter("fail"))
+        .on("error", notify.onError({
+            title: "Gulp",
+            message: "<%= error.message %>",
+            sound: "Basso",
+            icon: "Terminal Icon",
+        }))
+        .pipe(babel({ presets: ["es2015"] }))
+        .pipe(uglify())
         .pipe(gulp.dest("./cli"))
         .pipe(notify({
             sound: false,

@@ -1,5 +1,3 @@
-/*jshint esversion: 6 */
-
 // Constants
 const VERSION               = "1.0.0";
 const DICE_20               = "w20";

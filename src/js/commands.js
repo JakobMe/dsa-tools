@@ -1,4 +1,9 @@
-/*jshint esversion: 6 */
+/**
+ * DSA-Tools CLI.
+ * @author Jakob Metzger <jakob.me@gmail.com>
+ * @copyright 2017 Jakob Metzger
+ * @license MIT
+ */
 
 /**
  * Commands module; encapsulates all command functions.
@@ -15,29 +20,29 @@ var Commands = (function() {
     function roll(n, rolls, options) {
 
         // Initialize and convert arguments and values
-        rolls     = Func.toInt(rolls, 1);
-        var plus  = Func.toInt(options.plus, 0);
-        var minus = Func.toInt(options.minus, 0);
+        rolls     = _.toInt(rolls, 1);
+        var plus  = _.toInt(options.plus, 0);
+        var minus = _.toInt(options.minus, 0);
         var sum   = plus - minus;
         var max   = n * rolls + sum;
 
         // Print title
-        Func.printLn();
-        Func.printLn(Func.colorDice(rolls, n) + Func.colorMod(plus - minus));
-        Func.printLn();
+        _.printLine();
+        _.printLine(_.getDice(rolls, n) + _.getMod(plus - minus));
+        _.printLine();
 
         // Roll dice, add to sum, print results
-        Func.rollDice(n, rolls).forEach(function(roll, i) {
+        _.rollDice(n, rolls).forEach(function(roll, i) {
             sum += roll;
-            var content = Func.colorRoll(Func.indent(roll, max), roll, 1, n);
-            Func.li(i + 1, rolls, content);
+            var content = _.getRoll(_.indent(roll, max), roll, 1, n);
+            _.printList(i + 1, rolls, content);
         });
-        Func.printLn();
+        _.printLine();
 
         // Print sum if necessary
         if (rolls > 1 || plus > 0 || minus > 0) {
-            Func.printLn(Func.colorSum(sum, true, rolls, max));
-            Func.printLn();
+            _.printLine(_.getSum(sum, true, rolls, max));
+            _.printLine();
         }
     }
 
@@ -50,10 +55,10 @@ var Commands = (function() {
     function skill(attr, value, options) {
 
         // Fix value, initialize plus, minus, mod and repeat options
-        value = Func.toInt(value, SKILL_MIN);
-        var plus = Func.toInt(options.plus, MOD_DEFAULT);
-        var minus = Func.toInt(options.minus, MOD_DEFAULT);
-        var repeat = Func.toInt(options.sammel, ROLLS_MIN);
+        value = _.toInt(value, SKILL_MIN);
+        var plus = _.toInt(options.plus, MOD_DEFAULT);
+        var minus = _.toInt(options.minus, MOD_DEFAULT);
+        var repeat = _.toInt(options.sammel, ROLLS_MIN);
         var mod = (plus - minus);
 
         // Split attributes argument
@@ -69,7 +74,7 @@ var Commands = (function() {
 
             // Fix attribute values
             attr.forEach(function(val, i) {
-                attr[i] = Func.toInt(val, ATTR_MIN);
+                attr[i] = _.toInt(val, ATTR_MIN);
             });
 
             // Initialize and color mod output string
@@ -116,7 +121,7 @@ var Commands = (function() {
 
                     // Roll and save result, subtract points
                     var val = attr[j];
-                    var roll = Func.rollDice(DICE_20_VALUE, ROLLS_MIN)[0];
+                    var roll = _.rollDice(DICE_20_VALUE, ROLLS_MIN)[0];
                     results.push(roll);
                     points -= Math.max(
                         0, roll - Math.max(0, val + mod + modAddtional));
