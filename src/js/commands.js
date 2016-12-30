@@ -7,92 +7,38 @@
 var Commands = (function() {
 
     /**
-     * Command: w20; rolls twenty-sided dice.
-     * @param {String} rolls Number of dice rolls
-     */
-    function w20(rolls) {
-
-        // Fix rolls argument
-        rolls = Func.toInt(rolls, ROLLS_MIN);
-
-        // Print title
-        console.log(
-            CHAR_NEWLINE + CHAR_TAB + CHAR_PLACEHOLDER.yellow +
-            DICE_20 + CHAR_NEWLINE, rolls
-        );
-
-        // Roll dice, print results
-        Func.rollDice(DICE_20_VALUE, rolls).forEach(function(roll, i) {
-
-            // Color roll string
-            var rollStr = CHAR_PLACEHOLDER;
-            if (roll === DICE_20_VALUE) { rollStr = rollStr.red; }
-            else if (roll === ROLL_RESULT_MIN) { rollStr = rollStr.green; }
-
-            // Print result
-            console.log(
-                CHAR_TAB + (CHAR_PLACEHOLDER + CHAR_DOT).grey.dim +
-                CHAR_SPACE + rollStr, (i + 1), roll
-            );
-        });
-
-        // Print linebreak
-        console.log(CHAR_BREAK);
-    }
-
-    /**
-     * Command: w6; rolls six-sided dice.
-     * @param {String} rolls Number of dice rolls
+     * Default function for dice commands.
+     * @param {Number} n Sides of dice
+     * @param {String} rolls Number of rolls as string
      * @param {Object} options Command options
      */
-    function w6(rolls, options) {
+    function roll(n, rolls, options) {
 
-        // Fix rolls and plus/minus arguments, initialize sum and mod
-        rolls = Func.toInt(rolls, ROLLS_MIN);
-        var plus = Func.toInt(options.plus, MOD_DEFAULT);
-        var minus = Func.toInt(options.minus, MOD_DEFAULT);
-        var mod = (plus - minus);
-        var sum = mod + 0;
-
-        // Initialize mod output strings
-        var modStr = CHAR_PLACEHOLDER;
-        if (mod < 0) { modStr = modStr.red; }
-        else if (mod > 0) { modStr = (CHAR_PLUS + modStr).green; }
-        else { modStr = (CHAR_PLUSMINUS + modStr).grey.dim; }
+        // Initialize and convert arguments and values
+        rolls     = Func.toInt(rolls, 1);
+        var plus  = Func.toInt(options.plus, 0);
+        var minus = Func.toInt(options.minus, 0);
+        var sum   = plus - minus;
+        var max   = n * rolls + sum;
 
         // Print title
-        console.log(
-            CHAR_NEWLINE + CHAR_TAB + CHAR_PLACEHOLDER.yellow +
-            DICE_6 + CHAR_SPACE + modStr + CHAR_NEWLINE, rolls, mod
-        );
+        Func.printLn();
+        Func.printLn(Func.colorDice(rolls, n) + Func.colorMod(plus - minus));
+        Func.printLn();
 
-        // Roll dice
-        Func.rollDice(DICE_6_VALUE, rolls).forEach(function(roll, i) {
-
-            // Color roll string
-            var rollStr = CHAR_SPACE + CHAR_PLACEHOLDER;
-            if (roll === DICE_6_VALUE) { rollStr = rollStr.green; }
-            else if (roll === ROLL_RESULT_MIN) { rollStr = rollStr.red; }
-
-            // Print result
-            console.log(
-                CHAR_TAB + (CHAR_PLACEHOLDER + CHAR_DOT).grey.dim + rollStr,
-                (i + 1), roll
-            );
-
-            // Add result to sum
+        // Roll dice, add to sum, print results
+        Func.rollDice(n, rolls).forEach(function(roll, i) {
             sum += roll;
+            var content = Func.colorRoll(Func.indent(roll, max), roll, 1, n);
+            Func.li(i + 1, rolls, content);
         });
+        Func.printLn();
 
-        // Print sum
-        if ((rolls > ROLLS_MIN) || (mod !== MOD_DEFAULT)) {
-            console.log(
-                CHAR_NEWLINE + CHAR_TAB +
-                (CHAR_SUM + CHAR_COLON).grey.dim + CHAR_SPACE +
-                CHAR_PLACEHOLDER.cyan + CHAR_NEWLINE,
-                sum
-            );
-        } else { console.log(CHAR_BREAK); }
+        // Print sum if necessary
+        if (rolls > 1 || plus > 0 || minus > 0) {
+            Func.printLn(Func.colorSum(sum, true, rolls, max));
+            Func.printLn();
+        }
     }
 
     /**
@@ -264,8 +210,7 @@ var Commands = (function() {
 
     // Public interface
     return {
-        w20   : w20,
-        w6    : w6,
+        roll  : roll,
         skill : skill
     };
 

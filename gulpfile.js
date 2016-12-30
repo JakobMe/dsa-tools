@@ -11,12 +11,12 @@ gulp.task("default", ["watch"]);
 
 // Watch-Task
 gulp.task("watch", function() {
-    gulp.watch("src/*.js", ["js"]);
+    gulp.watch("src/js/*.js", ["js"]);
 });
 
 // JSHint-Task
 gulp.task("jshint", function() {
-    return gulp.src("src/*.js")
+    return gulp.src("src/js/*.js")
         .pipe(jshint())
         .pipe(jshint.reporter("jshint-stylish"))
         .pipe(jshint.reporter("fail"))
@@ -31,16 +31,16 @@ gulp.task("jshint", function() {
 // JavaScript-Task
 gulp.task("js", ["jshint"], function() {
     return gulp.src([
-            "src/modules.js",
-            "src/constants.js",
-            "src/functions.js",
-            "src/commands.js",
-            "src/program.js"
+            "src/js/modules.js",
+            "src/js/constants.js",
+            "src/js/functions.js",
+            "src/js/commands.js",
+            "src/js/program.js"
         ])
-        .pipe(concat("index.js"))
-        .pipe(babel({ presets: ["es2015"] }))
-        .pipe(uglify())
-        .pipe(gulp.dest("./"))
+        .pipe(concat("cli.js"))
+        //.pipe(babel({ presets: ["es2015"] }))
+        //.pipe(uglify())
+        .pipe(gulp.dest("./cli"))
         .pipe(notify({
             sound: false,
             icon: "Terminal Icon",

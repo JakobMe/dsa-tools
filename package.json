@@ -11,7 +11,7 @@
     "url": "git+https://github.com/JakobMe/dsa-tools.git"
   },
   "bin": {
-    "dsa": "./index.js"
+    "dsa": "./cli/cli.js"
   },
   "dependencies": {
     "colors": "^1.1.2",
