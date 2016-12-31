@@ -5,21 +5,18 @@
  * @license MIT
  */
 
-// Begin IIFE
-(function() {
-
-    // Constants
-    const MOD_MIN               = 0;
-    const SKILL_MIN             = 0;
-    const ATTR_MIN              = 0;
-    const ROLLS_MIN             = 1;
-    const ROLLS_ATTR            = 3;
-    const ROLLS_TO_CRIT         = 2;
-    const D_20                  = 20;
-    const ROLL_SLIP             = 20;
-    const ROLL_CRIT             = 1;
-    const QUAL_MULTIPLY         = 2;
-    const QUAL_DIVIDE           = 3;
-    const QUAL_MAX              = 6;
-    const QUAL_MIN              = 0;
-    const QUAL_SUCCESS          = 1;
+// Constants
+var MOD_MIN             = 0;
+var SKILL_MIN           = 0;
+var ATTR_MIN            = 0;
+var ROLLS_MIN           = 1;
+var ROLLS_ATTR          = 3;
+var ROLLS_TO_CRIT       = 2;
+var D_20                = 20;
+var ROLL_SLIP           = 20;
+var ROLL_CRIT           = 1;
+var QUAL_MULTIPLY       = 2;
+var QUAL_DIVIDE         = 3;
+var QUAL_MAX            = 6;
+var QUAL_MIN            = 0;
+var QUAL_SUCCESS        = 1;

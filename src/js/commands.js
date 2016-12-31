@@ -12,11 +12,13 @@
 var Commands = (function() {
 
     // Constants
-    const _MSG_HINT    = "(z.B. 11/13/12)";
-    const _MSG_ERROR   = "Probe im falschen Format!";
-    const _MSG_SLIPPED = "Patzer (automatisch misslungen)";
-    const _MSG_FAILED  = "Misslungen (bei Sammelprobe Malus +1)";
-    const _MSG_CRITTED = "Krit. Erfolg (bei Sammelprobe QS×2, Malus 0)";
+    var _MSG_HINT      = "(z.B. 11/13/12)";
+    var _MSG_ERROR     = "Probe im falschen Format!";
+    var _MSG_SLIPPED   = "Patzer (automatisch misslungen)";
+    var _MSG_FAILED    = "Nach misslungenen Proben Malus kumulativ +1";
+    var _MSG_CRITTED   = "Krit. Erfolg (bei Sammelprobe QS×2, Malus 0)";
+    var _MSG_UNSUCCESS = "Erfolgsprobe misslungen";
+    var _MSG_SUCCESS   = "Erfolgsprobe bestanden";
 
     /**
      * Default function for dice commands.
@@ -72,6 +74,7 @@ var Commands = (function() {
         var failed   = false;
         var slipped  = false;
         var critted  = false;
+        var success  = false;
         var malus    = 0;
         var level    = 0;
 
@@ -97,12 +100,12 @@ var Commands = (function() {
             _.printLine();
 
             // Make skill-checks
-            for (let i = 0; i < repeat; i++) {
+            for (var i = 0; i < repeat; i++) {
 
                 // Make rolls, calculate points
                 var rolls = [];
                 var points = val + 0;
-                for (let j = 0; j < attr.length; j++) {
+                for (var j = 0; j < attr.length; j++) {
                     rolls[j] = _.rollDice(D_20, ROLLS_MIN)[0];
                     var goal = Math.max(ATTR_MIN, attr[j] + mod - malus);
                     var diff = Math.max(ATTR_MIN, rolls[j] - goal);
@@ -113,15 +116,14 @@ var Commands = (function() {
                 var slip = _.countRolls(rolls, ROLL_SLIP) >= ROLLS_TO_CRIT;
                 var crit = _.countRolls(rolls, ROLL_CRIT) >= ROLLS_TO_CRIT;
                 var qual = _.calcQuality(points, crit, slip, repeated);
-                var mult = Math.min(QUAL_MAX, qual * QUAL_MULTIPLY);
                 var fail = qual < QUAL_SUCCESS;
 
                 // Set global values
-                slipped = slipped ?  true : slip;
-                critted = critted ?  true : crit;
-                failed  = failed  ?  true : fail;
-                malus   = crit ?  MOD_MIN : fail ? malus + 1    : malus;
-                level   = slip ? QUAL_MIN : crit ? level + mult : level + qual;
+                slipped = slipped ? true    : slip;
+                critted = critted ? true    : crit;
+                failed  = failed  ? true    : fail;
+                level   = slip    ? qual    : level + qual;
+                malus   = crit    ? MOD_MIN : fail ? malus + 1 : malus;
 
                 // Print results
                 _.printList(
@@ -137,11 +139,37 @@ var Commands = (function() {
 
             // Print messages
             _.printLine();
-            if (failed && !slipped) { _.printMsg(_MSG_FAILED, repeat); }
-            if (critted) { _.printMsg(_MSG_CRITTED, repeat, false, true); }
-            if (slipped) { _.printMsg(_MSG_SLIPPED, repeat, true, false); }
-            if (failed || slipped || critted) { _.printLine(); }
+            _chooseMsg(repeat, critted, failed, slipped);
         }
+    }
+
+    /**
+     * Choose messages for skill-checks to print.
+     * @param {Number} repeat Number of repeated skill-checks
+     * @param {Boolean} critted At least one critical success on skill-check
+     * @param {Boolean} failed At least one failed skill-check
+     * @param {Boolean} slipped At least one slipped skill-check
+     */
+    function _chooseMsg(repeat, critted, failed, slipped) {
+
+        // Initialize status and values
+        var extra    = false;
+        var message  = false;
+        var repeated = repeat > ROLLS_MIN;
+        var error    = (!repeated && failed);
+        var success  = (!repeated && !failed);
+
+        // Choose messages
+        if (!repeated && !failed) { message = _MSG_SUCCESS; }
+        if (!repeated &&  failed) { message = _MSG_UNSUCCESS; }
+        if ( repeated &&  failed) { message = _MSG_FAILED; }
+        if (critted)              { extra   = _MSG_CRITTED; }
+        if (slipped)              { extra   = _MSG_SLIPPED; }
+
+        // Print messages
+        if (message) { _.printMsg(message, repeat, error, success); }
+        if (extra)   { _.printMsg(extra, repeat, slipped, critted); }
+        if (extra || message) { _.printLine(); }
     }
 
     // Public interface

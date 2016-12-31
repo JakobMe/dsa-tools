@@ -40,7 +40,7 @@ var _ = (function() {
      */
     function rollDice(sides, rolls) {
         var results = [];
-        for (let i = 0; i < toInt(rolls, ROLLS_MIN); i++) {
+        for (var i = 0; i < toInt(rolls, ROLLS_MIN); i++) {
             results.push(_randInt(1, sides));
         }
         return results;
@@ -68,7 +68,7 @@ var _ = (function() {
     function indent(string, longest) {
         var lenStr = string.toString().length;
         var lenLon = longest.toString().length;
-        for (let i = 0; i < (lenLon - lenStr); i++) { string = " " + string; }
+        for (var i = 0; i < (lenLon - lenStr); i++) { string = " " + string; }
         return string.toString();
     }
 

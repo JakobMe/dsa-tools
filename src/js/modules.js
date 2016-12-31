@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/*jshint esversion: 6 */
 
 /**
  * DSA-Tools CLI.
