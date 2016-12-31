@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-// Constants
+// Number-Constants
 var MOD_MIN             = 0;
 var SKILL_MIN           = 0;
 var ATTR_MIN            = 0;
@@ -20,4 +20,9 @@ var QUAL_DIVIDE         = 3;
 var QUAL_MAX            = 6;
 var QUAL_MIN            = 0;
 var QUAL_SUCCESS        = 1;
-var SEARCH_MAX          = 10;
+
+// Regex-Constants
+var DATA_PLACEHOLDER    = "$1";
+var DATA_TITLE          = /\[\[(.*?)\]\]/;
+var DATA_ITALIC         = /__(.*?)__/;
+var DATA_BOLD           = /\*\*(.*?)\*\*/;

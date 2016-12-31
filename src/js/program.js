@@ -38,10 +38,10 @@ Program
     });
 
 /*
- * Command: suche <begriff>
+ * Command: suche [thema] [begriff]
  */
 Program
-    .command("suche <thema> <begriff>")
+    .command("suche [thema] [begriff]")
     .description("Regel-Thema nach einem Begriff durchsuchen")
     .action(function(directory, keyword) {
         Commands.find(directory, keyword);

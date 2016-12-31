@@ -183,7 +183,8 @@ var _ = (function() {
      * @returns {String} Colored string of repeats
      */
     function strRepeat(repeat) {
-        return ("×" + repeat.toString()).grey.dim;
+        var output = "×" + repeat.toString();
+        return repeat > ROLLS_MIN ? output.yellow : output.grey.dim;
     }
 
     /**
@@ -230,7 +231,7 @@ var _ = (function() {
      * @returns {String} Colored string of keyword
      */
     function strKeyword(keyword) {
-        return ("„" + keyword.toString() + "”").yellow + " — ".grey.dim;
+        return ("„" + keyword.toString() + "“").yellow + " — ".grey.dim;
     }
 
     /**
@@ -261,11 +262,24 @@ var _ = (function() {
         return Math.max(Math.min(qual * mult, QUAL_MAX), min);
     }
 
+    /**
+     * Format a read file-line and replace certain strings.
+     * @param {String} line Input line
+     * @returns {String} Formatted line
+     */
+    function formatLine(line) {
+        line = line.replace(DATA_TITLE, DATA_PLACEHOLDER.green);
+        line = line.replace(DATA_ITALIC, DATA_PLACEHOLDER.grey.dim);
+        line = line.replace(DATA_BOLD, DATA_PLACEHOLDER.blue);
+        return line;
+    }
+
     // Public interface
     return {
         printLine    : printLine,
         printList    : printList,
         printMsg     : printMsg,
+        formatLine   : formatLine,
         splitAttr    : splitAttr,
         rollDice     : rollDice,
         countRolls   : countRolls,

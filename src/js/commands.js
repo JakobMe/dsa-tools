@@ -12,23 +12,31 @@
 var Commands = (function() {
 
     // Message-Constants
-    var _MSG_ATTR_HINT  = "(z.B. 11/13/12)";
-    var _MSG_ATTR_ERROR = "Probe im falschen Format!";
-    var _MSG_SLIPPED    = "Patzer (automatisch misslungen)";
-    var _MSG_FAILED     = "Nach misslungenen Proben Malus kumulativ +1";
-    var _MSG_CRITTED    = "Krit. Erfolg (bei Sammelprobe QS×2, Malus 0)";
-    var _MSG_UNSUCCESS  = "Erfolgsprobe misslungen";
-    var _MSG_SUCCESS    = "Erfolgsprobe bestanden";
-    var _MSG_NOT_FOUND  = "Kein passender Begriff gefunden.";
-    var _MSG_WAS_FOUND  = "Folgende Begriffe wurden gefunden:";
-    var _MSG_HAS_MATCH  = "Suchbegriff gefunden:";
-    var _MSG_TOPIC_NO   = "Thema existiert nicht, folgende sind verfügbar:";
-    var _MSG_TOPIC_HINT = "[dsa suche <thema> <begriff>]";
+    var _MSG_ATTR_HINT     = "(z.B. 11/13/12)";
+    var _MSG_ATTR_ERROR    = "Probe im falschen Format!";
+    var _MSG_SKILL_SLIP    = "Patzer (automatisch misslungen)";
+    var _MSG_SKILL_FAIL    = "Nach misslungenen Proben Malus kumulativ +1";
+    var _MSG_SKILL_CRIT    = "Krit. Erfolg (bei Sammelprobe QS×2, Malus 0)";
+    var _MSG_SKILL_FLOP    = "Erfolgsprobe misslungen";
+    var _MSG_SKILL_SUCC    = "Erfolgsprobe bestanden";
+    var _MSG_KEYWORD_FAIL  = "Kein passender Begriff gefunden.";
+    var _MSG_KEYWORD_NONE  = "Keine Begriffe verfügbar.";
+    var _MSG_KEYWORD_LIST  = "Folgende Begriffe wurden gefunden:";
+    var _MSG_KEYWORD_ALL   = "Folgende Begriffe sind verfügbar";
+    var _MSG_KEYWORD_HINT  = "(dsa suche $1 [begriff])";
+    var _MSG_TOPIC_FAIL    = "Thema existiert nicht, folgende sind verfügbar:";
+    var _MSG_TOPIC_ALL     = "Folgende Themen sind verfügbar:";
+    var _MSG_TOPIC_HINT    = "(dsa suche [thema] [begriff])";
+    var _MSG_READ_ERROR    = "Es ist ein unbekannter Fehler aufgetreten.";
 
     // Data-Constants
-    var _DATA_PATH     = "/data/";
-    var _DATA_TYPE     = ".txt";
-    var _DATA_IGNORE   = ".";
+    var _DATA_PATH         = "/data/";
+    var _DATA_TYPE         = ".txt";
+    var _DATA_LINE         = "line";
+    var _DATA_CLOSE        = "close";
+    var _DATA_ERROR        = "error";
+    var _DATA_DELIMITER    = "/";
+    var _DATA_IGNORE       = ".";
 
     /**
      * Default function for dice commands.
@@ -91,8 +99,8 @@ var Commands = (function() {
         // Print error on invalid attributes
         if (attr.length !== ROLLS_ATTR) {
             _.printLine();
-            _.printLine(_MSG_ATTR_ERROR.red);
-            _.printLine(_MSG_ATTR_HINT.grey);
+            _.printMsg(_MSG_ATTR_ERROR.red, 0, true);
+            _.printMsg(_MSG_ATTR_HINT.grey.dim, 0);
             _.printLine();
 
         // Else continue with valid attributes
@@ -155,12 +163,18 @@ var Commands = (function() {
 
     /**
      * Command: find; searches for keyword in local data filenames.
-     * @param {String} directory Directory to search in
-     * @param {String} keyword Keyword to search
+     * @param {String} [directory] Directory to search in
+     * @param {String} [keyword] Keyword to search
      */
     function find(directory, keyword) {
-        var path = Path.join(__dirname + _DATA_PATH);
-        Fs.readdir(path, function(error, dirs) {
+
+        // Initialize values
+            keyword   = keyword   || "";
+            directory = directory || "";
+        var missing   = directory.length === 0;
+
+        // Read directory
+        Fs.readdir(Path.join(__dirname + _DATA_PATH), function(error, dirs) {
             _.printLine();
             if (!error) {
 
@@ -169,16 +183,20 @@ var Commands = (function() {
                 var topic = false;
                 dirs.forEach(function(dir) {
                     if (!dir.startsWith(_DATA_IGNORE)) { avail.push(dir); }
-                    if (directory.toLowerCase() === dir) { topic = dir; }
+                    if (directory.toLowerCase() === dir.toLowerCase()) {
+                        topic = dir;
+                    }
                 });
+                var count = avail.length;
 
                 // Show error if directory is invalid
                 if (!topic) {
-                    _.printMsg(_MSG_TOPIC_NO.red, avail.length, true);
-                    _.printMsg(_MSG_TOPIC_HINT.grey.dim, avail.length);
+                    if (missing) { _.printMsg(_MSG_TOPIC_ALL.cyan, count); }
+                    else { _.printMsg(_MSG_TOPIC_FAIL.red, count, true); }
+                    _.printMsg(_MSG_TOPIC_HINT.grey.dim, count);
                     _.printLine();
                     avail.forEach(function(dir, i) {
-                        _.printList(i + 1, avail.length, dir);
+                        _.printList(i + 1, count, dir);
                     });
                     _.printLine();
 
@@ -186,7 +204,7 @@ var Commands = (function() {
                 } else { _findFile(topic, keyword); }
 
             // Print error
-            } else { console.log(error); }
+            } else { _.printMsg(_MSG_READ_ERROR.red, 0, true); }
         });
     }
 
@@ -196,15 +214,18 @@ var Commands = (function() {
      * @param {String} keyword Keyword to search
      */
     function _findFile(directory, keyword) {
+        var none = keyword.length === 0;
         var path = Path.join(__dirname + _DATA_PATH + directory);
         Fs.readdir(path, function(error, files) {
 
-            // Fix search keyword, initialize values
+            // Initialize values
             var quote   = _.strKeyword(keyword);
             var search  = keyword.toLowerCase();
             var match   = false;
             var count   = 0;
             var similar = [];
+            var hint    = _MSG_KEYWORD_HINT.grey.dim;
+                hint    = hint.replace(DATA_PLACEHOLDER, directory);
 
             // Search all available files
             files.forEach(function(file) {
@@ -217,24 +238,52 @@ var Commands = (function() {
                 }
             });
 
-            // If exact match was found
-            if (match) {
-                var topic = _.strKeyword(match);
-                _.printMsg(topic + _MSG_HAS_MATCH.green, 0, false, true);
+            // Print file on exact match
+            if (match) { _printFile(path, match);
 
             // Show similar found keywords
             } else if (count > 0) {
+                if (none) { _.printMsg(_MSG_KEYWORD_ALL.cyan, count); }
+                else { _.printMsg(quote + _MSG_KEYWORD_LIST.cyan, count); }
+                _.printMsg(hint, count);
+                _.printLine();
                 similar.forEach(function(found, i) {
-                    _.printMsg(quote + _MSG_WAS_FOUND.cyan, count);
-                    _.printLine();
-                    _.printList(i + 1, similar.length, found);
-                    if (i >= SEARCH_MAX - 1) { return; }
+                    _.printList(i + 1, count, found);
                 });
+                _.printLine();
 
             // Show error if nothing was found
-            } else { _.printMsg(quote + _MSG_NOT_FOUND.red, 0, true); }
+            } else {
+                if (none) { _.printMsg(_MSG_KEYWORD_NONE.red, 0, true); }
+                else { _.printMsg(quote + _MSG_KEYWORD_FAIL.red, 0, true); }
+                _.printMsg(hint, count);
+                _.printLine();
+            }
+        });
+    }
+
+    /**
+     * Print the content of a given file.
+     * @param {String} path Path to file
+     * @param {String} name Name of file
+     */
+    function _printFile(path, name) {
+
+        // Read file
+        var file = path + _DATA_DELIMITER + name + _DATA_TYPE;
+        var read = Fs.createReadStream(Path.join(file))
+            .on(_DATA_ERROR, function() {
+            _.printMsg(_MSG_READ_ERROR.red, 0, true);
             _.printLine();
         });
+
+        // Print file line by line
+        Readline.createInterface({ input: read })
+            .on(_DATA_LINE, function(line) {
+            _.printLine(_.formatLine(line));
+
+        // Print empty line
+        }).on(_DATA_CLOSE, function() { _.printLine(); });
     }
 
     /**
@@ -254,11 +303,11 @@ var Commands = (function() {
         var success  = (!repeated && !failed);
 
         // Choose messages
-        if (!repeated && !failed) { message = _MSG_SUCCESS.green; }
-        if (!repeated &&  failed) { message = _MSG_UNSUCCESS.red; }
-        if ( repeated &&  failed) { message = _MSG_FAILED.grey.dim; }
-        if (critted)              { extra   = _MSG_CRITTED.green; }
-        if (slipped)              { extra   = _MSG_SLIPPED.red; }
+        if (!repeated && !failed) { message = _MSG_SKILL_SUCC.green; }
+        if (!repeated &&  failed) { message = _MSG_SKILL_FLOP.red; }
+        if ( repeated &&  failed) { message = _MSG_SKILL_FAIL.grey.dim; }
+        if (critted)              { extra   = _MSG_SKILL_CRIT.green; }
+        if (slipped)              { extra   = _MSG_SKILL_SLIP.red; }
 
         // Print messages
         if (message) { _.printMsg(message, repeat, error, success); }
