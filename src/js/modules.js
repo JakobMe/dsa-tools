@@ -8,5 +8,8 @@
  */
 
 // Modules
-var Program = require("commander");
-var Colors  = require("colors");
+var Fuzzy    = require("fuzzysearch");
+var Program  = require("commander");
+var Colors   = require("colors");
+var Path     = require("path");
+var Fs       = require("fs");

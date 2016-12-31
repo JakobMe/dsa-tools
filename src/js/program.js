@@ -37,5 +37,15 @@ Program
         Commands.skill(attr, val, options);
     });
 
+/*
+ * Command: suche <begriff>
+ */
+Program
+    .command("suche <thema> <begriff>")
+    .description("Regel-Thema nach einem Begriff durchsuchen")
+    .action(function(directory, keyword) {
+        Commands.find(directory, keyword);
+    });
+
 // Add version and parse
 Program.version("0.0.1").parse(process.argv);

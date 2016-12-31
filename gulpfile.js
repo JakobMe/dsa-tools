@@ -11,6 +11,19 @@ gulp.task("default", ["watch"]);
 // Watch-Task
 gulp.task("watch", function() {
     gulp.watch("src/js/*.js", ["js"]);
+    gulp.watch("src/data/**/*", ["data"]);
+});
+
+// Data-Task
+gulp.task("data", function() {
+    return gulp.src("src/data/**/")
+        .pipe(gulp.dest("./cli/data"))
+        .pipe(notify({
+            sound: false,
+            icon: "Terminal Icon",
+            title: "Gulp",
+            message: "Data: Copied <%= file.relative %>.",
+        }));
 });
 
 // JSHint-Task

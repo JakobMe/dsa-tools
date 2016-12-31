@@ -102,7 +102,7 @@ var _ = (function() {
             error = error || false;
             success = success || false;
             icon = error ? icon.red : success ? icon.green : icon.grey.dim;
-        printLine(icon + "  " + text.grey.dim);
+        printLine(icon + "  " + text);
     }
 
     /**
@@ -225,6 +225,15 @@ var _ = (function() {
     }
 
     /**
+     * Creates a color string of a keyword.
+     * @param {String} keyword Keyword to color
+     * @returns {String} Colored string of keyword
+     */
+    function strKeyword(keyword) {
+        return ("„" + keyword.toString() + "”").yellow + " — ".grey.dim;
+    }
+
+    /**
      * Count rolls of specific value in set of rolls.
      * @param {Number[]} rolls Array of roll results
      * @param {Number} value Desired result value
@@ -254,25 +263,26 @@ var _ = (function() {
 
     // Public interface
     return {
-        printLine   : printLine,
-        printList   : printList,
-        printMsg    : printMsg,
-        splitAttr   : splitAttr,
-        rollDice    : rollDice,
-        countRolls  : countRolls,
-        calcQuality : calcQuality,
-        strQuality  : strQuality,
-        strPoints   : strPoints,
-        strRepeat   : strRepeat,
-        strRolls    : strRolls,
-        strDice     : strDice,
-        strRoll     : strRoll,
-        strAttr     : strAttr,
-        strVal      : strVal,
-        strSum      : strSum,
-        strMod      : strMod,
-        toInt       : toInt,
-        indent      : indent
+        printLine    : printLine,
+        printList    : printList,
+        printMsg     : printMsg,
+        splitAttr    : splitAttr,
+        rollDice     : rollDice,
+        countRolls   : countRolls,
+        calcQuality  : calcQuality,
+        strKeyword   : strKeyword,
+        strQuality   : strQuality,
+        strPoints    : strPoints,
+        strRepeat    : strRepeat,
+        strRolls     : strRolls,
+        strDice      : strDice,
+        strRoll      : strRoll,
+        strAttr      : strAttr,
+        strVal       : strVal,
+        strSum       : strSum,
+        strMod       : strMod,
+        toInt        : toInt,
+        indent       : indent
     };
 
 })();

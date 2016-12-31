@@ -20,3 +20,4 @@ var QUAL_DIVIDE         = 3;
 var QUAL_MAX            = 6;
 var QUAL_MIN            = 0;
 var QUAL_SUCCESS        = 1;
+var SEARCH_MAX          = 10;

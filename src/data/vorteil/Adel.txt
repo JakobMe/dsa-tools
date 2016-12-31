@@ -1,0 +1,13 @@
+[[Adel I-III]] __(Regelwerk)__
+
+**Regel:**
+Der Held ist angesehen, genießt die Privilegien des Adels
+und kann vom Meister Erleichterungen zugesprochen bekommen,
+wenn er gegenüber Rangniedrigeren agiert. Genaueres hierzu
+siehe Seite 338.
+
+**Voraussetzungen:**
+Kultur muss über einen passenden Adel verfügen.
+
+**AP-Wert:**
+5 Abenteuerpunkte pro Stufe
