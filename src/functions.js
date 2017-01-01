@@ -77,7 +77,7 @@ var _ = (function() {
      * @param {String} content Content of line
      */
     function printLine(content) {
-        console.log("\t" + (content || ""));
+        console.log(content || "");
     }
 
     /**
@@ -226,12 +226,30 @@ var _ = (function() {
     }
 
     /**
+     * Creates a colored and quoted string.
+     * @param {String} text Text to color
+     * @returns {String} Colored quoted string
+     */
+    function strQuote(text) {
+        return ("„" + text.toString() + "“").yellow;
+    }
+
+    /**
      * Creates a color string of a keyword.
      * @param {String} keyword Keyword to color
      * @returns {String} Colored string of keyword
      */
     function strKeyword(keyword) {
-        return ("„" + keyword.toString() + "“").yellow + " — ".grey.dim;
+        return strQuote(keyword) + " — ".grey.dim;
+    }
+
+    /**
+     * Creates a color string with checkmark.
+     * @param {String} text Text to color
+     * @returns {String} Colored string
+     */
+    function strSuccess(text) {
+        return "✓ ".green + text;
     }
 
     /**
@@ -261,17 +279,29 @@ var _ = (function() {
         var qual = points === SKILL_MIN ? QUAL_SUCCESS : calc;
         return Math.max(Math.min(qual * mult, QUAL_MAX), min);
     }
+    
+    /**
+     * Format and color a text.
+     * @param {String} input Input text
+     * @returns {String} Output text
+     */
+    function formatOutput(input) {
+        input = input.red;
+        input = input.replace(REGEX_P, "\n");
+        input = input.replace(REGEX_H, REGEX_REPLACE.green);
+        input = input.replace(REGEX_B, REGEX_REPLACE.blue);
+        return input;
+    }
 
     /**
-     * Format a read file-line and replace certain strings.
-     * @param {String} line Input line
-     * @returns {String} Formatted line
+     * Enclose a string in two other strings.
+     * @param {String} str Inner string
+     * @param {String} l Left string
+     * @param {Boolean} r Right newlines
+     * @returns {String} Enclosed string
      */
-    function formatLine(line) {
-        line = line.replace(DATA_TITLE, DATA_PLACEHOLDER.green);
-        line = line.replace(DATA_ITALIC, DATA_PLACEHOLDER.grey.dim);
-        line = line.replace(DATA_BOLD, DATA_PLACEHOLDER.blue);
-        return line;
+    function enclose(str, l, r) {
+        return l + str + r;
     }
 
     // Public interface
@@ -279,11 +309,13 @@ var _ = (function() {
         printLine    : printLine,
         printList    : printList,
         printMsg     : printMsg,
-        formatLine   : formatLine,
+        formatOutput : formatOutput,
         splitAttr    : splitAttr,
         rollDice     : rollDice,
         countRolls   : countRolls,
         calcQuality  : calcQuality,
+        strQuote     : strQuote,
+        strSuccess   : strSuccess,
         strKeyword   : strKeyword,
         strQuality   : strQuality,
         strPoints    : strPoints,
@@ -296,7 +328,8 @@ var _ = (function() {
         strSum       : strSum,
         strMod       : strMod,
         toInt        : toInt,
-        indent       : indent
+        indent       : indent,
+        enclose      : enclose
     };
 
 })();

@@ -28,15 +28,8 @@ var Commands = (function() {
     var _MSG_TOPIC_ALL     = "Folgende Themen sind verfügbar:";
     var _MSG_TOPIC_HINT    = "(dsa suche [thema] [begriff])";
     var _MSG_READ_ERROR    = "Es ist ein unbekannter Fehler aufgetreten.";
-
-    // Data-Constants
-    var _DATA_PATH         = "/data/";
-    var _DATA_TYPE         = ".txt";
-    var _DATA_LINE         = "line";
-    var _DATA_CLOSE        = "close";
-    var _DATA_ERROR        = "error";
-    var _DATA_DELIMITER    = "/";
-    var _DATA_IGNORE       = ".";
+    var _MSG_DATA_ERROR    = "Keine Daten gefunden!";
+    var _MSG_DATA_HINT     = "(dsa update [thema] [-f, --force])";
 
     /**
      * Default function for dice commands.
@@ -162,128 +155,116 @@ var Commands = (function() {
     }
 
     /**
-     * Command: find; searches for keyword in local data filenames.
-     * @param {String} [directory] Directory to search in
+     * Command: find; searches for keyword in local data.
+     * @param {String} [topic] Topic to search in
      * @param {String} [keyword] Keyword to search
      */
-    function find(directory, keyword) {
+    function find(topic, keyword) {
 
         // Initialize values
-            keyword   = keyword   || "";
-            directory = directory || "";
-        var missing   = directory.length === 0;
+            keyword = keyword || "";
+            topic   = topic   || "";
+        var missing = topic.length === 0;
 
-        // Read directory
-        Fs.readdir(Path.join(__dirname + _DATA_PATH), function(error, dirs) {
+        // Load data
+        Data.load(function(data) {
             _.printLine();
-            if (!error) {
+            if (Object.keys(data).length > 0) {
 
-                // Check if directory is valid
+                // Check if topic is valid
                 var avail = [];
-                var topic = false;
-                dirs.forEach(function(dir) {
-                    if (!dir.startsWith(_DATA_IGNORE)) { avail.push(dir); }
-                    if (directory.toLowerCase() === dir.toLowerCase()) {
-                        topic = dir;
+                var match = false;
+                Object.keys(data).forEach(function(found) {
+                    avail.push(found);
+                    if (topic.toLowerCase() === found.toLowerCase()) {
+                        match = found;
                     }
                 });
                 var count = avail.length;
 
-                // Show error if directory is invalid
-                if (!topic) {
+                // Show error if topic is invalid
+                if (!match) {
                     if (missing) { _.printMsg(_MSG_TOPIC_ALL.cyan, count); }
                     else { _.printMsg(_MSG_TOPIC_FAIL.red, count, true); }
-                    _.printMsg(_MSG_TOPIC_HINT.grey.dim, count);
                     _.printLine();
-                    avail.forEach(function(dir, i) {
-                        _.printList(i + 1, count, dir);
+                    avail.forEach(function(found, i) {
+                        _.printList(i + 1, count, found);
                     });
+                    _.printLine();
+                    _.printMsg(_MSG_TOPIC_HINT.grey.dim, count);
                     _.printLine();
 
                 // Else continue with search
-                } else { _findFile(topic, keyword); }
+                } else { _findTerm(data[match], keyword, match); }
 
             // Print error
-            } else { _.printMsg(_MSG_READ_ERROR.red, 0, true); }
-        });
-    }
-
-    /**
-     * Find a file in a directory.
-     * @param {String} directory Directory to search in
-     * @param {String} keyword Keyword to search
-     */
-    function _findFile(directory, keyword) {
-        var none = keyword.length === 0;
-        var path = Path.join(__dirname + _DATA_PATH + directory);
-        Fs.readdir(path, function(error, files) {
-
-            // Initialize values
-            var quote   = _.strKeyword(keyword);
-            var search  = keyword.toLowerCase();
-            var match   = false;
-            var count   = 0;
-            var similar = [];
-            var hint    = _MSG_KEYWORD_HINT.grey.dim;
-                hint    = hint.replace(DATA_PLACEHOLDER, directory);
-
-            // Search all available files
-            files.forEach(function(file) {
-                var name  = Path.basename(file, _DATA_TYPE);
-                var found = name.toLowerCase();
-                if (search === found) { match = name; return; }
-                else if (Fuzzy(search, found) || Fuzzy(found, search)) {
-                    similar.push(name);
-                    count++;
-                }
-            });
-
-            // Print file on exact match
-            if (match) { _printFile(path, match);
-
-            // Show similar found keywords
-            } else if (count > 0) {
-                if (none) { _.printMsg(_MSG_KEYWORD_ALL.cyan, count); }
-                else { _.printMsg(quote + _MSG_KEYWORD_LIST.cyan, count); }
-                _.printMsg(hint, count);
-                _.printLine();
-                similar.forEach(function(found, i) {
-                    _.printList(i + 1, count, found);
-                });
-                _.printLine();
-
-            // Show error if nothing was found
             } else {
-                if (none) { _.printMsg(_MSG_KEYWORD_NONE.red, 0, true); }
-                else { _.printMsg(quote + _MSG_KEYWORD_FAIL.red, 0, true); }
-                _.printMsg(hint, count);
+                _.printMsg(_MSG_DATA_ERROR.red, 0, true);
+                _.printMsg(_MSG_DATA_HINT.grey.dim, 0);
                 _.printLine();
             }
         });
     }
 
     /**
-     * Print the content of a given file.
-     * @param {String} path Path to file
-     * @param {String} name Name of file
+     * Find a term in a topic.
+     * @param {Object} topic Topic to search in
+     * @param {String} keyword Keyword to search
+     * @param {String} name Name of topic
      */
-    function _printFile(path, name) {
+    function _findTerm(topic, keyword, name) {
 
-        // Read file
-        var file = path + _DATA_DELIMITER + name + _DATA_TYPE;
-        var read = Fs.createReadStream(Path.join(file))
-            .on(_DATA_ERROR, function() {
-            _.printMsg(_MSG_READ_ERROR.red, 0, true);
-            _.printLine();
+        // Initialize values
+        var none    = keyword.length === 0;
+        var quote   = _.strKeyword(keyword);
+        var search  = keyword.toLowerCase();
+        var match   = false;
+        var count   = 0;
+        var similar = [];
+        var hint    = _MSG_KEYWORD_HINT.grey.dim;
+            hint    = hint.replace(REGEX_REPLACE, name);
+
+        // Search all available terms
+        Object.keys(topic).forEach(function(term) {
+            var found = term.toLowerCase();
+            if (search === found) { match = term; return; }
+            else if (found.indexOf(search) !== -1) {
+                similar.push(term);
+                count++;
+            }
         });
 
-        // Print file line by line
-        Readline.createInterface({ input: read })
-            .on(_DATA_LINE, function(line) {
-            _.printLine(_.formatLine(line));
+        // Print term on exact match
+        if (match) { _printTerm(topic[match]);
 
-        // Print empty line
-        }).on(_DATA_CLOSE, function() { _.printLine(); });
+        // Show similar found keywords
+        } else if (count > 0) {
+            if (none) { _.printMsg(_MSG_KEYWORD_ALL.cyan, count); }
+            else { _.printMsg(quote + _MSG_KEYWORD_LIST.cyan, count); }
+            _.printLine();
+            similar.forEach(function(found, i) {
+                _.printList(i + 1, count, found);
+            });
+            _.printLine();
+            _.printMsg(hint, count);
+            _.printLine();
+
+        // Show error if nothing was found
+        } else {
+            if (none) { _.printMsg(_MSG_KEYWORD_NONE.red, 0, true); }
+            else { _.printMsg(quote + _MSG_KEYWORD_FAIL.red, 0, true); }
+            _.printMsg(hint, count);
+            _.printLine();
+        }
+    }
+
+    /**
+     * Print the content of a given term.
+     * @param {String} term Content of term
+     */
+    function _printTerm(term) {
+        _.printLine(_.formatOutput(term));
+        _.printLine();
     }
 
     /**
@@ -317,9 +298,9 @@ var Commands = (function() {
 
     // Public interface
     return {
-        find  : find,
-        roll  : roll,
-        skill : skill
+        find   : find,
+        roll   : roll,
+        skill  : skill
     };
 
 })();

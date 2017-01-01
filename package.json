@@ -11,16 +11,18 @@
     "url": "git+https://github.com/JakobMe/dsa-tools.git"
   },
   "bin": {
-    "dsa": "./cli/cli.js"
+    "dsa": "./cli.js"
   },
   "dependencies": {
     "colors": "^1.1.2",
     "commander": "^2.9.0",
+    "crawler": "^1.0.1",
     "fuzzysearch": "^1.0.3",
-    "readline": "^1.3.0"
+    "jsonfile": "^2.4.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-chmod": "^2.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-jshint": "^2.0.4",
     "gulp-notify": "^2.2.0",

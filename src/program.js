@@ -43,8 +43,19 @@ Program
 Program
     .command("suche [thema] [begriff]")
     .description("Regel-Thema nach einem Begriff durchsuchen")
-    .action(function(directory, keyword) {
-        Commands.find(directory, keyword);
+    .action(function(topic, keyword) {
+        Commands.find(topic, keyword);
+    });
+
+/*
+ * Command: update
+ */
+Program
+    .command("update [thema]")
+    .description("Regeln aktualisieren")
+    .option("-f, --force", "Aktualisierung erzwingen")
+    .action(function(topic, options) {
+        Update.start(topic, options);
     });
 
 // Add version and parse
