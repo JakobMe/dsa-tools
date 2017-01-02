@@ -1023,12 +1023,14 @@ var Commands = (function() {
      * Command: find; searches for keyword in local data.
      * @param {String} [topic] Topic to search in
      * @param {String} [keyword] Keyword to search
+     * @param {String} [options] Command options
      */
-    function find(topic, keyword) {
+    function find(topic, keyword, options) {
 
         // Initialize values
-            keyword = keyword || "";
-            topic   = topic   || "";
+            keyword = keyword       || "";
+            topic   = topic         || "";
+        var fuzzy   = options.fuzzy || false;
         var missing = topic.length === 0;
 
         // Load data
@@ -1061,7 +1063,7 @@ var Commands = (function() {
                     F.printEmpty();
 
                 // Else continue with search
-                } else { _findTerm(data[match], keyword, match); }
+            } else { _findTerm(data[match], keyword, match, fuzzy); }
 
             // Print error
             } else {
@@ -1078,7 +1080,7 @@ var Commands = (function() {
      * @param {String} keyword Keyword to search
      * @param {String} name Name of topic
      */
-    function _findTerm(topic, keyword, name) {
+    function _findTerm(topic, keyword, name, fuzzy) {
 
         // Initialize values
         var none     = keyword.length === 0;
@@ -1098,7 +1100,7 @@ var Commands = (function() {
         Object.keys(topic).forEach(function(term) {
             var found = term.toLowerCase();
             if (search === found) { match = term; return; }
-            else if (found.indexOf(search) !== -1) {
+            else if (_compare(search, found, fuzzy)) {
                 similar.push(term);
                 count++;
             }
@@ -1132,6 +1134,25 @@ var Commands = (function() {
             }
             F.printEmpty();
         }
+    }
+
+    /**
+     * Compare two strings for similarity.
+     * @param {String} a First string
+     * @param {String} b Second string
+     * @param {Boolean} fuzzy Use fuzzysearch
+     * @returns {Boolean} Strings are equal or similar
+     */
+    function _compare(a, b, fuzzy) {
+
+        // Initialize fuzzysearch
+        Fuzzy = fuzzy ? require("fuzzysearch")
+                      : function() { return false; };
+
+        // Clean inputs, return comparison
+        a = a.toLowerCase(); b = b.toLowerCase();
+        return (a.indexOf(b) !== -1) || Fuzzy(a, b) ||
+               (b.indexOf(a) !== -1) || Fuzzy(b, a);
     }
 
     /**
@@ -1182,7 +1203,8 @@ var Commands = (function() {
 })();
 
 /*
- * Command: w<y> [n]
+ * Command:
+ * w<y> [n]
  * [-m, --minus <x>]
  * [-p, --plus <x>]
  */
@@ -1198,7 +1220,8 @@ var Commands = (function() {
 });
 
 /*
- * Command: probe <probe> <fw>
+ * Command: probe
+ * <probe> <fw>
  * [-m, --minus <x>]
  * [-p, --plus <x>]
  * [-s, --sammel <n>]
@@ -1214,13 +1237,16 @@ Program
     });
 
 /*
- * Command: suche [thema] [begriff]
+ * Command: suche
+ * [thema] [begriff]
+ * [-f, --fuzzy]
  */
 Program
     .command("suche [thema] [begriff]")
     .description("Regel-Thema nach einem Begriff durchsuchen")
-    .action(function(topic, keyword) {
-        Commands.find(topic, keyword);
+    .option("-f, --fuzzy", "Fuzzysearch benutzen")
+    .action(function(topic, keyword, options) {
+        Commands.find(topic, keyword, options);
     });
 
 /*

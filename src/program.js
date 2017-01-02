@@ -1,5 +1,6 @@
 /*
- * Command: w<y> [n]
+ * Command:
+ * w<y> [n]
  * [-m, --minus <x>]
  * [-p, --plus <x>]
  */
@@ -15,7 +16,8 @@
 });
 
 /*
- * Command: probe <probe> <fw>
+ * Command: probe
+ * <probe> <fw>
  * [-m, --minus <x>]
  * [-p, --plus <x>]
  * [-s, --sammel <n>]
@@ -31,13 +33,16 @@ Program
     });
 
 /*
- * Command: suche [thema] [begriff]
+ * Command: suche
+ * [thema] [begriff]
+ * [-f, --fuzzy]
  */
 Program
     .command("suche [thema] [begriff]")
     .description("Regel-Thema nach einem Begriff durchsuchen")
-    .action(function(topic, keyword) {
-        Commands.find(topic, keyword);
+    .option("-f, --fuzzy", "Fuzzysearch benutzen")
+    .action(function(topic, keyword, options) {
+        Commands.find(topic, keyword, options);
     });
 
 /*
