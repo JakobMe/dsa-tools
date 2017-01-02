@@ -9,14 +9,17 @@ var Search = (function() {
     var _MSG_KEYWORD_NONE = "Keine Begriffe verfügbar.";
     var _MSG_KEYWORD_LIST = "Folgende Begriffe wurden gefunden:";
     var _MSG_KEYWORD_ALL  = "Folgende Begriffe sind verfügbar";
-    var _MSG_KEYWORD_HINT = "(dsa suche $1 [begriff])";
+    var _MSG_KEYWORD_HINT = "(dsa suche $1 [begriff] [-f] [-b])";
     var _MSG_TOPIC_FAIL   = "Thema existiert nicht, folgende sind verfügbar:";
     var _MSG_TOPIC_ALL    = "Folgende Themen sind verfügbar:";
-    var _MSG_TOPIC_HINT   = "(dsa suche [thema] [begriff])";
+    var _MSG_TOPIC_HINT   = "(dsa suche [thema] [begriff] [-f] [-b])";
     var _MSG_READ_ERROR   = "Es ist ein unbekannter Fehler aufgetreten.";
     var _MSG_DATA_ERROR   = "Keine Daten gefunden!";
-    var _MSG_DATA_HINT    = "(dsa update [thema] [-f, --force])";
-    var _MSG_DATA_HELP    = "(dsa update $1 [-f, --force])";
+    var _MSG_DATA_HINT    = "(dsa update [thema] [-f])";
+    var _MSG_DATA_HELP    = "(dsa update $1 [-f])";
+
+    // Modules
+    var Didyoumean        = null;
 
     /**
      * Find keyword in topic; searches local data for topic and keyword.
@@ -26,9 +29,14 @@ var Search = (function() {
      */
     function find(topic, keyword, options) {
 
+        // Initialize didyoumean
+        Didyoumean = require("didyoumean");
+        Didyoumean.nullResultValue   = false;
+
         // Initialize values
             keyword = keyword       || "";
             topic   = topic         || "";
+        var best    = options.beste || false;
         var fuzzy   = options.fuzzy || false;
         var empty   = topic.length === 0;
 
@@ -49,9 +57,10 @@ var Search = (function() {
                     if (search === compare) { match = found; }
                 });
 
-                // Sort available topics and get size
+                // Sort available topics, get size, fix match
                 avail.sort(F.sortAlpha);
                 var size = avail.length;
+                match = !match ? Didyoumean(topic, avail) : match;
 
                 // Show message and available terms if no match was found
                 if (!match) {
@@ -72,7 +81,9 @@ var Search = (function() {
                     F.printEmpty();
 
                 // Else continue with search
-                } else { _findTerm(data[match], keyword, match, fuzzy); }
+                } else {
+                    _findTerm(data[match], keyword, match, fuzzy, best);
+                }
 
             // Print error if no data found
             } else {
@@ -88,8 +99,10 @@ var Search = (function() {
      * @param {Object} topic Topic to search in
      * @param {String} keyword Keyword to search
      * @param {String} name Name of topic
+     * @param {Boolean} fuzzy Use fuzzysearch
+     * @param {Boolean} best Pick best result
      */
-    function _findTerm(topic, keyword, name, fuzzy) {
+    function _findTerm(topic, keyword, name, fuzzy, best) {
 
         // Initialize values
         var empty    = keyword.length === 0;
@@ -105,7 +118,7 @@ var Search = (function() {
             hintFind = hintFind.replace(G.REGEX_REPLACE, name);
             hintUpdt = hintUpdt.replace(G.REGEX_REPLACE, name);
 
-        // Search all available terms
+        // Search all available terms, save similar and exact match
         Object.keys(topic).forEach(function(term) {
             var found = term.toLowerCase();
             if (search === found) { match = term; return; }
@@ -113,6 +126,9 @@ var Search = (function() {
                 similar.push(term); size++;
             }
         });
+
+        // Choose match, sort similar list
+        match = !match ? _didyoumean(search, similar, best) : match;
         similar.sort(F.sortAlpha);
 
         // Print term on exact match
@@ -160,13 +176,26 @@ var Search = (function() {
     function _compare(a, b, fuzzy) {
 
         // Initialize fuzzysearch
-        Fuzzy = fuzzy ? require("fuzzysearch")
-                      : function() { return false; };
+        var Fuzzy = fuzzy ? require("fuzzysearch")
+                          : function() { return false; };
 
         // Clean inputs, return comparison
         a = a.toLowerCase(); b = b.toLowerCase();
         return (a.indexOf(b) !== -1) || Fuzzy(a, b) ||
                (b.indexOf(a) !== -1) || Fuzzy(b, a);
+    }
+
+    /**
+     * Choose best search result from list.
+     * @param {String} search Search keyword
+     * @param {String[]} list List of possible matches
+     * @param {Boolean} best Use best result
+     * @returns {String|Boolean} Found match or false
+     */
+    function _didyoumean(search, list, best) {
+        Didyoumean.threshold = null;
+        Didyoumean.thresholdAbsolute = 100;
+        return best ? Didyoumean(search, list) : false;
     }
 
     /**

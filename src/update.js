@@ -10,7 +10,7 @@ var Update = (function() {
     var _MSG_FINISH        = "Update abgeschlossen";
     var _MSG_UPTODATE      = "Begriffe sind auf dem aktuellen Stand";
     var _MSG_FAIL          = "Thema existiert nicht, folgende sind verfügbar:";
-    var _MSG_HINT          = "(dsa update [thema] [-f, --force])";
+    var _MSG_HINT          = "(dsa update [thema] [-f])";
 
     // Data constants
     var _DATA_CONNECTIONS  = 1;

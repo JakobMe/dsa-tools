@@ -26,8 +26,8 @@
     Program
         .command("probe <probe> <fw>")
         .description("Fertigkeitsprobe würfeln")
-        .option("-m, --minus <x>", "Erleichterung +x")
-        .option("-p, --plus <x>", "Erschwernis -x")
+        .option("-m, --minus <x>", "Erschwernis -x")
+        .option("-p, --plus <x>", "Erleichterung +x")
         .option("-s, --sammel <n>", "Sammelprobe mit n Versuchen")
         .action(function(attr, val, options) {
             Dice.skill(attr, val, options);
@@ -40,8 +40,9 @@
      */
     Program
         .command("suche [thema] [begriff]")
-        .description("Regel-Thema nach einem Begriff durchsuchen")
-        .option("-f, --fuzzy", "Fuzzysearch benutzen")
+        .description("Thema nach einem Begriff durchsuchen")
+        .option("-f, --fuzzy", "Ungefähre Suche benutzen")
+        .option("-b, --beste", "Bestes Suchergebnis anzeigen")
         .action(function(topic, keyword, options) {
             Search.find(topic, keyword, options);
         });
