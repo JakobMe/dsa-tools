@@ -32,15 +32,16 @@ gulp.task("jshint", function() {
 gulp.task("js", ["jshint"], function() {
     return gulp.src([
             "src/modules.js",
-            "src/constants.js",
+            "src/globals.js",
             "src/functions.js",
             "src/data.js",
             "src/update.js",
-            "src/commands.js",
+            "src/dice.js",
+            "src/search.js",
             "src/program.js"
         ])
         .pipe(concat("cli.js"))
-        //.pipe(uglify())
+        .pipe(uglify({ preserveComments: "license" }))
         .pipe(chmod(0o755))
         .pipe(gulp.dest("./"))
         .pipe(notify({

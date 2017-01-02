@@ -1,8 +1,5 @@
 /**
  * Functions module; encapsulates all helper functions.
- * @author Jakob Metzger <jakob.me@gmail.com>
- * @copyright 2017 Jakob Metzger
- * @license MIT
  * @returns {Object} Public interface
  */
 var F = (function() {
@@ -36,7 +33,7 @@ var F = (function() {
      */
     function rollDice(sides, rolls) {
         var results = [];
-        for (var i = 0; i < toInt(rolls, ROLLS_MIN); i++) {
+        for (var i = 0; i < toInt(rolls, G.ROLLS_MIN); i++) {
             results.push(_randInt(1, sides));
         }
         return results;
@@ -50,7 +47,7 @@ var F = (function() {
     function splitAttr(attr) {
         var values = [];
         attr.split("/").forEach(function(val) {
-            values.push(toInt(val, ATTR_MIN));
+            values.push(toInt(val, G.ATTR_MIN));
         });
         return values;
     }
@@ -189,9 +186,9 @@ var F = (function() {
      */
     function strMod(mod) {
         var output = mod.toString() + " ";
-        return mod < MOD_MIN ? output.red
-                             : mod > MOD_MIN ? ("+" + output).green
-                                             : ("±" + output).grey.dim;
+        return mod < G.MOD_MIN ? output.red
+                               : mod > G.MOD_MIN ? ("+" + output).green
+                                                 : ("±" + output).grey.dim;
     }
 
     /**
@@ -201,7 +198,7 @@ var F = (function() {
      */
     function strRepeat(repeat) {
         var output = "×" + repeat.toString();
-        return repeat > ROLLS_MIN ? output.yellow : output.grey.dim;
+        return repeat > G.ROLLS_MIN ? output.yellow : output.grey.dim;
     }
 
     /**
@@ -225,8 +222,8 @@ var F = (function() {
     function strQuality(quality, crit, slip) {
         var icon = crit || slip ? " ‼" : "";
             icon = crit ? icon.green : slip ? icon.red : icon.grey.dim;
-        var qual = "\tQS " + indent(quality, QUAL_MAX);
-            qual = quality < QUAL_SUCCESS ? qual.grey.dim : qual;
+        var qual = "\tQS " + indent(quality, G.QUAL_MAX);
+            qual = quality < G.QUAL_SUCCESS ? qual.grey.dim : qual;
         return qual + icon + "\t";
     }
 
@@ -236,10 +233,10 @@ var F = (function() {
      * @returns {String} Colored string of remaining points
      */
     function strPoints(points) {
-        var max = (-(D_20 * ROLLS_ATTR)).toString();
+        var max = (-(G.D_20 * G.ROLLS_ATTR)).toString();
         var output = "\t" + indent(points, max);
-        return points < SKILL_MIN ? output.red
-                                  : output.green;
+        return points < G.SKILL_MIN ? output.red
+                                    : output.green;
     }
 
     /**
@@ -281,11 +278,11 @@ var F = (function() {
      * @returns {Number} Caluclated quality level
      */
     function calcQuality(points, crit, slip, repeated) {
-        var calc = Math.ceil(points / QUAL_DIVIDE);
-        var min  = crit ? QUAL_SUCCESS : QUAL_MIN;
-        var mult = crit && repeated ? QUAL_MULTIPLY : slip ? 0 : 1;
-        var qual = points === SKILL_MIN ? QUAL_SUCCESS : calc;
-        return Math.max(Math.min(qual * mult, QUAL_MAX), min);
+        var calc = Math.ceil(points / G.QUAL_DIVIDE);
+        var min  = crit ? G.QUAL_SUCCESS : G.QUAL_MIN;
+        var mult = crit && repeated ? G.QUAL_MULTIPLY : slip ? 0 : 1;
+        var qual = points === G.SKILL_MIN ? G.QUAL_SUCCESS : calc;
+        return Math.max(Math.min(qual * mult, G.QUAL_MAX), min);
     }
 
     /**
@@ -294,10 +291,10 @@ var F = (function() {
      * @returns {String} Output text
      */
     function formatOutput(input) {
-        input = input.replace(REGEX_P, "\n");
-        input = input.replace(REGEX_H, REGEX_REPLACE.green);
-        input = input.replace(REGEX_B, REGEX_REPLACE.blue);
-        input = input.replace(REGEX_I, REGEX_REPLACE.yellow);
+        input = input.replace(G.REGEX_P, "\n");
+        input = input.replace(G.REGEX_H, G.REGEX_REPLACE.green);
+        input = input.replace(G.REGEX_B, G.REGEX_REPLACE.blue);
+        input = input.replace(G.REGEX_I, G.REGEX_REPLACE.yellow);
         return input;
     }
 

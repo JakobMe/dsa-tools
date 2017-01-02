@@ -1,8 +1,5 @@
 /**
  * Update module; encapsulates all update functions.
- * @author Jakob Metzger <jakob.me@gmail.com>
- * @copyright 2017 Jakob Metzger
- * @license MIT
  * @returns {Object} Public interface
  */
 var Update = (function() {
@@ -18,7 +15,8 @@ var Update = (function() {
     // Data constants
     var _DATA_CONNECTIONS  = 1;
     var _DATA_RATE         = 0;
-    var _DATA_DOTS         = 10;
+    var _DATA_DOTS         = 3;
+    var _DATA_TIC_TIME     = 300;
     var _DATA_CHECK        = "ulisses-regelwiki.de";
     var _DATA_URL_TERM     = "http://www.ulisses-regelwiki.de/";
     var _DATA_URL_TOPIC    = "http://www.ulisses-regelwiki.de/index.php/";
@@ -121,9 +119,9 @@ var Update = (function() {
                         });
 
                         // Get size, update total amount
-                        var size      = $terms.length;
-                            max       = size > max ? size : max;
-                            c[n][m]   = size;
+                        var size    = $terms.length;
+                            max     = size > max ? size : max;
+                            c[n][m] = size;
 
                         // Iterate all found terms
                         $terms.each(function(i) {
@@ -239,7 +237,7 @@ var Update = (function() {
             tic = tic >= _DATA_DOTS ? 0 : tic + 1;
             F.printUp();
             F.printLine(".".repeat(tic).green);
-        }, 500);
+        }, _DATA_TIC_TIME);
     }
 
     /**
@@ -248,7 +246,7 @@ var Update = (function() {
      */
     function _printStart(total) {
         clearInterval(_wait);
-        var message = _MSG_START.replace(REGEX_REPLACE, total);
+        var message = _MSG_START.replace(G.REGEX_REPLACE, total);
         F.printUp();
         F.printMsg(message.green, total, false, true);
         F.printEmpty();
@@ -334,9 +332,9 @@ var Update = (function() {
      * @returns {String} Cleaned term name
      */
     function _cleanTermName(term) {
-        term = term.replace(REGEX_LVL, "");
-        term = term.replace(REGEX_STAR, "");
-        term = term.replace(REGEX_DOTS, "");
+        term = term.replace(G.REGEX_LVL, "");
+        term = term.replace(G.REGEX_STAR, "");
+        term = term.replace(G.REGEX_DOTS, "");
         return term;
     }
 
@@ -360,33 +358,37 @@ var Update = (function() {
 
         // Replace titles
         $content.find(_HTML_SEL_H).each(function() {
-            $(this).replaceWith(F.enclose($(this).text(), C_T, C_T + C_P));
+            $(this).replaceWith(F.enclose(
+                $(this).text(), G.CODE_T, G.CODE_T + G.CODE_P));
         });
 
         // Replace bold text
         $content.find(_HTML_SEL_B).each(function() {
-            $(this).replaceWith(F.enclose($(this).text(), C_B, C_B));
+            $(this).replaceWith(F.enclose(
+                $(this).text(), G.CODE_B, G.CODE_B));
         });
 
         // Replace bold text
         $content.find(_HTML_SEL_I).each(function() {
-            $(this).replaceWith(F.enclose($(this).text(), C_I, C_I));
+            $(this).replaceWith(F.enclose(
+                $(this).text(), G.CODE_I, G.CODE_I));
         });
 
         // Replace linebreaks
         $content.find(_HTML_SEL_BR).each(function() {
-            $(this).replaceWith(C_P);
+            $(this).replaceWith(G.CODE_P);
         });
 
         // Replace paragraphs
         $content.find(_HTML_SEL_P).each(function() {
-            $(this).replaceWith(F.enclose($(this).text(), C_P, C_P));
+            $(this).replaceWith(F.enclose(
+                $(this).text(), G.CODE_P, G.CODE_P));
         });
 
         // Return converted content
         var output = $content.text().trim();
-            output = output.replace(REGEX_HASH, "");
-        return output.substr(0, output.length - C_P.length);
+            output = output.replace(G.REGEX_HASH, "");
+        return output.substr(0, output.length - G.CODE_P.length);
     }
 
     // Public interface

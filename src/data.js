@@ -1,8 +1,5 @@
 /**
  * Data module; encapsulates all data functions.
- * @author Jakob Metzger <jakob.me@gmail.com>
- * @copyright 2017 Jakob Metzger
- * @license MIT
  * @returns {Object} Public interface
  */
 var Data = (function() {
