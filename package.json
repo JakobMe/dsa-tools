@@ -17,8 +17,8 @@
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "crawler": "^1.0.1",
-    "fuzzysearch": "^1.0.3",
-    "jsonfile": "^2.4.0"
+    "jsonfile": "^2.4.0",
+    "terminal-kit": "^0.26.1"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

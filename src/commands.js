@@ -1,12 +1,8 @@
 /**
- * DSA-Tools CLI.
+ * Commands module; encapsulates all command functions.
  * @author Jakob Metzger <jakob.me@gmail.com>
  * @copyright 2017 Jakob Metzger
  * @license MIT
- */
-
-/**
- * Commands module; encapsulates all command functions.
  * @returns {Object} Public interface
  */
 var Commands = (function() {
@@ -30,6 +26,7 @@ var Commands = (function() {
     var _MSG_READ_ERROR    = "Es ist ein unbekannter Fehler aufgetreten.";
     var _MSG_DATA_ERROR    = "Keine Daten gefunden!";
     var _MSG_DATA_HINT     = "(dsa update [thema] [-f, --force])";
+    var _MSG_DATA_HELP     = "(dsa update $1 [-f, --force])";
 
     /**
      * Default function for dice commands.
@@ -40,29 +37,29 @@ var Commands = (function() {
     function roll(n, rolls, options) {
 
         // Initialize and convert arguments and values
-            rolls = _.toInt(rolls, ROLLS_MIN);
-        var plus  = _.toInt(options.plus, MOD_MIN);
-        var minus = _.toInt(options.minus, MOD_MIN);
+            rolls = F.toInt(rolls, ROLLS_MIN);
+        var plus  = F.toInt(options.plus, MOD_MIN);
+        var minus = F.toInt(options.minus, MOD_MIN);
         var sum   = plus - minus;
         var max   = n * rolls + sum;
 
         // Print title
-        _.printLine();
-        _.printLine(_.strDice(rolls, n) + _.strMod(plus - minus));
-        _.printLine();
+        F.printEmpty();
+        F.printLine(F.strDice(rolls, n) + F.strMod(plus - minus));
+        F.printEmpty();
 
         // Roll dice, add to sum, print results
-        _.rollDice(n, rolls).forEach(function(roll, i) {
+        F.rollDice(n, rolls).forEach(function(roll, i) {
             sum += roll;
-            var content = _.strRoll(_.indent(roll, max), roll, ROLL_CRIT, n);
-            _.printList(i + 1, rolls, content);
+            var content = F.strRoll(F.indent(roll, max), roll, ROLL_CRIT, n);
+            F.printList(i + 1, rolls, content);
         });
-        _.printLine();
+        F.printEmpty();
 
         // Print sum if necessary
         if (rolls > ROLLS_MIN || plus > MOD_MIN || minus > MOD_MIN) {
-            _.printLine(_.strSum(sum, true, rolls, max));
-            _.printLine();
+            F.printLine(F.strSum(sum, true, rolls, max));
+            F.printEmpty();
         }
     }
 
@@ -75,40 +72,39 @@ var Commands = (function() {
     function skill(attr, val, options) {
 
         // Initialize and convert arguments and values
-            attr     = _.splitAttr(attr);
-            val      = _.toInt(val, SKILL_MIN);
-        var plus     = _.toInt(options.plus, MOD_MIN);
-        var minus    = _.toInt(options.minus, MOD_MIN);
-        var repeat   = _.toInt(options.sammel, ROLLS_MIN);
+            attr     = F.splitAttr(attr);
+            val      = F.toInt(val, SKILL_MIN);
+        var plus     = F.toInt(options.plus, MOD_MIN);
+        var minus    = F.toInt(options.minus, MOD_MIN);
+        var repeat   = F.toInt(options.sammel, ROLLS_MIN);
         var repeated = repeat > ROLLS_MIN;
         var mod      = plus - minus;
         var failed   = false;
         var slipped  = false;
         var critted  = false;
-        var success  = false;
         var malus    = 0;
         var level    = 0;
 
         // Print error on invalid attributes
         if (attr.length !== ROLLS_ATTR) {
-            _.printLine();
-            _.printMsg(_MSG_ATTR_ERROR.red, 0, true);
-            _.printMsg(_MSG_ATTR_HINT.grey.dim, 0);
-            _.printLine();
+            F.printEmpty();
+            F.printMsg(_MSG_ATTR_ERROR.red, 0, true);
+            F.printMsg(_MSG_ATTR_HINT.grey.dim, 0);
+            F.printEmpty();
 
         // Else continue with valid attributes
         } else {
 
             // Print title
-            _.printLine();
-            _.printLine(
-                _.strDice(ROLLS_ATTR, D_20) +
-                _.strAttr(attr) +
-                _.strMod(mod) +
-                _.strVal(val) +
-                _.strRepeat(repeat)
+            F.printEmpty();
+            F.printLine(
+                F.strDice(ROLLS_ATTR, D_20) +
+                F.strAttr(attr) +
+                F.strMod(mod) +
+                F.strVal(val) +
+                F.strRepeat(repeat)
             );
-            _.printLine();
+            F.printEmpty();
 
             // Make skill-checks
             for (var i = 0; i < repeat; i++) {
@@ -117,16 +113,16 @@ var Commands = (function() {
                 var rolls = [];
                 var points = val + 0;
                 for (var j = 0; j < attr.length; j++) {
-                    rolls[j] = _.rollDice(D_20, ROLLS_MIN)[0];
+                    rolls[j] = F.rollDice(D_20, ROLLS_MIN)[0];
                     var goal = Math.max(ATTR_MIN, attr[j] + mod - malus);
                     var diff = Math.max(ATTR_MIN, rolls[j] - goal);
                     points  -= diff;
                 }
 
                 // Analyse rolls, set/calculate values
-                var slip = _.countRolls(rolls, ROLL_SLIP) >= ROLLS_TO_CRIT;
-                var crit = _.countRolls(rolls, ROLL_CRIT) >= ROLLS_TO_CRIT;
-                var qual = _.calcQuality(points, crit, slip, repeated);
+                var slip = F.countRolls(rolls, ROLL_SLIP) >= ROLLS_TO_CRIT;
+                var crit = F.countRolls(rolls, ROLL_CRIT) >= ROLLS_TO_CRIT;
+                var qual = F.calcQuality(points, crit, slip, repeated);
                 var fail = qual < QUAL_SUCCESS;
 
                 // Set global values
@@ -137,11 +133,11 @@ var Commands = (function() {
                 malus   = crit    ? MOD_MIN : fail ? malus + 1 : malus;
 
                 // Print results
-                _.printList(
+                F.printList(
                     i + 1, repeat,
-                    _.strRolls(rolls, ROLL_CRIT, ROLL_SLIP) +
-                    _.strPoints(points) + _.strQuality(qual, crit, slip) +
-                    _.strSum(level, false, 0, QUAL_MAX * repeat)
+                    F.strRolls(rolls, ROLL_CRIT, ROLL_SLIP) +
+                    F.strPoints(points) + F.strQuality(qual, crit, slip) +
+                    F.strSum(level, false, 0, QUAL_MAX * repeat)
                 );
 
                 // Break on critical slip
@@ -149,7 +145,7 @@ var Commands = (function() {
             }
 
             // Print messages
-            _.printLine();
+            F.printEmpty();
             _chooseMsg(repeat, critted, failed, slipped);
         }
     }
@@ -168,7 +164,7 @@ var Commands = (function() {
 
         // Load data
         Data.load(function(data) {
-            _.printLine();
+            F.printEmpty();
             if (Object.keys(data).length > 0) {
 
                 // Check if topic is valid
@@ -180,28 +176,29 @@ var Commands = (function() {
                         match = found;
                     }
                 });
+                avail.sort(F.sortAlpha);
                 var count = avail.length;
 
                 // Show error if topic is invalid
                 if (!match) {
-                    if (missing) { _.printMsg(_MSG_TOPIC_ALL.cyan, count); }
-                    else { _.printMsg(_MSG_TOPIC_FAIL.red, count, true); }
-                    _.printLine();
+                    if (missing) { F.printMsg(_MSG_TOPIC_ALL.cyan, count); }
+                    else { F.printMsg(_MSG_TOPIC_FAIL.red, count, true); }
+                    F.printEmpty();
                     avail.forEach(function(found, i) {
-                        _.printList(i + 1, count, found);
+                        F.printList(i + 1, count, found);
                     });
-                    _.printLine();
-                    _.printMsg(_MSG_TOPIC_HINT.grey.dim, count);
-                    _.printLine();
+                    F.printEmpty();
+                    F.printMsg(_MSG_TOPIC_HINT.grey.dim, count);
+                    F.printEmpty();
 
                 // Else continue with search
                 } else { _findTerm(data[match], keyword, match); }
 
             // Print error
             } else {
-                _.printMsg(_MSG_DATA_ERROR.red, 0, true);
-                _.printMsg(_MSG_DATA_HINT.grey.dim, 0);
-                _.printLine();
+                F.printMsg(_MSG_DATA_ERROR.red, 0, true);
+                F.printMsg(_MSG_DATA_HINT.grey.dim, 0);
+                F.printEmpty();
             }
         });
     }
@@ -215,14 +212,18 @@ var Commands = (function() {
     function _findTerm(topic, keyword, name) {
 
         // Initialize values
-        var none    = keyword.length === 0;
-        var quote   = _.strKeyword(keyword);
-        var search  = keyword.toLowerCase();
-        var match   = false;
-        var count   = 0;
-        var similar = [];
-        var hint    = _MSG_KEYWORD_HINT.grey.dim;
-            hint    = hint.replace(REGEX_REPLACE, name);
+        var none     = keyword.length === 0;
+        var quote    = F.strKeyword(keyword);
+        var search   = keyword.toLowerCase();
+        var match    = false;
+        var count    = 0;
+        var similar  = [];
+
+        // Initialize hints
+        var hintFind = _MSG_KEYWORD_HINT.grey.dim;
+        var hintUpdt = _MSG_DATA_HELP.grey.dim;
+            hintFind = hintFind.replace(REGEX_REPLACE, name);
+            hintUpdt = hintUpdt.replace(REGEX_REPLACE, name);
 
         // Search all available terms
         Object.keys(topic).forEach(function(term) {
@@ -233,28 +234,34 @@ var Commands = (function() {
                 count++;
             }
         });
+        similar.sort(F.sortAlpha);
 
         // Print term on exact match
         if (match) { _printTerm(topic[match]);
 
         // Show similar found keywords
         } else if (count > 0) {
-            if (none) { _.printMsg(_MSG_KEYWORD_ALL.cyan, count); }
-            else { _.printMsg(quote + _MSG_KEYWORD_LIST.cyan, count); }
-            _.printLine();
+            if (none) { F.printMsg(_MSG_KEYWORD_ALL.cyan, count); }
+            else { F.printMsg(quote + _MSG_KEYWORD_LIST.cyan, count); }
+            F.printEmpty();
             similar.forEach(function(found, i) {
-                _.printList(i + 1, count, found);
+                F.printList(i + 1, count, found);
             });
-            _.printLine();
-            _.printMsg(hint, count);
-            _.printLine();
+            F.printEmpty();
+            F.printMsg(hintFind, count);
+            F.printEmpty();
 
         // Show error if nothing was found
         } else {
-            if (none) { _.printMsg(_MSG_KEYWORD_NONE.red, 0, true); }
-            else { _.printMsg(quote + _MSG_KEYWORD_FAIL.red, 0, true); }
-            _.printMsg(hint, count);
-            _.printLine();
+            if (none) {
+                F.printMsg(_MSG_KEYWORD_NONE.red, 0, true);
+                F.printMsg(hintUpdt, count);
+            }
+            else {
+                F.printMsg(quote + _MSG_KEYWORD_FAIL.red, 0, true);
+                F.printMsg(hintFind, count);
+            }
+            F.printEmpty();
         }
     }
 
@@ -263,8 +270,8 @@ var Commands = (function() {
      * @param {String} term Content of term
      */
     function _printTerm(term) {
-        _.printLine(_.formatOutput(term));
-        _.printLine();
+        F.printLine(F.formatOutput(term));
+        F.printEmpty();
     }
 
     /**
@@ -291,9 +298,9 @@ var Commands = (function() {
         if (slipped)              { extra   = _MSG_SKILL_SLIP.red; }
 
         // Print messages
-        if (message) { _.printMsg(message, repeat, error, success); }
-        if (extra)   { _.printMsg(extra, repeat, slipped, critted); }
-        if (extra || message) { _.printLine(); }
+        if (message) { F.printMsg(message, repeat, error, success); }
+        if (extra)   { F.printMsg(extra, repeat, slipped, critted); }
+        if (extra || message) { F.printEmpty(); }
     }
 
     // Public interface

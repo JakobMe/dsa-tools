@@ -1,15 +1,11 @@
 /**
- * DSA-Tools CLI.
+ * Functions module; encapsulates all helper functions.
  * @author Jakob Metzger <jakob.me@gmail.com>
  * @copyright 2017 Jakob Metzger
  * @license MIT
- */
-
-/**
- * Functions module; encapsulates all helper functions.
  * @returns {Object} Public interface
  */
-var _ = (function() {
+var F = (function() {
 
     /**
      * Return a random integer between 'min' and 'max' (inclusive).
@@ -77,7 +73,28 @@ var _ = (function() {
      * @param {String} content Content of line
      */
     function printLine(content) {
-        console.log(content || "");
+        Terminal((content || "") + "\n");
+    }
+
+    /**
+     * Move n lines up in terminal.
+     * @param {Number} n Number of lines to move up
+     */
+    function printUp(n) {
+        for (var i = 0; i < (n || 1); i++) {
+            Terminal.previousLine(1);
+            Terminal.eraseLine();
+        }
+    }
+
+    /**
+     * Print n empty lines.
+     * @param {Number} n Number of empty lines
+     */
+    function printEmpty(n) {
+        for (var i = 0; i < (n || 1); i++) {
+            printLine("");
+        }
     }
 
     /**
@@ -231,7 +248,7 @@ var _ = (function() {
      * @returns {String} Colored quoted string
      */
     function strQuote(text) {
-        return ("„" + text.toString() + "“").yellow;
+        return "„" + text.toString() + "“";
     }
 
     /**
@@ -240,16 +257,7 @@ var _ = (function() {
      * @returns {String} Colored string of keyword
      */
     function strKeyword(keyword) {
-        return strQuote(keyword) + " — ".grey.dim;
-    }
-
-    /**
-     * Creates a color string with checkmark.
-     * @param {String} text Text to color
-     * @returns {String} Colored string
-     */
-    function strSuccess(text) {
-        return "✓ ".green + text;
+        return strQuote(keyword).yellow + " — ".grey.dim;
     }
 
     /**
@@ -279,17 +287,17 @@ var _ = (function() {
         var qual = points === SKILL_MIN ? QUAL_SUCCESS : calc;
         return Math.max(Math.min(qual * mult, QUAL_MAX), min);
     }
-    
+
     /**
      * Format and color a text.
      * @param {String} input Input text
      * @returns {String} Output text
      */
     function formatOutput(input) {
-        input = input.red;
         input = input.replace(REGEX_P, "\n");
         input = input.replace(REGEX_H, REGEX_REPLACE.green);
         input = input.replace(REGEX_B, REGEX_REPLACE.blue);
+        input = input.replace(REGEX_I, REGEX_REPLACE.yellow);
         return input;
     }
 
@@ -304,18 +312,29 @@ var _ = (function() {
         return l + str + r;
     }
 
+    /**
+     * Sort alphabetically.
+     * @param {String} a First string
+     * @param {String} b Second string
+     * @returns {Number} Comparison
+     */
+    function sortAlpha(a, b) {
+        return a.localeCompare(b);
+    }
+
     // Public interface
     return {
+        printEmpty   : printEmpty,
         printLine    : printLine,
         printList    : printList,
         printMsg     : printMsg,
+        printUp      : printUp,
         formatOutput : formatOutput,
         splitAttr    : splitAttr,
         rollDice     : rollDice,
         countRolls   : countRolls,
         calcQuality  : calcQuality,
         strQuote     : strQuote,
-        strSuccess   : strSuccess,
         strKeyword   : strKeyword,
         strQuality   : strQuality,
         strPoints    : strPoints,
@@ -329,7 +348,8 @@ var _ = (function() {
         strMod       : strMod,
         toInt        : toInt,
         indent       : indent,
-        enclose      : enclose
+        enclose      : enclose,
+        sortAlpha    : sortAlpha
     };
 
 })();

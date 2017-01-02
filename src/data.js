@@ -11,13 +11,15 @@
  */
 var Data = (function() {
 
-    // Data constants
-    var _DATA_FILE          = "/data.json";
+    // Constants
+    var _FILE_DATA          = "/data.json";
+    var _FILE_CONFIG        = "/config.json";
 
     // Modules/variables
     var Jsonfile            = null;
     var Path                = null;
-    var _file               = null;
+    var _data               = null;
+    var _config             = null;
 
     /**
      * Initialize module.
@@ -25,7 +27,8 @@ var Data = (function() {
     function _init() {
         Path     = require("path");
         Jsonfile = require("jsonfile");
-        _file    = Path.join(__dirname + _DATA_FILE);
+        _data    = Path.join(__dirname + _FILE_DATA);
+        _config  = Path.join(__dirname + _FILE_CONFIG);
     }
 
     /**
@@ -34,7 +37,7 @@ var Data = (function() {
      */
     function load(callback) {
         _init();
-        Jsonfile.readFile(_file, function(error, data) {
+        Jsonfile.readFile(_data, function(error, data) {
             callback(error !== null ? {} : data);
         });
     }
@@ -45,13 +48,26 @@ var Data = (function() {
      */
     function save(data) {
         _init();
-        Jsonfile.writeFile(_file, data);
+        var temp = {};
+        Jsonfile.writeFile(_data, data);
+    }
+
+    /**
+     * Load config from JSON file.
+     * @param {Function} callback Callback function
+     */
+    function config(callback) {
+        _init();
+        Jsonfile.readFile(_config, function(error, config) {
+            callback(error !== null ? {} : config);
+        });
     }
 
     // Public interface
     return {
-        load: load,
-        save: save
+        load   : load,
+        save   : save,
+        config : config
     };
 
 })();

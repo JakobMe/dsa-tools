@@ -1,21 +1,15 @@
 /**
- * DSA-Tools CLI.
+ * Update module; encapsulates all update functions.
  * @author Jakob Metzger <jakob.me@gmail.com>
  * @copyright 2017 Jakob Metzger
  * @license MIT
- */
-
-/**
- * Update module; encapsulates all update functions.
  * @returns {Object} Public interface
  */
 var Update = (function() {
 
     // Message constants
     var _MSG_ERROR         = "Verbindungsfehler!";
-    var _MSG_DOWNLOAD      = "Lade Thema ";
-    var _MSG_START         = "Starte Update";
-    var _MSG_FOUND         = "Neue Begriffe: ";
+    var _MSG_START         = "Update: $1 neue Begriffe gefunden";
     var _MSG_FINISH        = "Update abgeschlossen";
     var _MSG_UPTODATE      = "Begriffe sind auf dem aktuellen Stand";
     var _MSG_FAIL          = "Thema existiert nicht, folgende sind verfügbar:";
@@ -24,6 +18,7 @@ var Update = (function() {
     // Data constants
     var _DATA_CONNECTIONS  = 1;
     var _DATA_RATE         = 0;
+    var _DATA_DOTS         = 10;
     var _DATA_CHECK        = "ulisses-regelwiki.de";
     var _DATA_URL_TERM     = "http://www.ulisses-regelwiki.de/";
     var _DATA_URL_TOPIC    = "http://www.ulisses-regelwiki.de/index.php/";
@@ -35,6 +30,7 @@ var Update = (function() {
     var _HTML_SEL_TEXT     = "#main .ce_text";
     var _HTML_SEL_H        = "h1";
     var _HTML_SEL_B        = "strong";
+    var _HTML_SEL_I        = "em";
     var _HTML_SEL_P        = "p";
     var _HTML_SEL_BR       = "br";
     var _HTML_ATTR_HREF    = "href";
@@ -48,25 +44,8 @@ var Update = (function() {
     // Variables
     var _topic             = false;
     var _force             = false;
-
-    // Private topic list
-    var _config = [
-        /*
-        {
-            name: "zauber",
-            urls: ["za_zaubersprueche"]
-        },
-        */
-        {
-            name: "vorteil",
-            urls: ["vorteile"]
-        }/*,
-        {
-            name: "nachteil",
-            urls: ["nachteile"]
-        }
-        */
-    ];
+    var _config            = null;
+    var _wait              = null;
 
     /**
      * Start update; peforms web crawls to collect data and saves it in a file.
@@ -74,15 +53,18 @@ var Update = (function() {
      * @param {Object} options Command options
      */
     function start(topic, options) {
+        Data.config(function(config) {
 
-        // Initialize variables
-        Dns     = require("dns");
-        Crawler = require("crawler");
-        _force  = options.force;
-        _topic  = _checkTopic(topic || "");
+            // Initialize variables
+            Dns     = require("dns");
+            Crawler = require("crawler");
+            _config = config.config;
+            _force  = options.force;
+            _topic  = _checkTopic(topic || "");
 
-        // Start update
-        if (_topic !== false) { _checkConnection(_loadData); }
+            // Start update
+            if (_topic !== false) { _checkConnection(_loadData); }
+        });
     }
 
     /**
@@ -90,6 +72,10 @@ var Update = (function() {
      * @param {Object} data Loaded data
      */
     function _initCrawls(data) {
+
+        // Print waiting string
+        F.printEmpty(2);
+        _printWait();
 
         // Initialize crawler options
         var options = {
@@ -100,6 +86,7 @@ var Update = (function() {
         // Initialize crawler, queues and data
         var max         = 0;
         var total       = 0;
+        var c           = [];
         var queueTerms  = [];
         var queueTopics = [];
         var crawlTerms  = new Crawler(options);
@@ -112,9 +99,12 @@ var Update = (function() {
             var topic = config.name;
             var force = typeof data[topic] === typeof undefined || _force;
             if (force) { data[topic] = {}; }
+            Data.save(data);
+            c[n] = [];
 
             // Iterate defined url-list for topic
-            config.urls.forEach(function(urlTopic) {
+            config.urls.forEach(function(urlTopic, m) {
+                c[n][m] = 0;
 
                 // Push to queue
                 queueTopics.push({
@@ -125,18 +115,20 @@ var Update = (function() {
                         // Initialize dom
                         var $      = res.$;
                         var $terms = $(_HTML_SEL_TERM).filter(function() {
-                            var term = data[topic][$(this).text().trim()];
+                            var term = _cleanTermName($(this).text().trim());
+                                term = data[topic][term];
                             return typeof term === typeof undefined;
                         });
 
                         // Get size, update total amount
-                        var size   = $terms.length;
-                            total += size;
-                            max    = size > max ? size : max;
+                        var size      = $terms.length;
+                            max       = size > max ? size : max;
+                            c[n][m]   = size;
 
                         // Iterate all found terms
                         $terms.each(function(i) {
                             var term    = $(this).text().trim();
+                                term    = _cleanTermName(term);
                             var urlTerm = $(this).attr(_HTML_ATTR_HREF);
                                 urlTerm = encodeURI(urlTerm);
 
@@ -147,11 +139,12 @@ var Update = (function() {
                                     if (err) { return; }
 
                                     // Clean and set data
-                                    data[topic][term] =
-                                        _convert(res.$, res.$(_HTML_SEL_TEXT));
+                                    data[topic][term] = _cleanTermContent(
+                                        res.$, res.$(_HTML_SEL_TEXT));
 
-                                    // Print download message
-                                    _printDownload(i, n, total, topic, term);
+                                    // Save data, print status
+                                    Data.save(data);
+                                    _printStatus(i, n, m, c, topic, term);
                                     done();
                                 }
                             });
@@ -165,8 +158,7 @@ var Update = (function() {
         // Make crawls
         _makeCrawls(
             [crawlTopics, crawlTerms],
-            [queueTopics, queueTerms],
-            function() { Data.save(data); }
+            [queueTopics, queueTerms]
         );
     }
 
@@ -185,7 +177,7 @@ var Update = (function() {
      * @param {Object[]} queues List of crawler queues
      * @param {Function} callback Callback function
      */
-    function _makeCrawls(crawlers, queues, callback) {
+    function _makeCrawls(crawlers, queues) {
         var size = crawlers.length;
         if (size === queues.length) {
             crawlers.forEach(function(crawler, i) {
@@ -195,53 +187,91 @@ var Update = (function() {
 
                 // When crawler is finished
                 crawler.on(_DATA_DRAIN, function() {
-                    var total;
 
                     // Print title
                     if (i === 0) {
-                        total = queues[i + 1].length;
-                        _.printLine();
-                        _.printMsg(_MSG_START.green, total, false, true);
-                        if (total === 0) {
-                            _.printMsg(_MSG_UPTODATE.green, 0, false, true);
-                            _.printLine();
-                        }
+                        var total = queues[i + 1].length;
+                        if (total === 0) { _printUptodate(); }
+                        else { _printStart(total); }
                     }
 
-                    // Start next crawler or callback on last one
+                    // Start next crawler or print finish on last one
                     if (i + 1 < size) { crawlers[i + 1].queue(queues[i + 1]); }
-                    if (i === size - 1) {
-                        total = queues[i].length;
-                        _.printLine();
-                        _.printMsg(_MSG_FINISH.green, total, false, true);
-                        _.printLine();
-                        callback();
-                    }
+                    if (i === size - 1) { _printFinish(queues[i].length); }
                 });
             });
         }
     }
 
     /**
-     * Print message of downloaded topic/term.
+     * Print message of download stats.
      * @param {Number} i Index of term
-     * @param {Number} max Maximum size of term lists
      * @param {Number} n Index of topic
-     * @param {Number} total Total number of terms
+     * @param {Number} m Sub-index of topic
+     * @param {Number} count Total numbers of terms
      * @param {String} topic Name of topic
      * @param {String} term Name of term
      */
-    function _printDownload(i, n, total, topic, term) {
-        if (i === 0) {
-            if (n === 0) {
-                var num = total.toString().grey;
-                _.printMsg(_MSG_FOUND.grey.dim + num, total);
-                _.printLine();
-            }
-            _.printMsg(_MSG_DOWNLOAD.cyan + _.strQuote(topic), total);
-            _.printLine();
-        }
-        _.printList(i + 1, total, _.strSuccess(term.grey.dim));
+    function _printStatus(i, n, m, count, topic, term) {
+
+        // Calculate total sum and current index
+        var total = 0;
+        var index = 1 + i;
+        count.forEach(function(sums, x) {
+            sums.forEach(function(sum, y) {
+                index += ((x === n && y < m) || (x < n)) ? sum : 0;
+                total += sum;
+            });
+        });
+
+        // Print messages
+        var message = topic + " " + F.strQuote(term);
+        F.printUp();
+        F.printList(index, total, message.grey.dim);
+    }
+
+    /**
+     * Print waiting animation.
+     */
+    function _printWait() {
+        var tic = 0;
+        _wait = setInterval(function() {
+            tic = tic >= _DATA_DOTS ? 0 : tic + 1;
+            F.printUp();
+            F.printLine(".".repeat(tic).green);
+        }, 500);
+    }
+
+    /**
+     * Remove waiting animation, print start message.
+     * @param {Number} total Number of updates for indentation
+     */
+    function _printStart(total) {
+        clearInterval(_wait);
+        var message = _MSG_START.replace(REGEX_REPLACE, total);
+        F.printUp();
+        F.printMsg(message.green, total, false, true);
+        F.printEmpty();
+    }
+
+    /**
+     * Print finish message.
+     * @param {Number} total Total number of terms
+     */
+    function _printFinish(total) {
+        F.printUp();
+        F.printMsg(_MSG_FINISH.green, total, false, true);
+        F.printEmpty();
+    }
+
+    /**
+     * Remove waiting animation, print uptodate message.
+     */
+    function _printUptodate() {
+        clearInterval(_wait);
+        F.printUp();
+        F.printMsg(_MSG_UPTODATE.green, 0, false, true);
+        F.printEmpty();
     }
 
     /**
@@ -267,14 +297,14 @@ var Update = (function() {
         // Print error on mismatching topic
         if (match.length === 0) {
             var count = avail.length;
-            _.printLine();
-            _.printMsg(_MSG_FAIL.red, count, true);
-            _.printMsg(_MSG_HINT.grey.dim, count);
-            _.printLine();
+            F.printEmpty();
+            F.printMsg(_MSG_FAIL.red, count, true);
+            F.printMsg(_MSG_HINT.grey.dim, count);
+            F.printEmpty();
             avail.forEach(function(config, i) {
-                _.printList(i + 1, count, config.name);
+                F.printList(i + 1, count, config.name);
             });
-            _.printLine();
+            F.printEmpty();
             return false;
         }
 
@@ -289,22 +319,37 @@ var Update = (function() {
     function _checkConnection(callback) {
         Dns.lookup(_DATA_CHECK, function(error) {
             if (error) {
-                _.printLine();
-                _.printMsg(_MSG_ERROR.red, 0, true);
-                _.printMsg(_DATA_CHECK.grey.dim, 0);
-                _.printLine();
+                F.printEmpty();
+                F.printMsg(_MSG_ERROR.red, 0, true);
+                F.printMsg(_DATA_CHECK.grey.dim, 0);
+                F.printEmpty();
                 callback(false);
             } else { callback(true); }
         });
     }
 
     /**
-     * Convert HTML content to writeable output.
+     * Clean name of term.
+     * @param {String} term Name of term
+     * @returns {String} Cleaned term name
+     */
+    function _cleanTermName(term) {
+        term = term.replace(REGEX_LVL, "");
+        term = term.replace(REGEX_STAR, "");
+        term = term.replace(REGEX_DOTS, "");
+        return term;
+    }
+
+    /**
+     * Clean HTML content of term.
      * @param {Object} $ jQuery
      * @param {Object} $content Content element
-     * @returns {String} Converted content string
+     * @returns {String} Cleaned content string
      */
-    function _convert($, $content) {
+    function _cleanTermContent($, $content) {
+
+        // Return nothing if invalid
+        if ($content.length === 0) { return ""; }
 
         // Clean content
         function _filterNode() { return this.nodeType === 3; }
@@ -315,12 +360,17 @@ var Update = (function() {
 
         // Replace titles
         $content.find(_HTML_SEL_H).each(function() {
-            $(this).replaceWith(_.enclose($(this).text(), C_T, C_T + C_P));
+            $(this).replaceWith(F.enclose($(this).text(), C_T, C_T + C_P));
         });
 
         // Replace bold text
         $content.find(_HTML_SEL_B).each(function() {
-            $(this).replaceWith(_.enclose($(this).text(), C_B, C_B));
+            $(this).replaceWith(F.enclose($(this).text(), C_B, C_B));
+        });
+
+        // Replace bold text
+        $content.find(_HTML_SEL_I).each(function() {
+            $(this).replaceWith(F.enclose($(this).text(), C_I, C_I));
         });
 
         // Replace linebreaks
@@ -330,11 +380,12 @@ var Update = (function() {
 
         // Replace paragraphs
         $content.find(_HTML_SEL_P).each(function() {
-            $(this).replaceWith(_.enclose($(this).text(), C_P, C_P));
+            $(this).replaceWith(F.enclose($(this).text(), C_P, C_P));
         });
 
         // Return converted content
         var output = $content.text().trim();
+            output = output.replace(REGEX_HASH, "");
         return output.substr(0, output.length - C_P.length);
     }
 

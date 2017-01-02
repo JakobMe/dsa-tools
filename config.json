@@ -1,0 +1,85 @@
+{
+    "config": [
+        {
+            "name": "vorteil",
+            "urls": [
+                "vorteile"
+            ]
+        },
+        {
+            "name": "nachteil",
+            "urls": [
+                "nachteile"
+            ]
+        },
+        {
+            "name": "zauber",
+            "urls": [
+                "za_zaubersprueche",
+                "za-rituale",
+                "Zauber_Zaubertricks",
+                "ESF_Elfenlieder",
+                "verelfenl",
+                "herituel",
+                "HSF_Hexenflueche"
+            ]
+        },
+        {
+            "name": "magie",
+            "urls": [
+                "Ahnenzeichen",
+                "SF_Magie",
+                "SSF_Stabzauber",
+                "bannundschutz",
+                "VSF_Vertrautentricks",
+                "drituale"
+            ]
+        },
+        {
+            "name": "liturgie",
+            "urls": [
+                "lt_liturgien",
+                "Lit_Segnungen",
+                "lt_zeremonien"
+            ]
+        },
+        {
+            "name": "geweiht",
+            "urls": [
+                "SF_karmal"
+            ]
+        },
+        {
+            "name": "kampf",
+            "urls": [
+                "SF_Erweitertekampfstilsonderfertigkeiten",
+                "SF_Pruegelsonderfertigkeiten",
+                "sf_kampfsonderfertigkeiten",
+                "SF_Tier",
+                "Befehls_SF",
+                "SF_Kampfstilsonderfertigkeiten"
+            ]
+        },
+        {
+            "name": "sf",
+            "urls": [
+                "sf_allgemeine_sonderfertigkeiten",
+                "SF_Schick"
+            ]
+        },
+        {
+            "name": "spezies",
+            "urls": [
+                "spezies"
+            ]
+        },
+        {
+            "name": "kultur",
+            "urls": [
+                "Kul_Zwerge",
+                "Kul_Elfen",
+                "Kul_Menschen"
+            ]
+        }
+    ]
+}
