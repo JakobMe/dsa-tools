@@ -1,12 +1,8 @@
 /**
- * DSA-Tools CLI.
+ * Data module; encapsulates all data functions.
  * @author Jakob Metzger <jakob.me@gmail.com>
  * @copyright 2017 Jakob Metzger
  * @license MIT
- */
-
-/**
- * Data module; encapsulates all data functions.
  * @returns {Object} Public interface
  */
 var Data = (function() {

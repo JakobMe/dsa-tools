@@ -40,7 +40,7 @@ gulp.task("js", ["jshint"], function() {
             "src/program.js"
         ])
         .pipe(concat("cli.js"))
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(chmod(0o755))
         .pipe(gulp.dest("./"))
         .pipe(notify({
