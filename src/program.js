@@ -1,63 +1,63 @@
 (function(){
+
+    // Add version and description
+    Program
+        .version("0.0.1")
+        .description("CLI tools for The Dark Eye");
+
     /*
-     * Command:
-     * w<y> [n]
-     * [-m, --minus <x>]
-     * [-p, --plus <x>]
+     * Command: d<x> [n] [-m, --minus <x>] [-p, --plus <x>]
      */
-    [100, 20, 12, 10, 8, 6, 4, 3, 2].forEach(function(y) {
+    [2, 3, 4, 6, 8, 10, 12, 20, 100].forEach(function(sides) {
         Program
-            .command("w" + y + " [n]")
-            .description("nW" + y + " würfeln")
-            .option("-m, --minus <x>", "Summe -x")
-            .option("-p, --plus <x>", "Summe +x")
+            .command("d" + sides + " [rolls]")
+            .description("roll d" + sides)
+            .option("-m, --minus <x>", "subtract x from sum")
+            .option("-p, --plus <x>", "add x to sum")
             .action(function(rolls, options) {
-                Dice.roll(y, rolls, options);
+                Dice.roll(sides, rolls, options);
             });
     });
 
     /*
-     * Command: probe
-     * <probe> <fw>
-     * [-m, --minus <x>]
-     * [-p, --plus <x>]
-     * [-s, --sammel <n>]
+     * Command: skill <attributes> <value>
+     * [-m, --minus <x>] [-p, --plus <x>] [-r, --repeat <n>]
      */
     Program
-        .command("probe <probe> <fw>")
-        .description("Fertigkeitsprobe würfeln")
-        .option("-m, --minus <x>", "Erschwernis -x")
-        .option("-p, --plus <x>", "Erleichterung +x")
-        .option("-s, --sammel <n>", "Sammelprobe mit n Versuchen")
-        .action(function(attr, val, options) {
-            Dice.skill(attr, val, options);
+        .command("skill <attributes> <value>")
+        .description("roll skill check")
+        .option("-m, --minus <x>", "modify check by -x")
+        .option("-p, --plus <x>", "modify check by +x")
+        .option("-r, --repeat <n>", "repeat check n times")
+        .action(function(attributes, value, options) {
+            Dice.skill(attributes, value, options);
         });
 
     /*
-     * Command: suche
-     * [thema] [begriff]
-     * [-f, --fuzzy]
+     * Command: search [topic] [keyword] [-f, --fuzzy] [-l, --lucky]
      */
     Program
-        .command("suche [thema] [begriff]")
-        .description("Thema nach einem Begriff durchsuchen")
-        .option("-f, --fuzzy", "Ungefähre Suche benutzen")
-        .option("-b, --beste", "Bestes Suchergebnis anzeigen")
+        .command("search [topic] [keyword]")
+        .description("search for keyword in topic")
+        .option("-f, --fuzzy", "make fuzzy search")
+        .option("-l, --lucky", "show best result immediately")
         .action(function(topic, keyword, options) {
             Search.find(topic, keyword, options);
         });
 
     /*
-     * Command: update [-f, --force]
+     * Command: update [topic] [-f, --force]
      */
     Program
-        .command("update [thema]")
-        .description("Regeln aktualisieren")
-        .option("-f, --force", "Aktualisierung erzwingen")
+        .command("update [topic]")
+        .description("update search database")
+        .option("-f, --force", "force update")
         .action(function(topic, options) {
             Update.start(topic, options);
         });
 
-    // Add version and parse
-    Program.version("0.0.1").parse(process.argv);
+    // Parse program, display help on default
+    Program.parse(process.argv);
+    if (!Program.args.length) { Program.help(); }
+
 })();
