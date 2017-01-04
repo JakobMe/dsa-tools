@@ -6,16 +6,18 @@ var Str = (function() {
 
     /**
      * Format an indented string.
-     * @param   {String} str String to format
-     * @param   {String} max Longest possible string
-     * @returns {String} Formatted string
+     * @param   {String|Number} str   String to format
+     * @param   {String|Number} [max] Longest possible string
+     * @returns {String}        Formatted string
      */
     function indent(str, max) {
-        var string = str.toString(); var longest = max.toString();
+        var output  = str.toString();
+        var string  = str.toString();
+        var longest = (typeof max === "undefined" ? "" : max).toString();
         for (var i = 0; i < (longest.length - string.length); i++) {
-            str = G.STR.SPACE + str;
+            output = G.STR.SPACE + output;
         }
-        return str;
+        return output;
     }
 
     /**
@@ -38,10 +40,10 @@ var Str = (function() {
      * @returns {String}  Formatted string
      */
     function roll(str, int, good, bad) {
-        str = str.toString();
-        return int === good ? str.green
-                            : int === bad ? str.red
-                                          : str;
+        var output = str.toString();
+        return int === good ? output.green
+                            : int === bad ? output.red
+                                          : output;
     }
 
     /**
@@ -52,11 +54,11 @@ var Str = (function() {
      * @returns {String}   Formatted string
      */
     function rolls(ints, good, bad) {
-        var str = [];
+        var output = [];
         ints.forEach(function(int) {
-            str.push(roll(int, int, good, bad));
+            output.push(roll(int, int, good, bad));
         });
-        return str.join(G.STR.DELIMITER);
+        return output.join(G.STR.DELIMITER);
     }
 
     /**
@@ -94,10 +96,10 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function mod(int) {
-        var str = int.toString() + G.STR.SPACE;
-        return int < 0 ? str.red
-                       : int > 0 ? (G.STR.PLUS + str).green
-                                 : (G.STR.PLUSMINUS + str).grey.dim;
+        var output = int.toString() + G.STR.SPACE;
+        return int < 0 ? output.red
+                       : int > 0 ? (G.STR.PLUS + output).green
+                                 : (G.STR.PLUSMINUS + output).grey.dim;
     }
 
     /**
@@ -106,8 +108,8 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function times(int) {
-        var str = G.STR.TIMES + int.toString();
-        return int > 1 ? str : str.grey.dim;
+        var output = G.STR.TIMES + int.toString();
+        return int > 1 ? output.grey.dim : output.grey.dim;
     }
 
     /**
@@ -119,9 +121,10 @@ var Str = (function() {
      * @returns {String}  Formatted string
      */
     function sum(int, colon, addends, max) {
-        var symbol  = indent(G.STR.SUM, addends || 0);
+        var total   = indent(int, max);
+        var symbol  = indent(G.STR.SUM, addends);
         var delimit = colon || false ? G.STR.COLON + G.STR.SPACE : G.STR.SPACE;
-        return (symbol + delimit).grey.dim + indent(int, max || 0);
+        return (symbol + delimit).grey.dim + total.cyan;
     }
 
     /**
@@ -148,8 +151,8 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function points(int, max) {
-        var str = G.STR.TAB + indent(int, (max * -1));
-        return int < 0 ? str.red : str.green;
+        var output = G.STR.TAB + indent(int, (max * -1));
+        return int < 0 ? output.red : output.green;
     }
 
     /**
@@ -162,26 +165,34 @@ var Str = (function() {
     }
 
     /**
-     * Format a phrase string.
-     * @param   {String} str String to format
+     * Format a percent string.
+     * @param   {Number} float Float number of percent
      * @returns {String} Formatted string
      */
-    function phrase(str) {
-        return quote(str).yellow + G.STR.HYPHEN.grey.dim;
+    function percent(float) {
+        return float.toString() + G.STR.PERCENT;
     }
 
     /**
-     * Format a probability string.
-     * @param   {Number} float Float number of probability
+     * Format a progressbar string.
+     * @param   {Number} current Integer of current step in progress
+     * @param   {Number} total   Integer of total steps in progress
+     * @param   {Number} n       Integer of steps to display
      * @returns {String} Formatted string
      */
-    function probability(float) {
-        return G.STR.PROB + G.STR.SPACE + float.toString() + G.STR.PERCENT;
+    function progressbar(current, total, n) {
+        var rate    = current / total;
+        var finish  = percent(Math.round(rate * 100));
+        var steps   = Math.round(rate * n);
+        var fill    = G.STR.SPACE + G.STR.FILL.repeat(steps);
+        var blank   = G.STR.BLANK.repeat(n - steps) + G.STR.SPACE;
+        return Str.brackets(fill.cyan + blank) + finish.magenta;
     }
 
     // Public interface
     return {
-        probability : probability,
+        percent     : percent,
+        progressbar : progressbar,
         indent      : indent,
         enclose     : enclose,
         roll        : roll,
@@ -194,8 +205,7 @@ var Str = (function() {
         sum         : sum,
         quality     : quality,
         points      : points,
-        quote       : quote,
-        phrase      : phrase
+        quote       : quote
     };
 
 })();

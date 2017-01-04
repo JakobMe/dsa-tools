@@ -95,7 +95,7 @@ var Log = (function() {
      * @param {Number}  [below] Number of empty lines below
      */
     function hint(content, size, above, below) {
-        shout(content.grey.dim, size, false, false, above, below);
+        shout(content.toString().grey.dim, size, false, false, above, below);
     }
 
     /**

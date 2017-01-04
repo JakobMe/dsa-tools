@@ -6,17 +6,14 @@ var Update = (function() {
 
     // Message constants
     var _MSG_ERROR         = "Verbindungsfehler!";
-    var _MSG_START         = "Update: $1 neue Begriffe gefunden";
-    var _MSG_FINISH        = "Update abgeschlossen";
-    var _MSG_UPTODATE      = "Begriffe sind auf dem aktuellen Stand";
+    var _MSG_FOUND         = "neue Begriffe gefunden";
     var _MSG_FAIL          = "Thema existiert nicht, folgende sind verfügbar:";
     var _MSG_HINT          = "(dsa update [topic] [-f])";
 
     // Data constants
     var _DATA_CONNECTIONS  = 1;
     var _DATA_RATE         = 0;
-    var _DATA_DOTS         = 3;
-    var _DATA_TIC_TIME     = 300;
+    var _DATA_STEPS        = 15;
     var _DATA_CHECK        = "ulisses-regelwiki.de";
     var _DATA_URL_TERM     = "http://www.ulisses-regelwiki.de/";
     var _DATA_URL_TOPIC    = "http://www.ulisses-regelwiki.de/index.php/";
@@ -43,7 +40,6 @@ var Update = (function() {
     var _topic             = false;
     var _force             = false;
     var _config            = null;
-    var _wait              = null;
 
     /**
      * Start update; peforms web crawls to collect and save data.
@@ -71,9 +67,6 @@ var Update = (function() {
      */
     function _initCrawls(data) {
 
-        // Log waiting string
-        _logWait();
-
         // Initialize crawler options
         var options = {
             maxConnections : _DATA_CONNECTIONS,
@@ -81,8 +74,6 @@ var Update = (function() {
         };
 
         // Initialize crawler, queues and data
-        var max         = 0;
-        var total       = 0;
         var c           = [];
         var queueTerms  = [];
         var queueTopics = [];
@@ -117,10 +108,9 @@ var Update = (function() {
                             return typeof term === "undefined";
                         });
 
-                        // Get size, update total amount
-                        var size    = $terms.length;
-                            max     = size > max ? size : max;
-                            c[n][m] = size;
+                        // Update counter, log message
+                        c[n][m] = $terms.length;
+                        _logTopic(n, m, c);
 
                         // Iterate all found terms
                         $terms.each(function(i) {
@@ -139,9 +129,9 @@ var Update = (function() {
                                     data[topic][term] = _cleanTermContent(
                                         res.$, res.$(_HTML_SEL_TEXT));
 
-                                    // Save data, print status
+                                    // Save data, log status
                                     Data.save(data);
-                                    _logStatus(i, n, m, c, topic, term);
+                                    _logTerm(i, n, m, c, topic, term);
                                     done();
                                 }
                             });
@@ -182,88 +172,74 @@ var Update = (function() {
                 // Start first crawler
                 if (i === 0) { crawler.queue(queues[i]); }
 
-                // When crawler is finished
+                // Start next crawler
                 crawler.on(_DATA_DRAIN, function() {
-
-                    // Print title
-                    if (i === 0) {
-                        var total = queues[i + 1].length;
-                        if (total) { _logStart(total); }
-                        else { _logUptodate(); }
+                    if (i + 1 < size) {
+                        crawlers[i + 1].queue(queues[i + 1]);
                     }
-
-                    // Start next crawler or print finish on last one
-                    if (i + 1 < size) { crawlers[i + 1].queue(queues[i + 1]); }
-                    if (i === size - 1) { _logFinish(queues[i].length); }
                 });
             });
         }
     }
 
     /**
-     * Log message of download status.
+     * Log message of current downloaded topic.
+     * @param {Number} n     Index of topic
+     * @param {Number} m     Sub-index of topic
+     * @param {Number} count Total number of terms
+     */
+    function _logTopic(n, m, count) {
+
+        // Caluclate current index and total number of steps and terms
+        var total = 0;
+        var found = 0;
+        var index = 1 + m;
+        count.forEach(function(sums, x) {
+            total += sums.length;
+            index += x < n ? sums.length : 0;
+            sums.forEach(function(sum, y) {
+                found += sum;
+            });
+        });
+
+        // Log message
+        var message  = found + G.STR.SPACE + _MSG_FOUND;
+        var progress = Str.progressbar(index, total, _DATA_STEPS);
+        Log.empty(index === 1 ? 2 : 0);
+        Log.back(index === 1 ? 0 : 3);
+        Log.success(message, 0, 0, 0);
+        Log.shout(progress, 0, false, false, 0, 1);
+    }
+
+    /**
+     * Log message of current downloaded term.
      * @param {Number} i     Index of term
      * @param {Number} n     Index of topic
      * @param {Number} m     Sub-index of topic
-     * @param {Number} count Total numbers of terms
+     * @param {Number} count Total number of terms
      * @param {String} topic Name of topic
      * @param {String} term  Name of term
      */
-    function _logStatus(i, n, m, count, topic, term) {
+    function _logTerm(i, n, m, count, topic, term) {
 
-        // Calculate current index
+        // Calculate current index and total sum
+        var total = 0;
         var index = 1 + i;
         count.forEach(function(sums, x) {
             sums.forEach(function(sum, y) {
+                total += sum;
                 index += ((x === n && y < m) || (x < n)) ? sum : 0;
             });
         });
 
-        // Print messages
-        Log.back();
-        var message = topic + G.STR.SPACE + Str.quote(term);
-        Log.hint(index + G.STR.BULLET + message, 0, 0, 0);
-    }
-
-    /**
-     * Log waiting animation.
-     */
-    function _logWait() {
-        var tic = 0;
-        Log.empty(2);
-        _wait = setInterval(function() {
-            tic = tic >= _DATA_DOTS ? 0 : tic + 1;
-            Log.back();
-            Log.line(G.STR.TIC.repeat(tic).green);
-        }, _DATA_TIC_TIME);
-    }
-
-    /**
-     * Remove waiting animation, log start message.
-     * @param {Number} total Number of updates
-     */
-    function _logStart(total) {
-        clearInterval(_wait);
-        var message = _MSG_START.replace(G.REGEX.PH, total);
-        Log.back();
-        Log.success(message, 0, 0);
-    }
-
-    /**
-     * Print finish message.
-     */
-    function _logFinish() {
-        Log.back();
-        Log.success(_MSG_FINISH, 0, 0);
-    }
-
-    /**
-     * Remove waiting animation, print uptodate message.
-     */
-    function _logUptodate() {
-        clearInterval(_wait);
-        Log.back();
-        Log.success(_MSG_UPTODATE, 0, 0);
+        // Log message
+        var now      = index + G.STR.DELIMITER + total + G.STR.SPACE;
+        var message  = topic + G.STR.SPACE + Str.quote(term);
+        var progress = Str.progressbar(index, total, _DATA_STEPS);
+        Log.empty(index === 1 ? 1 : 0);
+        Log.back(index === 1 ? 0 : 3);
+        Log.success(now + message, 0, 0, 0);
+        Log.shout(progress, 0, false, false, 0, 1);
     }
 
     /**

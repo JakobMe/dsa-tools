@@ -51,7 +51,7 @@ var Dice = (function() {
         // Log results
         Log.spaced(Str.dice(n, m) + Str.mod(mod));
         Log.list(results);
-        Log.spaced(add ? Str.sum(sum + mod, true, n) : "", add ? 1 : 0);
+        Log.spaced(add ? Str.sum(sum + mod, true) : "", add ? 1 : 0);
     }
 
     /**
@@ -70,7 +70,7 @@ var Dice = (function() {
         var repeat      = Math.max(Util.toInt(options.repeat), _ROLLS_MIN);
             repeat      = prob ? 0 : repeat;
         var probability = _probability(attributes, value, mod);
-            probability = Str.probability(probability);
+            probability = Str.percent(probability);
         var repeated    = repeat > _ROLLS_MIN;
         var failed      = false;
         var slipped     = false;
@@ -119,9 +119,8 @@ var Dice = (function() {
             // Log title
             Log.spaced(
                 Str.dice(Str.indent(_ROLLS_ATTR, checks.length), _DICE_CHECK) +
-                Str.attr(attributes) + Str.mod(mod) +
-                Str.brackets(value) + Str.times(repeat) +
-                G.STR.HYPHEN.grey.dim +
+                Str.attr(attributes).magenta + Str.mod(mod) +
+                Str.brackets(value).magenta + Str.times(repeat) + G.STR.SPACE +
                 (prob ? probability.cyan : probability.grey.dim)
             );
 

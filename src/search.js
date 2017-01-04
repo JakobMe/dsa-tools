@@ -16,8 +16,9 @@ var Search = (function() {
     var _MSG_DATA_ERROR   = "Keine Daten gefunden!";
     var _MSG_DATA_HINT    = "(dsa update [topic] [-f])";
     var _MSG_DATA_HELP    = "(dsa update $1 [-f])";
+    var _NUM_CHARS_LINE   = 80;
 
-    // Modules
+    // Variables
     var DidYouMean        = null;
 
     /**
@@ -78,7 +79,6 @@ var Search = (function() {
 
         // Initialize values
         var blank   = phrase.length === 0;
-        var quote   = Str.phrase(phrase);
         var terms   = Object.keys(data);
         var found   = false;
         var similar = [];
@@ -168,11 +168,43 @@ var Search = (function() {
      * @returns {String} Formatted content
      */
     function _format(term) {
+        term = _linebreaks(term);
         term = term.replace(G.REGEX.PARA,   G.STR.NL);
         term = term.replace(G.REGEX.TITLE,  G.REGEX.PH.green);
-        term = term.replace(G.REGEX.BOLD,   G.REGEX.PH.yellow);
-        term = term.replace(G.REGEX.ITALIC, G.REGEX.PH.grey);
+        term = term.replace(G.REGEX.BOLD,   G.REGEX.PH.magenta);
+        term = term.replace(G.REGEX.ITALIC, G.REGEX.PH.cyan);
         return term;
+    }
+
+    /**
+     * Insert linebreaks into a string to prevent breaking words.
+     * @param   {String} str String to format
+     * @returns {String} Formatted string
+     */
+    function _linebreaks(str) {
+        var paragraphs = [];
+        str.split(G.STR.PARA).forEach(function(paragraph) {
+            var lines = [""], i = 0;
+            paragraph.split(G.STR.SPACE).forEach(function(word) {
+                if (!_squeeze(word, lines[i])) { lines[++i] = ""; }
+                lines[i] += word + G.STR.SPACE;
+            });
+            lines.forEach(function(line, i) { lines[i] = line.trim(); });
+            paragraphs.push(lines.join(G.STR.NL));
+        });
+        return paragraphs.join(G.STR.PARA);
+    }
+
+    /**
+     * Check if a string can be queezed in a line, ignoring some chars.
+     * @param   {String}  str  String to squeeze in line
+     * @param   {String}  line Line to squeeze string into
+     * @returns {Boolean} String fits in line
+     */
+    function _squeeze(str, line) {
+        var put  = str.replace(G.REGEX.IGNORE, "");
+        var host = line.replace(G.REGEX.IGNORE, "");
+        return (put.length + host.length) < _NUM_CHARS_LINE;
     }
 
     // Public interface
