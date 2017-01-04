@@ -88,7 +88,7 @@ var Search = (function() {
 
         // Find match and similar terms
         terms.forEach(function(term) {
-            if (phrase === term) { found = term; }
+            if (phrase === term.toLowerCase()) { found = term; }
             else if (_compare(phrase, term, fuzzy)) { similar.push(term); }
         });
 
