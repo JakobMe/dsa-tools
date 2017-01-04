@@ -15,7 +15,7 @@ var Str = (function() {
         var string  = str.toString();
         var longest = (typeof max === "undefined" ? "" : max).toString();
         for (var i = 0; i < (longest.length - string.length); i++) {
-            output = G.STR.SPACE + output;
+            output = " " + output;
         }
         return output;
     }
@@ -68,7 +68,7 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function dice(n, m) {
-        return n.toString() + G.STR.DICE + m.toString() + G.STR.SPACE;
+        return n.toString() + "d" + m.toString() + " ";
     }
 
     /**
@@ -77,8 +77,7 @@ var Str = (function() {
      * @returns {String}   Formatted string
      */
     function attr(ints) {
-        return enclose(ints.join(G.STR.DELIMITER), G.STR.PAREN_LEFT,
-                       G.STR.PAREN_RIGHT + G.STR.SPACE);
+        return enclose(ints.join(G.STR.DELIMITER), "(", ") ");
     }
 
     /**
@@ -87,7 +86,7 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function brackets(str) {
-        return enclose(str, G.STR.BRACK_LEFT, G.STR.BRACK_RIGHT + G.STR.SPACE);
+        return enclose(str, "[", "] ");
     }
 
     /**
@@ -96,10 +95,10 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function mod(int) {
-        var output = int.toString() + G.STR.SPACE;
+        var output = int.toString() + " ";
         return int < 0 ? output.red
-                       : int > 0 ? (G.STR.PLUS + output).green
-                                 : (G.STR.PLUSMINUS + output).grey.dim;
+                       : int > 0 ? ("+" + output).green
+                                 : ("±" + output).grey.dim;
     }
 
     /**
@@ -108,7 +107,7 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function times(int) {
-        var output = G.STR.TIMES + int.toString();
+        var output = "×" + int.toString();
         return int > 1 ? output.grey.dim : output.grey.dim;
     }
 
@@ -122,8 +121,8 @@ var Str = (function() {
      */
     function sum(int, colon, addends, max) {
         var total   = indent(int, max);
-        var symbol  = indent(G.STR.SUM, addends);
-        var delimit = colon || false ? G.STR.COLON + G.STR.SPACE : G.STR.SPACE;
+        var symbol  = indent("Σ", addends);
+        var delimit = colon || false ? ": " : " ";
         return (symbol + delimit).grey.dim + total.cyan;
     }
 
@@ -137,11 +136,11 @@ var Str = (function() {
      * @returns {String}  Formatted string
      */
     function quality(int, crit, slip, min, max) {
-        var icon = crit || slip ? G.STR.SPACE + G.STR.ALERT : "";
+        var icon = crit || slip ? " ‼" : "";
             icon = crit ? icon.green : slip ? icon.red : icon.grey.dim;
-        var qual = G.STR.TAB + G.STR.QUAL + G.STR.SPACE + indent(int, max);
+        var qual = "\tQS " + indent(int, max);
             qual = int < min ? qual.grey.dim : qual;
-        return qual + icon + G.STR.TAB;
+        return qual + icon + "\t";
     }
 
     /**
@@ -151,7 +150,7 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function points(int, max) {
-        var output = G.STR.TAB + indent(int, (max * -1));
+        var output = "\t" + indent(int, (max * -1));
         return int < 0 ? output.red : output.green;
     }
 
@@ -161,7 +160,7 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function quote(str) {
-        return enclose(str, G.STR.QUOTE_LEFT, G.STR.QUOTE_RIGHT);
+        return enclose(str, "\"", "\"");
     }
 
     /**
@@ -170,7 +169,7 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function percent(float) {
-        return float.toString() + G.STR.PERCENT;
+        return float.toString() + "%";
     }
 
     /**
@@ -184,9 +183,9 @@ var Str = (function() {
         var rate    = current / total;
         var finish  = percent(Math.round(rate * 100));
         var steps   = Math.round(rate * n);
-        var fill    = G.STR.SPACE + G.STR.FILL.repeat(steps);
-        var blank   = G.STR.BLANK.repeat(n - steps) + G.STR.SPACE;
-        return Str.brackets(fill.cyan + blank) + finish.magenta;
+        var fill    = "=".repeat(steps);
+        var blank   = " ".repeat(n - steps);
+        return Str.brackets(" " + fill.cyan + blank + " ") + finish.magenta;
     }
 
     // Public interface

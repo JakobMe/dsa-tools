@@ -12,7 +12,7 @@ var Log = (function() {
      * @param {String} content Content of line
      */
     function line(content) {
-        Terminal((content || "") + G.STR.NL);
+        Terminal((content || "") + "\n");
     }
 
     /**
@@ -68,8 +68,8 @@ var Log = (function() {
      * @param {Number}  [below]   Number of empty lines below
      */
     function shout(content, size, error, success, above, below) {
-        var spaces  = G.STR.SPACE.repeat(G.STR.BULLET.length);
-        var icon    = Str.indent(G.STR.ALERT, size || 0);
+        var spaces  = " ".repeat(G.STR.BULLET.length);
+        var icon    = Str.indent("‼", size || 0);
             error   = error   || false;
             success = success || false;
             icon    = error ? icon.red : success ? icon.green : icon.grey.dim;

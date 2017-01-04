@@ -10,21 +10,20 @@ var Dice = (function() {
     var _MSG_SKILL_SLIP  = "Patzer (automatisch misslungen)";
     var _MSG_SKILL_FAIL  = "Nach misslungenen Proben Malus kumulativ +1";
     var _MSG_SKILL_CRIT  = "Krit. Erfolg (bei Sammelprobe QS×2, Malus 0)";
-    var _MSG_PROBABILITY = "Erfolgswahrscheinlichkeit: ";
     var _MSG_SKILL_FLOP  = "Erfolgsprobe misslungen";
     var _MSG_SKILL_SUCC  = "Erfolgsprobe bestanden";
 
     // Number-constants
     var _ROLLS_ATTR      = 3;
     var _ROLLS_SPECIAL   = 2;
-    var _ROLLS_MIN       = 1;
-    var _DICE_CRIT       = 1;
-    var _DICE_CHECK      = 20;
+    var _DICE_ATTR       = 20;
+    var _VAL_SLIP        = 20;
+    var _VAL_CRIT        = 1;
     var _QUAL_FACTOR     = 2;
     var _QUAL_DIVIDE     = 3;
     var _QUAL_MAX        = 6;
     var _QUAL_MIN        = 0;
-    var _QUAL_HIT        = 1;
+    var _QUAL_SUCCESS    = 1;
 
     /**
      * Roll a number of dice.
@@ -35,9 +34,9 @@ var Dice = (function() {
     function roll(m, n, options) {
 
         // Initialize command arguments and options
-            n       = Math.max(Util.toInt(n), _ROLLS_MIN);
+            n       = Math.max(Util.toInt(n), 1);
         var mod     = Util.toInt(options.mod);
-        var add     = n > _ROLLS_MIN || mod;
+        var add     = n > 1 || mod;
         var results = [];
         var sum     = 0;
 
@@ -45,7 +44,7 @@ var Dice = (function() {
         _dice(n, m).forEach(function(res, i) {
             sum    += res;
             var str = Str.indent(res, m);
-            results.push(Str.roll(str, res, _DICE_CRIT, m));
+            results.push(Str.roll(str, res, _VAL_CRIT, m));
         });
 
         // Log results
@@ -67,11 +66,11 @@ var Dice = (function() {
             attributes  = _attributes(attributes);
         var mod         = Util.toInt(options.mod);
         var prob        = options.probability || false;
-        var repeat      = Math.max(Util.toInt(options.repeat), _ROLLS_MIN);
+        var repeat      = Math.max(Util.toInt(options.repeat), 1);
             repeat      = prob ? 0 : repeat;
         var probability = _probability(attributes, value, mod);
             probability = Str.percent(probability);
-        var repeated    = repeat > _ROLLS_MIN;
+        var repeated    = repeat > 1;
         var failed      = false;
         var slipped     = false;
         var critted     = false;
@@ -94,10 +93,10 @@ var Dice = (function() {
                 var check   = _check(attributes, value, mod, malus);
                 var results = check.results;
                 var points  = check.points;
-                var slip    = _special(results, _DICE_CHECK);
-                var crit    = _special(results, _DICE_CRIT);
+                var slip    = _special(results, _VAL_SLIP);
+                var crit    = _special(results, _VAL_CRIT);
                 var qual    = _quality(points, crit, slip, repeated);
-                var fail    = qual < _QUAL_HIT;
+                var fail    = qual < _QUAL_SUCCESS;
                     slipped = slipped ? true : slip;
                     critted = critted ? true : crit;
                     failed  = failed  ? true : fail;
@@ -106,9 +105,9 @@ var Dice = (function() {
 
                 // Add result
                 checks.push(
-                    Str.rolls(results, _DICE_CRIT, _DICE_CHECK) +
-                    Str.points(points, _ROLLS_ATTR * _DICE_CHECK) +
-                    Str.quality(qual, crit, slip, _QUAL_HIT, _QUAL_MAX) +
+                    Str.rolls(results, _VAL_CRIT, _DICE_ATTR) +
+                    Str.points(points, _ROLLS_ATTR * _DICE_ATTR) +
+                    Str.quality(qual, crit, slip, _QUAL_SUCCESS, _QUAL_MAX) +
                     Str.sum(sum, false, 0, _QUAL_MAX * repeat)
                 );
 
@@ -118,9 +117,9 @@ var Dice = (function() {
 
             // Log title
             Log.spaced(
-                Str.dice(Str.indent(_ROLLS_ATTR, checks.length), _DICE_CHECK) +
+                Str.dice(Str.indent(_ROLLS_ATTR, checks.length), _DICE_ATTR) +
                 Str.attr(attributes).magenta + Str.mod(mod) +
-                Str.brackets(value).magenta + Str.times(repeat) + G.STR.SPACE +
+                Str.brackets(value).magenta + Str.times(repeat) + " " +
                 (prob ? probability.cyan : probability.grey.dim)
             );
 
@@ -145,7 +144,7 @@ var Dice = (function() {
         // Initialize status and values
         var extra    = false;
         var message  = false;
-        var repeated = repeat > _ROLLS_MIN;
+        var repeated = repeat > 1;
         var error    = (!repeated &&  failed);
         var success  = (!repeated && !failed);
 
@@ -197,7 +196,7 @@ var Dice = (function() {
      * @returns {Object}   Results of rolls and remaining skill points
      */
     function _check(attr, value, mod, malus) {
-        var results = _dice(attr.length, _DICE_CHECK);
+        var results = _dice(attr.length, _DICE_ATTR);
         var points  = _points(results, attr, value, mod, malus);
         return { results: results, points: points };
     }
@@ -212,9 +211,9 @@ var Dice = (function() {
      */
     function _quality(points, crit, slip, repeated) {
         var calc = Math.ceil(points / _QUAL_DIVIDE);
-        var min  = crit ? _QUAL_HIT : _QUAL_MIN;
+        var min  = crit ? _QUAL_SUCCESS : _QUAL_MIN;
         var mult = crit && repeated ? _QUAL_FACTOR : slip ? 0 : 1;
-        var qual = points === 0 ? _QUAL_HIT : calc;
+        var qual = points === 0 ? _QUAL_SUCCESS : calc;
         return Math.max(Math.min(qual * mult, _QUAL_MAX), min);
     }
 
@@ -227,11 +226,11 @@ var Dice = (function() {
      */
     function _probability(attr, val, mod) {
         var s = 0;
-        for (var x = 1; x <= _DICE_CHECK; x++) {
-            for (var y = 1; y <= _DICE_CHECK; y++) {
-                for (var z = 1; z <= _DICE_CHECK; z++) {
-                    if (_special([x, y, z], _DICE_CRIT)) { s++; }
-                    else if (!_special([x, y, z], _DICE_CHECK)) {
+        for (var x = 1; x <= _DICE_ATTR; x++) {
+            for (var y = 1; y <= _DICE_ATTR; y++) {
+                for (var z = 1; z <= _DICE_ATTR; z++) {
+                    if (_special([x, y, z], _VAL_CRIT)) { s++; }
+                    else if (!_special([x, y, z], _VAL_CRIT)) {
                         var p = _points([x, y, z], attr, val, mod, 0);
                         s += p >= 0 ? 1 : 0;
                     }
@@ -239,7 +238,7 @@ var Dice = (function() {
             }
         }
         return Math.round(
-            (1.0 /parseFloat(Math.pow(_DICE_CHECK, 3)) * s) *
+            (1.0 /parseFloat(Math.pow(_DICE_ATTR, _ROLLS_ATTR)) * s) *
                 100 * 100) / 100;
     }
 

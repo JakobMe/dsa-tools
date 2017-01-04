@@ -169,7 +169,7 @@ var Search = (function() {
      */
     function _format(term) {
         term = _linebreaks(term);
-        term = term.replace(G.REGEX.PARA,   G.STR.NL);
+        term = term.replace(G.REGEX.PARA,   "\n");
         term = term.replace(G.REGEX.TITLE,  G.REGEX.PH.green);
         term = term.replace(G.REGEX.BOLD,   G.REGEX.PH.magenta);
         term = term.replace(G.REGEX.ITALIC, G.REGEX.PH.cyan);
@@ -185,12 +185,12 @@ var Search = (function() {
         var paragraphs = [];
         str.split(G.STR.PARA).forEach(function(paragraph) {
             var lines = [""], i = 0;
-            paragraph.split(G.STR.SPACE).forEach(function(word) {
+            paragraph.split(" ").forEach(function(word) {
                 if (!_squeeze(word, lines[i])) { lines[++i] = ""; }
-                lines[i] += word + G.STR.SPACE;
+                lines[i] += word + " ";
             });
             lines.forEach(function(line, i) { lines[i] = line.trim(); });
-            paragraphs.push(lines.join(G.STR.NL));
+            paragraphs.push(lines.join("\n"));
         });
         return paragraphs.join(G.STR.PARA);
     }

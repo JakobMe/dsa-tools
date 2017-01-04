@@ -203,7 +203,7 @@ var Update = (function() {
         });
 
         // Log message
-        var message  = found + G.STR.SPACE + _MSG_FOUND;
+        var message  = found + " " + _MSG_FOUND;
         var progress = Str.progressbar(index, total, _DATA_STEPS);
         Log.empty(index === 1 ? 2 : 0);
         Log.back(index === 1 ? 0 : 3);
@@ -233,8 +233,8 @@ var Update = (function() {
         });
 
         // Log message
-        var now      = index + G.STR.DELIMITER + total + G.STR.SPACE;
-        var message  = topic + G.STR.SPACE + Str.quote(term);
+        var now      = index + "/" + total + " ";
+        var message  = topic + " " + Str.quote(term);
         var progress = Str.progressbar(index, total, _DATA_STEPS);
         Log.empty(index === 1 ? 1 : 0);
         Log.back(index === 1 ? 0 : 3);
