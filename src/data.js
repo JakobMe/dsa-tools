@@ -1,27 +1,27 @@
 /**
- * Data module; encapsulates all data functions.
+ * Data module; provides functions for reading and saving local data.
  * @returns {Object} Public interface
  */
 var Data = (function() {
 
     // Constants
-    var _FILE_DATA          = "/data.json";
-    var _FILE_CONFIG        = "/config.json";
+    var _PATH_DATA   = "/data.json";
+    var _PATH_CONFIG = "/config.json";
 
     // Modules/variables
-    var Jsonfile            = null;
-    var Path                = null;
-    var _data               = null;
-    var _config             = null;
+    var JsonFile     = null;
+    var Path         = null;
+    var _pathData    = null;
+    var _pathConfig  = null;
 
     /**
      * Initialize module.
      */
     function _init() {
-        Path     = require("path");
-        Jsonfile = require("jsonfile");
-        _data    = Path.join(__dirname + _FILE_DATA);
-        _config  = Path.join(__dirname + _FILE_CONFIG);
+        Path        = require("path");
+        JsonFile    = require("jsonfile");
+        _pathData   = Path.join(__dirname + _PATH_DATA);
+        _pathConfig = Path.join(__dirname + _PATH_CONFIG);
     }
 
     /**
@@ -30,7 +30,7 @@ var Data = (function() {
      */
     function load(callback) {
         _init();
-        Jsonfile.readFile(_data, function(error, data) {
+        JsonFile.readFile(_pathData, function(error, data) {
             callback(error !== null ? {} : data);
         });
     }
@@ -41,8 +41,7 @@ var Data = (function() {
      */
     function save(data) {
         _init();
-        var temp = {};
-        Jsonfile.writeFile(_data, data);
+        JsonFile.writeFile(_pathData, data);
     }
 
     /**
@@ -51,16 +50,16 @@ var Data = (function() {
      */
     function config(callback) {
         _init();
-        Jsonfile.readFile(_config, function(error, config) {
+        JsonFile.readFile(_pathConfig, function(error, config) {
             callback(error !== null ? {} : config);
         });
     }
 
     // Public interface
     return {
+        config : config,
         load   : load,
-        save   : save,
-        config : config
+        save   : save
     };
 
 })();

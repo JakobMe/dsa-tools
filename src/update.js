@@ -1,5 +1,5 @@
 /**
- * Update module; encapsulates all update functions.
+ * Update module; provides functions for update commands.
  * @returns {Object} Public interface
  */
 var Update = (function() {
@@ -46,8 +46,8 @@ var Update = (function() {
     var _wait              = null;
 
     /**
-     * Start update; peforms web crawls to collect data and saves it in a file.
-     * @param {String} topic Topic to update
+     * Start update; peforms web crawls to collect and save data.
+     * @param {String} topic   Topic to update
      * @param {Object} options Command options
      */
     function start(topic, options) {
@@ -57,7 +57,7 @@ var Update = (function() {
             Dns     = require("dns");
             Crawler = require("crawler");
             _config = config.config;
-            _force  = options.force;
+            _force  = options.force || false;
             _topic  = _checkTopic(topic || "");
 
             // Start update
@@ -71,9 +71,8 @@ var Update = (function() {
      */
     function _initCrawls(data) {
 
-        // Print waiting string
-        F.printEmpty(2);
-        _printWait();
+        // Log waiting string
+        _logWait();
 
         // Initialize crawler options
         var options = {
@@ -95,7 +94,7 @@ var Update = (function() {
 
             // Initialize topic name, create data object
             var topic = config.name;
-            var force = typeof data[topic] === typeof undefined || _force;
+            var force = typeof data[topic] === "undefined" || _force;
             if (force) { data[topic] = {}; }
             Data.save(data);
             c[n] = [];
@@ -115,7 +114,7 @@ var Update = (function() {
                         var $terms = $(_HTML_SEL_TERM).filter(function() {
                             var term = _cleanTermName($(this).text().trim());
                                 term = data[topic][term];
-                            return typeof term === typeof undefined;
+                            return typeof term === "undefined";
                         });
 
                         // Get size, update total amount
@@ -142,7 +141,7 @@ var Update = (function() {
 
                                     // Save data, print status
                                     Data.save(data);
-                                    _printStatus(i, n, m, c, topic, term);
+                                    _logStatus(i, n, m, c, topic, term);
                                     done();
                                 }
                             });
@@ -172,7 +171,7 @@ var Update = (function() {
     /**
      * Make crawls; performs consecutive craws one at a time.
      * @param {Object[]} crawlers List of crawler instances
-     * @param {Object[]} queues List of crawler queues
+     * @param {Object[]} queues   List of crawler queues
      * @param {Function} callback Callback function
      */
     function _makeCrawls(crawlers, queues) {
@@ -189,125 +188,117 @@ var Update = (function() {
                     // Print title
                     if (i === 0) {
                         var total = queues[i + 1].length;
-                        if (total === 0) { _printUptodate(); }
-                        else { _printStart(total); }
+                        if (total) { _logStart(total); }
+                        else { _logUptodate(); }
                     }
 
                     // Start next crawler or print finish on last one
                     if (i + 1 < size) { crawlers[i + 1].queue(queues[i + 1]); }
-                    if (i === size - 1) { _printFinish(queues[i].length); }
+                    if (i === size - 1) { _logFinish(queues[i].length); }
                 });
             });
         }
     }
 
     /**
-     * Print message of download stats.
-     * @param {Number} i Index of term
-     * @param {Number} n Index of topic
-     * @param {Number} m Sub-index of topic
+     * Log message of download status.
+     * @param {Number} i     Index of term
+     * @param {Number} n     Index of topic
+     * @param {Number} m     Sub-index of topic
      * @param {Number} count Total numbers of terms
      * @param {String} topic Name of topic
-     * @param {String} term Name of term
+     * @param {String} term  Name of term
      */
-    function _printStatus(i, n, m, count, topic, term) {
+    function _logStatus(i, n, m, count, topic, term) {
 
-        // Calculate total sum and current index
-        var total = 0;
+        // Calculate current index
         var index = 1 + i;
         count.forEach(function(sums, x) {
             sums.forEach(function(sum, y) {
                 index += ((x === n && y < m) || (x < n)) ? sum : 0;
-                total += sum;
             });
         });
 
         // Print messages
-        var message = topic + " " + F.strQuote(term);
-        F.printUp();
-        F.printList(index, total, message.grey.dim);
+        Log.back();
+        var message = topic + G.STR.SPACE + Str.quote(term);
+        Log.hint(index + G.STR.BULLET + message, 0, 0, 0);
     }
 
     /**
-     * Print waiting animation.
+     * Log waiting animation.
      */
-    function _printWait() {
+    function _logWait() {
         var tic = 0;
+        Log.empty(2);
         _wait = setInterval(function() {
             tic = tic >= _DATA_DOTS ? 0 : tic + 1;
-            F.printUp();
-            F.printLine(".".repeat(tic).green);
+            Log.back();
+            Log.line(G.STR.TIC.repeat(tic).green);
         }, _DATA_TIC_TIME);
     }
 
     /**
-     * Remove waiting animation, print start message.
-     * @param {Number} total Number of updates for indentation
+     * Remove waiting animation, log start message.
+     * @param {Number} total Number of updates
      */
-    function _printStart(total) {
+    function _logStart(total) {
         clearInterval(_wait);
-        var message = _MSG_START.replace(G.REGEX_REPLACE, total);
-        F.printUp();
-        F.printMsg(message.green, total, false, true);
-        F.printEmpty();
+        var message = _MSG_START.replace(G.REGEX.PH, total);
+        Log.back();
+        Log.success(message, 0, 0);
     }
 
     /**
      * Print finish message.
-     * @param {Number} total Total number of terms
      */
-    function _printFinish(total) {
-        F.printUp();
-        F.printMsg(_MSG_FINISH.green, total, false, true);
-        F.printEmpty();
+    function _logFinish() {
+        Log.back();
+        Log.success(_MSG_FINISH, 0, 0);
     }
 
     /**
      * Remove waiting animation, print uptodate message.
      */
-    function _printUptodate() {
+    function _logUptodate() {
         clearInterval(_wait);
-        F.printUp();
-        F.printMsg(_MSG_UPTODATE.green, 0, false, true);
-        F.printEmpty();
+        Log.back();
+        Log.success(_MSG_UPTODATE, 0, 0);
     }
 
     /**
      * Check given topic for validity.
-     * @param {String} topic Topic name to check
+     * @param   {String}           topic Topic name to check
      * @returns {String[]|Boolean} List of topics or false
      */
     function _checkTopic(topic) {
 
         // Check given topic, fill available topics
-        var match = [];
-        var avail = [];
+        var list      = [];
+        var matched   = [];
+        var available = [];
         _config.forEach(function(config) {
-            avail.push(config);
+            list.push(config.name);
+            available.push(config);
             if (config.name === topic.toLowerCase()) {
-                match.push(config);
+                matched.push(config);
             }
         });
 
         // If no topic was given return all topics
-        if (topic.length === 0) { return avail; }
+        if (!topic.length) { return available; }
 
         // Print error on mismatching topic
-        if (match.length === 0) {
-            var count = avail.length;
-            F.printEmpty();
-            F.printMsg(_MSG_FAIL.red, count, true);
-            F.printMsg(_MSG_HINT.grey.dim, count);
-            F.printEmpty();
-            avail.forEach(function(config, i) {
-                F.printList(i + 1, count, config.name);
-            });
-            F.printEmpty();
+        if (!matched.length) {
+            Log.error(_MSG_FAIL, list.length, 1, 0);
+            Log.hint(_MSG_HINT, list.length, 0, 1);
+            Log.list(list);
+            Log.empty();
             return false;
         }
 
         // Return match
-        return match;
+        return matched;
     }
 
     /**
@@ -317,10 +308,8 @@ var Update = (function() {
     function _checkConnection(callback) {
         Dns.lookup(_DATA_CHECK, function(error) {
             if (error) {
-                F.printEmpty();
-                F.printMsg(_MSG_ERROR.red, 0, true);
-                F.printMsg(_DATA_CHECK.grey.dim, 0);
-                F.printEmpty();
+                Log.error(_MSG_ERROR, 0, 1, 0);
+                Log.hint(_DATA_CHECK, 0, 0, 1);
                 callback(false);
             } else { callback(true); }
         });
@@ -328,67 +317,67 @@ var Update = (function() {
 
     /**
      * Clean name of term.
-     * @param {String} term Name of term
+     * @param   {String} term Name of term
      * @returns {String} Cleaned term name
      */
     function _cleanTermName(term) {
-        term = term.replace(G.REGEX_LVL, "");
-        term = term.replace(G.REGEX_STAR, "");
-        term = term.replace(G.REGEX_DOTS, "");
+        term = term.replace(G.REGEX.LVL, "");
+        term = term.replace(G.REGEX.STAR, "");
+        term = term.replace(G.REGEX.DOTS, "");
         return term;
     }
 
     /**
      * Clean HTML content of term.
-     * @param {Object} $ jQuery
-     * @param {Object} $content Content element
+     * @param   {Object} $        jQuery
+     * @param   {Object} $content Content element
      * @returns {String} Cleaned content string
      */
     function _cleanTermContent($, $content) {
 
         // Return nothing if invalid
-        if ($content.length === 0) { return ""; }
+        if (!$content.length) { return ""; }
 
         // Clean content
         function _filterNode() { return this.nodeType === 3; }
-        function _filterEmpty() { return $(this).text().trim().length === 0; }
+        function _filterEmpty() { return !$(this).text().trim().length; }
         $content.contents().filter(_filterNode).remove();
         $content.children().filter(_filterEmpty).remove();
         $content.html($content.html().split(_HTML_BR).join(_HTML_BREAK));
 
         // Replace titles
         $content.find(_HTML_SEL_H).each(function() {
-            $(this).replaceWith(F.enclose(
-                $(this).text(), G.CODE_T, G.CODE_T + G.CODE_P));
+            $(this).replaceWith(Str.enclose(
+                $(this).text(), G.STR.TITLE, G.STR.TITLE + G.STR.PARA));
         });
 
         // Replace bold text
         $content.find(_HTML_SEL_B).each(function() {
-            $(this).replaceWith(F.enclose(
-                $(this).text(), G.CODE_B, G.CODE_B));
+            $(this).replaceWith(Str.enclose(
+                $(this).text(), G.STR.BOLD, G.STR.BOLD));
         });
 
         // Replace bold text
         $content.find(_HTML_SEL_I).each(function() {
-            $(this).replaceWith(F.enclose(
-                $(this).text(), G.CODE_I, G.CODE_I));
+            $(this).replaceWith(Str.enclose(
+                $(this).text(), G.STR.ITALIC, G.STR.ITALIC));
         });
 
         // Replace linebreaks
         $content.find(_HTML_SEL_BR).each(function() {
-            $(this).replaceWith(G.CODE_P);
+            $(this).replaceWith(G.STR.PARA);
         });
 
         // Replace paragraphs
         $content.find(_HTML_SEL_P).each(function() {
-            $(this).replaceWith(F.enclose(
-                $(this).text(), G.CODE_P, G.CODE_P));
+            $(this).replaceWith(Str.enclose(
+                $(this).text(), G.STR.PARA, G.STR.PARA));
         });
 
         // Return converted content
         var output = $content.text().trim();
-            output = output.replace(G.REGEX_HASH, "");
-        return output.substr(0, output.length - G.CODE_P.length);
+            output = output.replace(G.REGEX.HASH, "");
+        return output.substr(0, output.length - G.STR.PARA.length);
     }
 
     // Public interface

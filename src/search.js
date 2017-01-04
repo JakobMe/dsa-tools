@@ -1,19 +1,18 @@
 /**
- * Search module; encapsulates all search functions.
+ * Search module; provides function for search commands.
  * @returns {Object} Public interface
  */
 var Search = (function() {
 
     // Constants
-    var _MSG_KEYWORD_FAIL = "Kein passender Begriff gefunden.";
-    var _MSG_KEYWORD_NONE = "Keine Begriffe verfügbar.";
-    var _MSG_KEYWORD_LIST = "Folgende Begriffe wurden gefunden:";
-    var _MSG_KEYWORD_ALL  = "Folgende Begriffe sind verfügbar";
-    var _MSG_KEYWORD_HINT = "(dsa seach $1 [keyword] [-f] [-l])";
+    var _MSG_PHRASE_FAIL  = "Kein passender Begriff gefunden.";
+    var _MSG_PHRASE_NONE  = "Keine Begriffe verfügbar.";
+    var _MSG_PHRASE_LIST  = "Folgende Begriffe wurden gefunden:";
+    var _MSG_PHRASE_ALL   = "Folgende Begriffe sind verfügbar";
+    var _MSG_PHRASE_HINT  = "(dsa search $1 [phrase] [-f] [-g])";
     var _MSG_TOPIC_FAIL   = "Thema existiert nicht, folgende sind verfügbar:";
     var _MSG_TOPIC_ALL    = "Folgende Themen sind verfügbar:";
-    var _MSG_TOPIC_HINT   = "(dsa search [topic] [keyword] [-f] [-l])";
-    var _MSG_READ_ERROR   = "Es ist ein unbekannter Fehler aufgetreten.";
+    var _MSG_TOPIC_HINT   = "(dsa search [topic] [phrase] [-f] [-g])";
     var _MSG_DATA_ERROR   = "Keine Daten gefunden!";
     var _MSG_DATA_HINT    = "(dsa update [topic] [-f])";
     var _MSG_DATA_HELP    = "(dsa update $1 [-f])";
@@ -22,155 +21,109 @@ var Search = (function() {
     var DidYouMean        = null;
 
     /**
-     * Find keyword in topic; searches local data for topic and keyword.
-     * @param {String} [topic] Topic to search in
-     * @param {String} [keyword] Term to search
+     * Find phrase in topic; searches local data for topic and phrase.
+     * @param {String} [topic]   Topic to search in
+     * @param {String} [phrase]  Phrase to search
      * @param {String} [options] Command options
      */
-    function find(topic, keyword, options) {
+    function find(topic, phrase, options) {
 
-        // Initialize didyoumean
+        // Initialize modules
         DidYouMean = require("didyoumean");
         DidYouMean.nullResultValue = false;
 
-        // Initialize values
-            keyword = keyword       || "";
-            topic   = topic         || "";
-        var lucky   = options.lucky || false;
-        var fuzzy   = options.fuzzy || false;
-        var empty   = topic.length === 0;
+        // Initialize command arguments and options
+            phrase = (phrase       || "").toLowerCase();
+            topic  = (topic        || "").toLowerCase();
+        var guess  = options.guess || false;
+        var fuzzy  = options.fuzzy || false;
 
-        // Load data, print empty line
+        // Load data
         Data.load(function(data) {
-            F.printEmpty();
 
-            // Check if data is available
-            if (Object.keys(data).length > 0) {
+            // Initialize variables for search
+            var available = Object.keys(data).sort(Util.sortAlpha);
+            var matched   = _topic(topic, available);
+            var blank     = topic.length === 0;
+            var count     = available.length;
+            var error     = blank ? _MSG_TOPIC_ALL.green : _MSG_TOPIC_FAIL.red;
 
-                // Search for topic, collect available topics
-                var avail = [];
-                var match = false;
-                Object.keys(data).forEach(function(found) {
-                    avail.push(found);
-                    var search  = topic.toLowerCase();
-                    var compare = found.toLowerCase();
-                    if (search === compare) { match = found; }
-                });
+            // Continue search on matched topic
+            if (count && matched) {
+                _search(data[matched], phrase, matched, fuzzy, guess);
 
-                // Sort available topics, get size, fix match
-                avail.sort(F.sortAlpha);
-                var size = avail.length;
-                match = !match ? DidYouMean(topic, avail) : match;
+            // Show available topics on wrong or no topic
+            } else if (count) {
+                Log.shout(error, count, !blank, blank);
+                Log.list(available);
+                Log.hint(_MSG_TOPIC_HINT, count);
 
-                // Show message and available terms if no match was found
-                if (!match) {
-
-                    // Print title
-                    if (empty) { F.printMsg(_MSG_TOPIC_ALL.cyan, size); }
-                    else { F.printMsg(_MSG_TOPIC_FAIL.red, size, true); }
-                    F.printEmpty();
-
-                    // Print available terms
-                    avail.forEach(function(found, i) {
-                        F.printList(i + 1, size, found);
-                    });
-
-                    // Print hint
-                    F.printEmpty();
-                    F.printMsg(_MSG_TOPIC_HINT.grey.dim, size);
-                    F.printEmpty();
-
-                // Else continue with search
-                } else {
-                    _findTerm(data[match], keyword, match, fuzzy, lucky);
-                }
-
-            // Print error if no data found
+            // Show error on missing data
             } else {
-                F.printMsg(_MSG_DATA_ERROR.red, 0, true);
-                F.printMsg(_MSG_DATA_HINT.grey.dim, 0);
-                F.printEmpty();
+                Log.error(_MSG_DATA_ERROR, count, 1, 0);
+                Log.hint(_MSG_DATA_HINT, count, 0, 1);
             }
         });
     }
 
     /**
-     * Find a term in a topic.
-     * @param {Object} topic Topic to search in
-     * @param {String} keyword Keyword to search
-     * @param {String} name Name of topic
-     * @param {Boolean} fuzzy Use fuzzysearch
-     * @param {Boolean} lucky Pick lucky result
+     * Search a phrase in data of topic.
+     * @param {Object}  data   Data to search in
+     * @param {String}  phrase Phrase to search
+     * @param {String}  topic  Name of topic
+     * @param {Boolean} fuzzy  Use fuzzy search
+     * @param {Boolean} guess  Guess correct result
      */
-    function _findTerm(topic, keyword, name, fuzzy, lucky) {
+    function _search(data, phrase, topic, fuzzy, guess) {
 
         // Initialize values
-        var empty    = keyword.length === 0;
-        var quote    = F.strKeyword(keyword);
-        var search   = keyword.toLowerCase();
-        var match    = false;
-        var size     = 0;
-        var similar  = [];
+        var blank   = phrase.length === 0;
+        var quote   = Str.phrase(phrase);
+        var terms   = Object.keys(data);
+        var found   = false;
+        var similar = [];
+        var title   = blank ? _MSG_PHRASE_ALL : _MSG_PHRASE_LIST;
+        var hint    = _MSG_PHRASE_HINT.replace(G.REGEX.PH, topic);
+        var help    = _MSG_DATA_HELP.replace(G.REGEX.PH, topic);
 
-        // Initialize hints
-        var hintFind = _MSG_KEYWORD_HINT.grey.dim;
-        var hintUpdt = _MSG_DATA_HELP.grey.dim;
-            hintFind = hintFind.replace(G.REGEX_REPLACE, name);
-            hintUpdt = hintUpdt.replace(G.REGEX_REPLACE, name);
-
-        // Search all available terms, save similar and exact match
-        Object.keys(topic).forEach(function(term) {
-            var found = term.toLowerCase();
-            if (search === found) { match = term; return; }
-            else if (_compare(search, found, fuzzy)) {
-                similar.push(term); size++;
-            }
+        // Find match and similar terms
+        terms.forEach(function(term) {
+            if (phrase === term) { found = term; }
+            else if (_compare(phrase, term, fuzzy)) { similar.push(term); }
         });
 
-        // Choose match, sort similar list
-        match = !match ? _pickBest(search, similar, lucky) : match;
-        similar.sort(F.sortAlpha);
+        // Sort and count similar terms, guess match
+        similar.sort(Util.sortAlpha);
+        var matched = !found ? _guess(phrase, similar, guess) : found;
+        var count   = similar.length;
 
-        // Print term on exact match
-        if (match) { _printTerm(topic[match]);
+        // Log matched term
+        if (matched) {
+            Log.spaced(_format(data[matched]));
 
-        // Show similar found keywords if available
-        } else if (size > 0) {
+        // Log similar matches
+        } else if (count) {
+            Log.success(title, count);
+            Log.list(similar);
+            Log.hint(hint, count);
 
-            // Print title
-            if (empty) { F.printMsg(_MSG_KEYWORD_ALL.cyan, size); }
-            else { F.printMsg(quote + _MSG_KEYWORD_LIST.cyan, size); }
-            F.printEmpty();
+        // Log error if no terms are available
+        } else if (blank && !count) {
+            Log.error(_MSG_PHRASE_NONE, count, 1, 0);
+            Log.hint(help, count, 0, 1);
 
-            // Print similar found terms
-            similar.forEach(function(found, i) {
-                F.printList(i + 1, size, found);
-            });
-
-            // Print hint
-            F.printEmpty();
-            F.printMsg(hintFind, size);
-            F.printEmpty();
-
-        // Show error if no terms are available
-        } else if (empty) {
-            F.printMsg(_MSG_KEYWORD_NONE.red, 0, true);
-            F.printMsg(hintUpdt, size);
-            F.printEmpty();
-
-        // Show error if no match was found
+        // Log error if no match was found
         } else {
-            F.printMsg(quote + _MSG_KEYWORD_FAIL.red, 0, true);
-            F.printMsg(hintFind, size);
-            F.printEmpty();
+            Log.error(_MSG_PHRASE_FAIL, count, 1, 0);
+            Log.hint(hint, count, 0, 1);
         }
     }
 
     /**
      * Compare two strings for similarity.
-     * @param {String} a First string
-     * @param {String} b Second string
-     * @param {Boolean} fuzzy Use fuzzysearch
+     * @param   {String}  a     First string
+     * @param   {String}  b     Second string
+     * @param   {Boolean} fuzzy Use fuzzysearch
      * @returns {Boolean} Strings are equal or similar
      */
     function _compare(a, b, fuzzy) {
@@ -186,25 +139,40 @@ var Search = (function() {
     }
 
     /**
-     * Choose best search result from list.
-     * @param {String} search Search keyword
-     * @param {String[]} list List of possible matches
-     * @param {Boolean} lucky Use lucky result
-     * @returns {String|Boolean} Found match or false
+     * Search topic in list of available topics.
+     * @param   {String}         topic     Searched topic
+     * @param   {String[]}       available Available topics
+     * @returns {String|Boolean} Found topic or false
      */
-    function _pickBest(search, list, lucky) {
-        DidYouMean.threshold = null;
-        DidYouMean.thresholdAbsolute = 100;
-        return lucky ? DidYouMean(search, list) : false;
+    function _topic(topic, available) {
+        return available.indexOf(topic) >= 0 ? topic :
+               DidYouMean(topic, available);
     }
 
     /**
-     * Print the content of a given term.
-     * @param {String} term Content of term
+     * Guess best search result from list.
+     * @param   {String}   search Search phrase
+     * @param   {String[]} list   List of possible matches
+     * @param   {Boolean}  guess  Do guess
+     * @returns {String|Boolean}  Found result or false
      */
-    function _printTerm(term) {
-        F.printLine(F.formatOutput(term));
-        F.printEmpty();
+    function _guess(search, list, guess) {
+        DidYouMean.threshold = null;
+        DidYouMean.thresholdAbsolute = 100;
+        return guess ? DidYouMean(search, list) : false;
+    }
+
+    /**
+     * Format output of term content.
+     * @param   {String} term Content of term
+     * @returns {String} Formatted content
+     */
+    function _format(term) {
+        term = term.replace(G.REGEX.PARA,   G.STR.NL);
+        term = term.replace(G.REGEX.TITLE,  G.REGEX.PH.green);
+        term = term.replace(G.REGEX.BOLD,   G.REGEX.PH.blue);
+        term = term.replace(G.REGEX.ITALIC, G.REGEX.PH.yellow);
+        return term;
     }
 
     // Public interface

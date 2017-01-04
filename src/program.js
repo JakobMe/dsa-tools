@@ -5,49 +5,38 @@
         .version("0.0.1")
         .description("CLI tools for The Dark Eye");
 
-    /*
-     * Command: d<x> [n] [-m, --minus <x>] [-p, --plus <x>]
-     */
-    [2, 3, 4, 6, 8, 10, 12, 20, 100].forEach(function(sides) {
+    // Command 'roll dice'
+    [3, 4, 6, 8, 10, 12, 20, 100].forEach(function(m) {
         Program
-            .command("d" + sides + " [rolls]")
-            .description("roll d" + sides)
-            .option("-m, --minus <x>", "subtract x from sum")
-            .option("-p, --plus <x>", "add x to sum")
-            .action(function(rolls, options) {
-                Dice.roll(sides, rolls, options);
+            .command("d" + m + " [n]")
+            .description("roll d" + m + " n times")
+            .option("-m, --mod <x>", "modify sum by x")
+            .action(function(n, options) {
+                Dice.roll(m, n, options);
             });
     });
 
-    /*
-     * Command: skill <attributes> <value>
-     * [-m, --minus <x>] [-p, --plus <x>] [-r, --repeat <n>]
-     */
+    // Command 'make skill check'
     Program
         .command("skill <attributes> <value>")
-        .description("roll skill check")
-        .option("-m, --minus <x>", "modify check by -x")
-        .option("-p, --plus <x>", "modify check by +x")
+        .description("make skill check")
+        .option("-m, --mod <x>", "modify check by x")
         .option("-r, --repeat <n>", "repeat check n times")
         .action(function(attributes, value, options) {
             Dice.skill(attributes, value, options);
         });
 
-    /*
-     * Command: search [topic] [keyword] [-f, --fuzzy] [-l, --lucky]
-     */
+    // Command 'search for keyword in topic'
     Program
-        .command("search [topic] [keyword]")
-        .description("search for keyword in topic")
-        .option("-f, --fuzzy", "make fuzzy search")
-        .option("-l, --lucky", "show best result immediately")
-        .action(function(topic, keyword, options) {
-            Search.find(topic, keyword, options);
+        .command("search [topic] [phrase]")
+        .description("search for phrase in topic")
+        .option("-f, --fuzzy", "use fuzzy search")
+        .option("-g, --guess", "guess correct result")
+        .action(function(topic, phrase, options) {
+            Search.find(topic, phrase, options);
         });
 
-    /*
-     * Command: update [topic] [-f, --force]
-     */
+    // Command 'update search database'
     Program
         .command("update [topic]")
         .description("update search database")

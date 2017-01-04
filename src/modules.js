@@ -10,4 +10,3 @@
 // Modules
 var Program  = require("commander");
 var Colors   = require("colors");
-var Terminal = require("terminal-kit").terminal;
