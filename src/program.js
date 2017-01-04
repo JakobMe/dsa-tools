@@ -22,6 +22,7 @@
         .description("make skill check")
         .option("-m, --mod <x>", "modify check by x")
         .option("-r, --repeat <n>", "repeat check n times")
+        .option("-p, --probability", "show probability of success")
         .action(function(attributes, value, options) {
             Dice.skill(attributes, value, options);
         });

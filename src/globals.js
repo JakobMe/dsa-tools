@@ -30,7 +30,9 @@ var G = (function() {
             PLUSMINUS       : "±",
             DELIMITER       : "/",
             DICE            : "d",
-            TIC             : "."
+            TIC             : ".",
+            PERCENT         : "%",
+            PROB            : "P"
         },
         REGEX: {
             PH              : "$1",

@@ -170,22 +170,32 @@ var Str = (function() {
         return quote(str).yellow + G.STR.HYPHEN.grey.dim;
     }
 
+    /**
+     * Format a probability string.
+     * @param   {Number} float Float number of probability
+     * @returns {String} Formatted string
+     */
+    function probability(float) {
+        return G.STR.PROB + G.STR.SPACE + float.toString() + G.STR.PERCENT;
+    }
+
     // Public interface
     return {
-        indent   : indent,
-        enclose  : enclose,
-        roll     : roll,
-        rolls    : rolls,
-        dice     : dice,
-        attr     : attr,
-        brackets : brackets,
-        mod      : mod,
-        times    : times,
-        sum      : sum,
-        quality  : quality,
-        points   : points,
-        quote    : quote,
-        phrase   : phrase
+        probability : probability,
+        indent      : indent,
+        enclose     : enclose,
+        roll        : roll,
+        rolls       : rolls,
+        dice        : dice,
+        attr        : attr,
+        brackets    : brackets,
+        mod         : mod,
+        times       : times,
+        sum         : sum,
+        quality     : quality,
+        points      : points,
+        quote       : quote,
+        phrase      : phrase
     };
 
 })();

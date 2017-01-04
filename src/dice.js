@@ -5,25 +5,26 @@
 var Dice = (function() {
 
     // Message-constants
-    var _MSG_ATTR_HINT  = "(z.B. 11/13/12)";
-    var _MSG_ATTR_ERROR = "Probe im falschen Format!";
-    var _MSG_SKILL_SLIP = "Patzer (automatisch misslungen)";
-    var _MSG_SKILL_FAIL = "Nach misslungenen Proben Malus kumulativ +1";
-    var _MSG_SKILL_CRIT = "Krit. Erfolg (bei Sammelprobe QS×2, Malus 0)";
-    var _MSG_SKILL_FLOP = "Erfolgsprobe misslungen";
-    var _MSG_SKILL_SUCC = "Erfolgsprobe bestanden";
+    var _MSG_ATTR_HINT   = "(z.B. 11/13/12)";
+    var _MSG_ATTR_ERROR  = "Probe im falschen Format!";
+    var _MSG_SKILL_SLIP  = "Patzer (automatisch misslungen)";
+    var _MSG_SKILL_FAIL  = "Nach misslungenen Proben Malus kumulativ +1";
+    var _MSG_SKILL_CRIT  = "Krit. Erfolg (bei Sammelprobe QS×2, Malus 0)";
+    var _MSG_PROBABILITY = "Erfolgswahrscheinlichkeit: ";
+    var _MSG_SKILL_FLOP  = "Erfolgsprobe misslungen";
+    var _MSG_SKILL_SUCC  = "Erfolgsprobe bestanden";
 
     // Number-constants
-    var _ROLLS_ATTR     = 3;
-    var _ROLLS_SPECIAL  = 2;
-    var _ROLLS_MIN      = 1;
-    var _DICE_CRIT      = 1;
-    var _DICE_CHECK     = 20;
-    var _QUAL_FACTOR    = 2;
-    var _QUAL_DIVIDE    = 3;
-    var _QUAL_MAX       = 6;
-    var _QUAL_MIN       = 0;
-    var _QUAL_HIT       = 1;
+    var _ROLLS_ATTR      = 3;
+    var _ROLLS_SPECIAL   = 2;
+    var _ROLLS_MIN       = 1;
+    var _DICE_CRIT       = 1;
+    var _DICE_CHECK      = 20;
+    var _QUAL_FACTOR     = 2;
+    var _QUAL_DIVIDE     = 3;
+    var _QUAL_MAX        = 6;
+    var _QUAL_MIN        = 0;
+    var _QUAL_HIT        = 1;
 
     /**
      * Roll a number of dice.
@@ -35,7 +36,7 @@ var Dice = (function() {
 
         // Initialize command arguments and options
             n       = Math.max(Util.toInt(n), _ROLLS_MIN);
-            mod     = Util.toInt(options.mod);
+        var mod     = Util.toInt(options.mod);
         var add     = n > _ROLLS_MIN || mod;
         var results = [];
         var sum     = 0;
@@ -62,17 +63,21 @@ var Dice = (function() {
     function skill(attributes, value, options) {
 
         // Initialize command arguments and options
-            attributes = _attributes(attributes);
-            value      = Util.toInt(value);
-        var mod        = Util.toInt(options.mod);
-        var repeat     = Math.max(Util.toInt(options.repeat), _ROLLS_MIN);
-        var repeated   = repeat > _ROLLS_MIN;
-        var failed     = false;
-        var slipped    = false;
-        var critted    = false;
-        var checks     = [];
-        var malus      = 0;
-        var sum        = 0;
+            value       = Math.max(Util.toInt(value), 0);
+            attributes  = _attributes(attributes);
+        var mod         = Util.toInt(options.mod);
+        var prob        = options.probability || false;
+        var repeat      = Math.max(Util.toInt(options.repeat), _ROLLS_MIN);
+            repeat      = prob ? 0 : repeat;
+        var probability = _probability(attributes, value, mod);
+            probability = Str.probability(probability);
+        var repeated    = repeat > _ROLLS_MIN;
+        var failed      = false;
+        var slipped     = false;
+        var critted     = false;
+        var checks      = [];
+        var malus       = 0;
+        var sum         = 0;
 
         // Log error on invalid attributes
         if (attributes.length !== _ROLLS_ATTR) {
@@ -89,8 +94,8 @@ var Dice = (function() {
                 var check   = _check(attributes, value, mod, malus);
                 var results = check.results;
                 var points  = check.points;
-                var slip    = _count(results, _DICE_CHECK) >= _ROLLS_SPECIAL;
-                var crit    = _count(results, _DICE_CRIT)  >= _ROLLS_SPECIAL;
+                var slip    = _special(results, _DICE_CHECK);
+                var crit    = _special(results, _DICE_CRIT);
                 var qual    = _quality(points, crit, slip, repeated);
                 var fail    = qual < _QUAL_HIT;
                     slipped = slipped ? true : slip;
@@ -111,12 +116,19 @@ var Dice = (function() {
                 if (slip) { break; }
             }
 
-            // Log results
+            // Log title
             Log.spaced(
                 Str.dice(Str.indent(_ROLLS_ATTR, checks.length), _DICE_CHECK) +
                 Str.attr(attributes) + Str.mod(mod) +
-                Str.brackets(value) + Str.times(repeat)
+                Str.brackets(value) + Str.times(repeat) +
+                G.STR.HYPHEN.grey.dim +
+                (prob ? probability.cyan : probability.grey.dim)
             );
+
+            // Abort if probability option is set
+            if (prob) { return; }
+
+            // Log results
             Log.list(checks);
             _alerts(checks.length, critted, failed, slipped);
         }
@@ -160,7 +172,7 @@ var Dice = (function() {
     function _attributes(attributes) {
         var values = [];
         attributes.split(G.STR.DELIMITER).forEach(function(value) {
-            values.push(Util.toInt(value));
+            values.push(Math.max(Util.toInt(value), 0));
         });
         return values;
     }
@@ -186,25 +198,9 @@ var Dice = (function() {
      * @returns {Object}   Results of rolls and remaining skill points
      */
     function _check(attr, value, mod, malus) {
-        var points  = value + 0;
         var results = _dice(attr.length, _DICE_CHECK);
-        results.forEach(function(result, i) {
-            var goal = Math.max(0, attr[i] + mod - malus);
-            points  -= Math.max(0, result - goal);
-        });
+        var points  = _points(results, attr, value, mod, malus);
         return { results: results, points: points };
-    }
-
-    /**
-     * Count results of specific value in array of results.
-     * @param   {Number[]} res Array of roll results
-     * @param   {Number}   val   Desired result value
-     * @returns {Number}   Count of desired result values
-     */
-    function _count(res, val) {
-        var count = 0;
-        res.forEach(function(int) { count += int === val ? 1 : 0; });
-        return count;
     }
 
     /**
@@ -221,6 +217,60 @@ var Dice = (function() {
         var mult = crit && repeated ? _QUAL_FACTOR : slip ? 0 : 1;
         var qual = points === 0 ? _QUAL_HIT : calc;
         return Math.max(Math.min(qual * mult, _QUAL_MAX), min);
+    }
+
+    /**
+     * Calculate probability of success of skill check.
+     * @param   {Number[]} attr Attribute values
+     * @param   {Number}   val  Skill value
+     * @param   {Number}   mod  Mod value
+     * @returns {Number}   Float number of probability
+     */
+    function _probability(attr, val, mod) {
+        var s = 0;
+        for (var x = 1; x <= _DICE_CHECK; x++) {
+            for (var y = 1; y <= _DICE_CHECK; y++) {
+                for (var z = 1; z <= _DICE_CHECK; z++) {
+                    if (_special([x, y, z], _DICE_CRIT)) { s++; }
+                    else if (!_special([x, y, z], _DICE_CHECK)) {
+                        var p = _points([x, y, z], attr, val, mod, 0);
+                        s += p >= 0 ? 1 : 0;
+                    }
+                }
+            }
+        }
+        return Math.round(
+            (1.0 /parseFloat(Math.pow(_DICE_CHECK, 3)) * s) *
+                100 * 100) / 100;
+    }
+
+    /**
+     * Check for special result.
+     * @param   {Number[]} res Result values
+     * @param   {Number}   n   Special value
+     * @returns {Boolean}  Is special result
+     */
+    function _special(res, n) {
+        var count = 0;
+        res.forEach(function(int) { count += int === n ? 1 : 0; });
+        return count >= _ROLLS_SPECIAL;
+    }
+
+    /**
+     * Calculate remaining points from skill check.
+     * @param   {Number[]} res   Result values
+     * @param   {Number[]} attr  Attribute values
+     * @param   {Number}   val   Skill value
+     * @param   {Number}   mod   Mod value
+     * @param   {Number}   malus Addtional malus
+     * @returns {Number}   Remaining points
+     */
+    function _points(res, attr, val, mod, malus) {
+        var points = val + 0;
+        res.forEach(function(x, i) {
+            points -= Math.max(0, x - (attr[i] + mod - malus));
+        });
+        return points;
     }
 
     // Public interface

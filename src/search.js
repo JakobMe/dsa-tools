@@ -170,8 +170,8 @@ var Search = (function() {
     function _format(term) {
         term = term.replace(G.REGEX.PARA,   G.STR.NL);
         term = term.replace(G.REGEX.TITLE,  G.REGEX.PH.green);
-        term = term.replace(G.REGEX.BOLD,   G.REGEX.PH.blue);
-        term = term.replace(G.REGEX.ITALIC, G.REGEX.PH.yellow);
+        term = term.replace(G.REGEX.BOLD,   G.REGEX.PH.yellow);
+        term = term.replace(G.REGEX.ITALIC, G.REGEX.PH.grey);
         return term;
     }
 
