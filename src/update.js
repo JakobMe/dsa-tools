@@ -12,8 +12,6 @@ var Update = (function() {
     var _MSG_HINT          = "(dsa update [topic] [-f])";
 
     // HTML constants
-    var _HTML_SEL_TERM     = "td > a";
-    var _HTML_SEL_TEXT     = "#main .ce_text";
     var _HTML_SEL_H        = "h1";
     var _HTML_SEL_B        = "strong";
     var _HTML_SEL_I        = "em";
@@ -56,7 +54,9 @@ var Update = (function() {
      * @param {Function} callback Callback function
      */
     function _checkConfig(config, callback) {
-        if (config.hasOwnProperty("topics") &&
+        if (config.hasOwnProperty("btn") &&
+            config.hasOwnProperty("text") &&
+            config.hasOwnProperty("topics") &&
             config.hasOwnProperty("domain") &&
             config.hasOwnProperty("protocol")) {
             callback();
@@ -163,7 +163,7 @@ var Update = (function() {
 
                         // Initialize dom
                         var $      = res.$;
-                        var $terms = $(_HTML_SEL_TERM).filter(function() {
+                        var $terms = $(_config.btn).filter(function() {
                             var term = _cleanTermName($(this).text().trim());
                                 term = data[topic][term];
                             return typeof term === "undefined";
@@ -188,7 +188,7 @@ var Update = (function() {
 
                                     // Clean and set data
                                     data[topic][term] = _cleanTermContent(
-                                        res.$, res.$(_HTML_SEL_TEXT));
+                                        res.$, res.$(_config.text));
 
                                     // Save data, log status
                                     Data.save(data);
