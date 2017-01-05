@@ -84,6 +84,37 @@
                 "index.php/Kul_Elfen.html",
                 "index.php/Kul_Menschen.html"
             ]
+        },
+        {
+            "name": "kreatur",
+            "urls": [
+                "index.php/Best_Dämonen.html",
+                "index.php/geister.html",
+                "index.php/Best_Tiere.html",
+                "index.php/Elementare.html",
+                "index.php/Best_Kulturschaffende.html",
+                "index.php/Ungeheuer.html",
+                "index.php/Best_Feen.html",
+                "index.php/Best_Untote.html"
+            ]
+        },
+        {
+            "name": "pflanze",
+            "urls": [
+                "index.php/herbarium.html"
+            ]
+        },
+        {
+            "name": "gift",
+            "urls": [
+                "index.php/GR_Gifte.html"
+            ]
+        },
+        {
+            "name": "krankheit",
+            "urls": [
+                "index.php/GR_Krankheiten.html"
+            ]
         }
     ]
 }
