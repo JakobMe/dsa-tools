@@ -5,20 +5,11 @@
 var Update = (function() {
 
     // Message constants
+    var _MSG_CONFIG        = "Konfigurationsfehler!";
     var _MSG_ERROR         = "Verbindungsfehler!";
     var _MSG_FOUND         = "neue Begriffe gefunden";
     var _MSG_FAIL          = "Thema existiert nicht, folgende sind verfügbar:";
     var _MSG_HINT          = "(dsa update [topic] [-f])";
-
-    // Data constants
-    var _DATA_CONNECTIONS  = 1;
-    var _DATA_RATE         = 0;
-    var _DATA_STEPS        = 15;
-    var _DATA_CHECK        = "ulisses-regelwiki.de";
-    var _DATA_URL_TERM     = "http://www.ulisses-regelwiki.de/";
-    var _DATA_URL_TOPIC    = "http://www.ulisses-regelwiki.de/index.php/";
-    var _DATA_EXT          = ".html";
-    var _DATA_DRAIN        = "drain";
 
     // HTML constants
     var _HTML_SEL_TERM     = "td > a";
@@ -31,13 +22,13 @@ var Update = (function() {
     var _HTML_ATTR_HREF    = "href";
 
     // Modules
-    var Dns                = null;
+    var Connect            = null;
     var Crawler            = null;
 
     // Variables
     var _topic             = false;
     var _force             = false;
-    var _config            = null;
+    var _config            = false;
 
     /**
      * Start update; peforms web crawls to collect and save data.
@@ -46,17 +37,89 @@ var Update = (function() {
      */
     function start(topic, options) {
         Data.config(function(config) {
+            _checkConfig(config, function() {
+                Connect = require("dns");
+                Crawler = require("crawler");
+                _config = config;
+                _force  = options.force || false;
+                _topic  = _checkTopic(topic || "");
 
-            // Initialize variables
-            Dns     = require("dns");
-            Crawler = require("crawler");
-            _config = config.config;
-            _force  = options.force || false;
-            _topic  = _checkTopic(topic || "");
-
-            // Start update
-            if (_topic !== false) { _checkConnection(_loadData); }
+                // Continue on valid topic value
+                if (_topic) { _checkConnection(_loadData); }
+            });
         });
+    }
+
+    /**
+     * Check validity of config data.
+     * @param {Object}   config   Configuration object
+     * @param {Function} callback Callback function
+     */
+    function _checkConfig(config, callback) {
+        if (config.hasOwnProperty("topics") &&
+            config.hasOwnProperty("domain") &&
+            config.hasOwnProperty("protocol")) {
+            callback();
+        } else { Log.error(_MSG_CONFIG); }
+    }
+
+    /**
+     * Check given topic for validity.
+     * @param   {String}           topic Topic name to check
+     * @returns {String[]|Boolean} List of topics or false
+     */
+    function _checkTopic(topic) {
+
+        // Check given topic, fill available topics
+        var list      = [];
+        var matched   = [];
+        var available = [];
+        _config.topics.forEach(function(config) {
+            list.push(config.name);
+            available.push(config);
+            if (config.name === topic.toLowerCase()) {
+                matched.push(config);
+            }
+        });
+
+        // If no topic was given return all topics
+        if (!topic.length) { return available; }
+
+        // Print error on mismatching topic
+        if (!matched.length) {
+            Log.error(_MSG_FAIL, list.length, 1, 0);
+            Log.hint(_MSG_HINT, list.length, 0, 1);
+            Log.list(list);
+            Log.empty();
+            return false;
+        }
+
+        // Return match
+        return matched;
+    }
+
+    /**
+     * Check connection to configured website.
+     * @param {Function} callback Callback function
+     */
+    function _checkConnection(callback) {
+        var domain = _config.domain.replace("/", "");
+        Connect.lookup(domain, function(error) {
+            if (error) {
+                Log.error(_MSG_ERROR, 0, 1, 0);
+                Log.hint(domain, 0, 0, 1);
+                callback(false);
+            } else { callback(true); }
+        });
+    }
+
+    /**
+     * Load data.
+     * @param {Boolean} connected Working connection
+     */
+    function _loadData(connected) {
+        if (!connected) { return; }
+        Data.load(_initCrawls);
     }
 
     /**
@@ -67,8 +130,8 @@ var Update = (function() {
 
         // Initialize crawler options
         var options = {
-            maxConnections : _DATA_CONNECTIONS,
-            rateLimit      : _DATA_RATE
+            maxConnections : 1,
+            rateLimit      : 0
         };
 
         // Initialize crawler, queues and data
@@ -89,12 +152,12 @@ var Update = (function() {
             c[n] = [];
 
             // Iterate defined url-list for topic
-            config.urls.forEach(function(urlTopic, m) {
+            config.urls.forEach(function(address, m) {
                 c[n][m] = 0;
 
                 // Push to queue
                 queueTopics.push({
-                    uri: _DATA_URL_TOPIC + urlTopic + _DATA_EXT,
+                    uri: _config.protocol + _config.domain + address,
                     callback: function(err, res, done) {
                         if (err) { return; }
 
@@ -112,14 +175,14 @@ var Update = (function() {
 
                         // Iterate all found terms
                         $terms.each(function(i) {
-                            var term    = $(this).text().trim();
-                                term    = _cleanTermName(term);
-                            var urlTerm = $(this).attr(_HTML_ATTR_HREF);
-                                urlTerm = encodeURI(urlTerm);
+                            var term = $(this).text().trim();
+                                term = _cleanTermName(term);
+                            var url  = $(this).attr(_HTML_ATTR_HREF);
+                                url  = encodeURI(url);
 
                             // Push to queue
                             queueTerms.push({
-                                uri: _DATA_URL_TERM + urlTerm,
+                                uri: _config.protocol + _config.domain + url,
                                 callback: function(err, res, done) {
                                     if (err) { return; }
 
@@ -148,15 +211,6 @@ var Update = (function() {
     }
 
     /**
-     * Load data.
-     * @param {Boolean} connected Connection-status
-     */
-    function _loadData(connected) {
-        if (!connected) { return; }
-        Data.load(_initCrawls);
-    }
-
-    /**
      * Make crawls; performs consecutive craws one at a time.
      * @param {Object[]} crawlers List of crawler instances
      * @param {Object[]} queues   List of crawler queues
@@ -171,7 +225,7 @@ var Update = (function() {
                 if (i === 0) { crawler.queue(queues[i]); }
 
                 // Start next crawler
-                crawler.on(_DATA_DRAIN, function() {
+                crawler.on("drain", function() {
                     if (i + 1 < size) {
                         crawlers[i + 1].queue(queues[i + 1]);
                     }
@@ -202,7 +256,7 @@ var Update = (function() {
 
         // Log message
         var message  = found + " " + _MSG_FOUND;
-        var progress = Str.progressbar(index, total, _DATA_STEPS);
+        var progress = Str.progressbar(index, total);
         Log.empty(index === 1 ? 2 : 0);
         Log.back(index === 1 ? 0 : 3);
         Log.success(message, 0, 0, 0);
@@ -233,60 +287,11 @@ var Update = (function() {
         // Log message
         var now      = index + "/" + total + " ";
         var message  = topic + " " + Str.quote(term);
-        var progress = Str.progressbar(index, total, _DATA_STEPS);
+        var progress = Str.progressbar(index, total);
         Log.empty(index === 1 ? 1 : 0);
         Log.back(index === 1 ? 0 : 3);
         Log.success(now + message, 0, 0, 0);
         Log.shout(progress, 0, false, false, 0, 1);
-    }
-
-    /**
-     * Check given topic for validity.
-     * @param   {String}           topic Topic name to check
-     * @returns {String[]|Boolean} List of topics or false
-     */
-    function _checkTopic(topic) {
-
-        // Check given topic, fill available topics
-        var list      = [];
-        var matched   = [];
-        var available = [];
-        _config.forEach(function(config) {
-            list.push(config.name);
-            available.push(config);
-            if (config.name === topic.toLowerCase()) {
-                matched.push(config);
-            }
-        });
-
-        // If no topic was given return all topics
-        if (!topic.length) { return available; }
-
-        // Print error on mismatching topic
-        if (!matched.length) {
-            Log.error(_MSG_FAIL, list.length, 1, 0);
-            Log.hint(_MSG_HINT, list.length, 0, 1);
-            Log.list(list);
-            Log.empty();
-            return false;
-        }
-
-        // Return match
-        return matched;
-    }
-
-    /**
-     * Check connection to wiki.
-     * @param {Function} callback Callback function
-     */
-    function _checkConnection(callback) {
-        Dns.lookup(_DATA_CHECK, function(error) {
-            if (error) {
-                Log.error(_MSG_ERROR, 0, 1, 0);
-                Log.hint(_DATA_CHECK, 0, 0, 1);
-                callback(false);
-            } else { callback(true); }
-        });
     }
 
     /**

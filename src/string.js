@@ -176,15 +176,14 @@ var Str = (function() {
      * Format a progressbar string.
      * @param   {Number} current Integer of current step in progress
      * @param   {Number} total   Integer of total steps in progress
-     * @param   {Number} n       Integer of steps to display
      * @returns {String} Formatted string
      */
-    function progressbar(current, total, n) {
+    function progressbar(current, total) {
         var rate    = current / total;
         var finish  = percent(Math.round(rate * 100));
-        var steps   = Math.round(rate * n);
+        var steps   = Math.round(rate * 15);
         var fill    = "=".repeat(steps);
-        var blank   = " ".repeat(n - steps);
+        var blank   = " ".repeat(15 - steps);
         return Str.brackets(" " + fill.cyan + blank + " ") + finish.magenta;
     }
 

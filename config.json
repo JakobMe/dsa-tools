@@ -1,84 +1,86 @@
 {
-    "config": [
+    "protocol": "http://",
+    "domain": "www.ulisses-regelwiki.de/",
+    "topics": [
         {
             "name": "vorteil",
             "urls": [
-                "vorteile"
+                "index.php/vorteile.html"
             ]
         },
         {
             "name": "nachteil",
             "urls": [
-                "nachteile"
+                "index.php/nachteile.html"
             ]
         },
         {
             "name": "zauber",
             "urls": [
-                "za_zaubersprueche",
-                "za_rituale",
-                "Zauber_Zaubertricks",
-                "ESF_Elfenlieder",
-                "verelfenl",
-                "herituel",
-                "HSF_Hexenflueche"
+                "index.php/za_zaubersprueche.html",
+                "index.php/za_rituale.html",
+                "index.php/Zauber_Zaubertricks.html",
+                "index.php/ESF_Elfenlieder.html",
+                "index.php/verelfenl.html",
+                "index.php/herituel.html",
+                "index.php/HSF_Hexenflueche.html"
             ]
         },
         {
             "name": "magie",
             "urls": [
-                "Ahnenzeichen",
-                "SF_Magie",
-                "SSF_Stabzauber",
-                "bannundschutz",
-                "VSF_Vertrautentricks",
-                "drituale"
+                "index.php/Ahnenzeichen.html",
+                "index.php/SF_Magie.html",
+                "index.php/SSF_Stabzauber.html",
+                "index.php/bannundschutz.html",
+                "index.php/VSF_Vertrautentricks.html",
+                "index.php/drituale.html"
             ]
         },
         {
             "name": "liturgie",
             "urls": [
-                "lt_liturgien",
-                "Lit_Segnungen",
-                "lt_zeremonien"
+                "index.php/lt_liturgien.html",
+                "index.php/Lit_Segnungen.html",
+                "index.php/lt_zeremonien.html"
             ]
         },
         {
             "name": "geweiht",
             "urls": [
-                "SF_karmal"
+                "index.php/SF_karmal.html"
             ]
         },
         {
             "name": "kampf",
             "urls": [
-                "SF_Erweitertekampfstilsonderfertigkeiten",
-                "SF_Pruegelsonderfertigkeiten",
-                "sf_kampfsonderfertigkeiten",
-                "SF_Tier",
-                "Befehls_SF",
-                "SF_Kampfstilsonderfertigkeiten"
+                "index.php/SF_Erweitertekampfstilsonderfertigkeiten.html",
+                "index.php/SF_Pruegelsonderfertigkeiten.html",
+                "index.php/sf_kampfsonderfertigkeiten.html",
+                "index.php/SF_Tier.html",
+                "index.php/Befehls_SF.html",
+                "index.php/SF_Kampfstilsonderfertigkeiten.html"
             ]
         },
         {
             "name": "sf",
             "urls": [
-                "sf_allgemeine_sonderfertigkeiten",
-                "SF_Schick"
+                "index.php/sf_allgemeine_sonderfertigkeiten.html",
+                "index.php/SF_Schick.html"
             ]
         },
         {
             "name": "spezies",
             "urls": [
-                "spezies"
+                "index.php/spezies.html"
             ]
         },
         {
             "name": "kultur",
             "urls": [
-                "Kul_Zwerge",
-                "Kul_Elfen",
-                "Kul_Menschen"
+                "index.php/Kul_Zwerge.html",
+                "index.php/Kul_Elfen.html",
+                "index.php/Kul_Menschen.html"
             ]
         }
     ]
