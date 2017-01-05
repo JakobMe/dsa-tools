@@ -29,8 +29,6 @@ var Update = (function() {
     var _HTML_SEL_P        = "p";
     var _HTML_SEL_BR       = "br";
     var _HTML_ATTR_HREF    = "href";
-    var _HTML_BR           = "<br>";
-    var _HTML_BREAK        = "<br/>";
 
     // Modules
     var Dns                = null;
@@ -297,10 +295,7 @@ var Update = (function() {
      * @returns {String} Cleaned term name
      */
     function _cleanTermName(term) {
-        term = term.replace(G.REGEX.LVL, "");
-        term = term.replace(G.REGEX.STAR, "");
-        term = term.replace(G.REGEX.DOTS, "");
-        return term;
+        return term.replace(G.REGEX.REMOVE, "").trim();
     }
 
     /**
@@ -310,50 +305,54 @@ var Update = (function() {
      * @returns {String} Cleaned content string
      */
     function _cleanTermContent($, $content) {
-
-        // Return nothing if invalid
         if (!$content.length) { return ""; }
+        _cleanup($, $content);
+        _replace($, $content, _HTML_SEL_BR, "\n");
+        _enclose($, $content, _HTML_SEL_B, G.STR.BOLD_L, G.STR.BOLD_R);
+        _enclose($, $content, _HTML_SEL_I, G.STR.ITAL_L, G.STR.ITAL_R);
+        _enclose($, $content, _HTML_SEL_H, G.STR.HEAD_L, G.STR.HEAD_R, "\n");
+        _enclose($, $content, _HTML_SEL_P, "\n", "\n");
+        return $content.text().trim();
+    }
 
-        // Clean content
-        function _filterNode() { return this.nodeType === 3; }
-        function _filterEmpty() { return !$(this).text().trim().length; }
-        $content.contents().filter(_filterNode).remove();
-        $content.children().filter(_filterEmpty).remove();
-        $content.html($content.html().split(_HTML_BR).join(_HTML_BREAK));
+    /**
+     * Replace HTML entities with a string.
+     * @param {Object}  $        jQuery object
+     * @param {Object}  $parent  Parent element
+     * @param {String}  selector Search selector
+     * @param {String}  string   Replace string
+     */
+    function _replace($, $parent, selector, string) {
+        $parent.find(selector).replaceWith(string);
+    }
 
-        // Replace titles
-        $content.find(_HTML_SEL_H).each(function() {
-            $(this).replaceWith(Str.enclose(
-                $(this).text(), G.STR.TITLE, G.STR.TITLE + G.STR.PARA));
+    /**
+     * Replace and enclose HTML entities in strings.
+     * @param {Object}  $        jQuery object
+     * @param {Object}  $parent  Parent element
+     * @param {String}  selector Search selector
+     * @param {String}  l        Left enclose string
+     * @param {Boolean} r        Right enclose string
+     * @param {String}  [append] Appended string to right
+     */
+    function _enclose($, $parent, selector, l, r, append) {
+        $parent.find(selector).each(function() {
+            var $el = $(this);
+            $el.replaceWith(Str.enclose($el.text(), l, r + (append || "")));
         });
+    }
 
-        // Replace bold text
-        $content.find(_HTML_SEL_B).each(function() {
-            $(this).replaceWith(Str.enclose(
-                $(this).text(), G.STR.BOLD, G.STR.BOLD));
-        });
-
-        // Replace bold text
-        $content.find(_HTML_SEL_I).each(function() {
-            $(this).replaceWith(Str.enclose(
-                $(this).text(), G.STR.ITALIC, G.STR.ITALIC));
-        });
-
-        // Replace linebreaks
-        $content.find(_HTML_SEL_BR).each(function() {
-            $(this).replaceWith(G.STR.PARA);
-        });
-
-        // Replace paragraphs
-        $content.find(_HTML_SEL_P).each(function() {
-            $(this).replaceWith(Str.enclose(
-                $(this).text(), G.STR.PARA, G.STR.PARA));
-        });
-
-        // Return converted content
-        var output = $content.text().trim();
-            output = output.replace(G.REGEX.HASH, "");
-        return output.substr(0, output.length - G.STR.PARA.length);
+    /**
+     * Remove unwanted HTML entities.
+     * @param {Object}  $       jQuery object
+     * @param {Object}  $parent Parent element
+     */
+    function _cleanup($, $parent) {
+        $parent.contents().filter(function() {
+            var wrong = this.nodeType === 3;
+            var empty = $(this).text().trim().length === 0;
+            return empty || wrong;
+        }).remove();
     }
 
     // Public interface

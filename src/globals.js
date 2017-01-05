@@ -5,24 +5,22 @@
 var G = (function() {
     return {
         STR: {
-            TITLE           : "++",
-            BOLD            : "==",
-            PARA            : "__",
-            ITALIC          : "--",
+            PH              : "$1",
+            HEAD_L          : "{{",
+            HEAD_R          : "}}",
+            BOLD_L          : "[[",
+            BOLD_R          : "]]",
+            ITAL_L          : "((",
+            ITAL_R          : "))",
             BULLET          : ". ",
             DELIMITER       : "/"
         },
         REGEX: {
-            PH              : "$1",
-            TITLE           : /\+\+(.*?)\+\+/g,
-            BOLD            : /==(.*?)==/g,
-            ITALIC          : /--(.*?)--/g,
-            PARA            : /__/g,
-            IGNORE          : /\+\+|==|--|__/g,
-            HASH            : /#(?!#)/g,
-            LVL             : / I-.*(I|V|X)/,
-            STAR            : / \(\*\)/,
-            DOTS            : / \.\.\./
+            HEAD            : /\{\{([\s\S]*?)\}\}/g,
+            BOLD            : /\[\[([\s\S]*?)\]\]/g,
+            ITAL            : /\(\(([\s\S]*?)\)\)/g,
+            IGNORE          : /\[\[|\]\]|\{\{|\}\}|\(\(|\)\)/g,
+            REMOVE          : /I-.*(I|V|X)|\(\*\)|\.\.\.|\*/g
         }
     };
 })();

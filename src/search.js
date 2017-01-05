@@ -83,8 +83,8 @@ var Search = (function() {
         var found   = false;
         var similar = [];
         var title   = blank ? _MSG_PHRASE_ALL : _MSG_PHRASE_LIST;
-        var hint    = _MSG_PHRASE_HINT.replace(G.REGEX.PH, topic);
-        var help    = _MSG_DATA_HELP.replace(G.REGEX.PH, topic);
+        var hint    = _MSG_PHRASE_HINT.replace(G.STR.PH, topic);
+        var help    = _MSG_DATA_HELP.replace(G.STR.PH, topic);
 
         // Find match and similar terms
         terms.forEach(function(term) {
@@ -169,10 +169,9 @@ var Search = (function() {
      */
     function _format(term) {
         term = _linebreaks(term);
-        term = term.replace(G.REGEX.PARA,   "\n");
-        term = term.replace(G.REGEX.TITLE,  G.REGEX.PH.green);
-        term = term.replace(G.REGEX.BOLD,   G.REGEX.PH.magenta);
-        term = term.replace(G.REGEX.ITALIC, G.REGEX.PH.cyan);
+        term = term.replace(G.REGEX.HEAD, G.STR.PH.green);
+        term = term.replace(G.REGEX.BOLD, G.STR.PH.magenta);
+        term = term.replace(G.REGEX.ITAL, G.STR.PH.cyan);
         return term;
     }
 
@@ -183,7 +182,7 @@ var Search = (function() {
      */
     function _linebreaks(str) {
         var paragraphs = [];
-        str.split(G.STR.PARA).forEach(function(paragraph) {
+        str.split("\n").forEach(function(paragraph) {
             var lines = [""], i = 0;
             paragraph.split(" ").forEach(function(word) {
                 if (!_squeeze(word, lines[i])) { lines[++i] = ""; }
@@ -192,7 +191,7 @@ var Search = (function() {
             lines.forEach(function(line, i) { lines[i] = line.trim(); });
             paragraphs.push(lines.join("\n"));
         });
-        return paragraphs.join(G.STR.PARA);
+        return paragraphs.join("\n");
     }
 
     /**
@@ -204,7 +203,7 @@ var Search = (function() {
     function _squeeze(str, line) {
         var put  = str.replace(G.REGEX.IGNORE, "");
         var host = line.replace(G.REGEX.IGNORE, "");
-        return (put.length + host.length) < _NUM_CHARS_LINE;
+        return (put.length + host.length) <= _NUM_CHARS_LINE;
     }
 
     // Public interface
