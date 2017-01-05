@@ -1,10 +1,11 @@
 {
   "name": "dsa-tools",
   "version": "1.0.0",
-  "description": "Kommandozeilen-Tools für DSA",
+  "description": "command line tools for 'The Dark Eye'",
   "author": "Jakob Metzger",
   "license": "MIT",
   "private": true,
+  "preferGlobal": true,
   "homepage": "https://github.com/JakobMe/dsa-tools#readme",
   "repository": {
     "type": "git",
