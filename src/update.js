@@ -9,7 +9,7 @@ var Update = (function() {
     var _MSG_ERROR         = "Verbindungsfehler!";
     var _MSG_FOUND         = "neue Begriffe gefunden";
     var _MSG_FAIL          = "Thema existiert nicht, folgende sind verfügbar:";
-    var _MSG_HINT          = "(dsa update [topic] [-f])";
+    var _MSG_HINT          = "(dsa aktualisiere [thema] [-e])";
 
     // HTML constants
     var _HTML_SEL_H        = "h1";
@@ -39,7 +39,7 @@ var Update = (function() {
                 Connect = require("dns");
                 Crawler = require("crawler");
                 _config = config;
-                _force  = options.force || false;
+                _force  = options.erzwingen || false;
                 _topic  = _checkTopic(topic || "");
 
                 // Continue on valid topic value

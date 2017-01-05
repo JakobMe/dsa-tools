@@ -9,13 +9,13 @@ var Search = (function() {
     var _MSG_PHRASE_NONE  = "Keine Begriffe verfügbar.";
     var _MSG_PHRASE_LIST  = "Folgende Begriffe wurden gefunden:";
     var _MSG_PHRASE_ALL   = "Folgende Begriffe sind verfügbar";
-    var _MSG_PHRASE_HINT  = "(dsa search $1 [phrase] [-f] [-g])";
+    var _MSG_PHRASE_HINT  = "(dsa suche $1 [begriff] [-u] [-r])";
     var _MSG_TOPIC_FAIL   = "Thema existiert nicht, folgende sind verfügbar:";
     var _MSG_TOPIC_ALL    = "Folgende Themen sind verfügbar:";
-    var _MSG_TOPIC_HINT   = "(dsa search [topic] [phrase] [-f] [-g])";
+    var _MSG_TOPIC_HINT   = "(dsa suche [thema] [begriff] [-u] [-r])";
     var _MSG_DATA_ERROR   = "Keine Daten gefunden!";
-    var _MSG_DATA_HINT    = "(dsa update [topic] [-f])";
-    var _MSG_DATA_HELP    = "(dsa update $1 [-f])";
+    var _MSG_DATA_HINT    = "(dsa aktualisiere [thema] [-e])";
+    var _MSG_DATA_HELP    = "(dsa aktualisiere $1 [-e])";
     var _NUM_CHARS_LINE   = 80;
 
     // Variables
@@ -34,10 +34,10 @@ var Search = (function() {
         DidYouMean.nullResultValue = false;
 
         // Initialize command arguments and options
-            phrase = (phrase       || "").toLowerCase();
-            topic  = (topic        || "").toLowerCase();
-        var guess  = options.guess || false;
-        var fuzzy  = options.fuzzy || false;
+            phrase = (phrase         || "").toLowerCase();
+            topic  = (topic          || "").toLowerCase();
+        var guess  = options.raten   || false;
+        var fuzzy  = options.ungenau || false;
 
         // Load data
         Data.load(function(data) {

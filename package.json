@@ -1,7 +1,7 @@
 {
   "name": "dsa-tools",
   "version": "1.0.0",
-  "description": "command line tools for 'The Dark Eye'",
+  "description": "Kommandozeilen-Tools für 'Das Schwarze Auge'",
   "author": "Jakob Metzger",
   "license": "MIT",
   "private": true,
