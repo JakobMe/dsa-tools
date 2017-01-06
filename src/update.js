@@ -9,7 +9,7 @@ var Update = (function() {
     var _MSG_CONNECT    = "Verbindungsfehler!";
     var _MSG_FOUND      = "neue Begriffe gefunden";
     var _MSG_FAIL       = "Thema existiert nicht, folgende sind verfügbar:";
-    var _MSG_HINT       = "(dsa aktualisiere [thema] [-e] [-s])";
+    var _MSG_HINT       = "dsa aktualisiere [thema] [-e] [-s]";
 
     // HTML constants
     var _HTML_FORBID    = "*:not(h1):not(strong):not(em):not(br):not(p)";

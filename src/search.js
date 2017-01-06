@@ -9,13 +9,13 @@ var Search = (function() {
     var _MSG_PHRASE_NONE  = "Keine Begriffe verfügbar.";
     var _MSG_PHRASE_LIST  = "Folgende Begriffe wurden gefunden:";
     var _MSG_PHRASE_ALL   = "Folgende Begriffe sind verfügbar";
-    var _MSG_PHRASE_HINT  = "(dsa suche $1 [begriff] [-u] [-r])";
+    var _MSG_PHRASE_HINT  = "dsa suche $1 [begriff] [-u] [-r]";
     var _MSG_TOPIC_FAIL   = "Thema existiert nicht, folgende sind verfügbar:";
     var _MSG_TOPIC_ALL    = "Folgende Themen sind verfügbar:";
-    var _MSG_TOPIC_HINT   = "(dsa suche [thema] [begriff] [-u] [-r])";
+    var _MSG_TOPIC_HINT   = "dsa suche [thema] [begriff] [-u] [-r]";
     var _MSG_DATA_ERROR   = "Keine Daten gefunden!";
-    var _MSG_DATA_HINT    = "(dsa aktualisiere [thema] [-e])";
-    var _MSG_DATA_HELP    = "(dsa aktualisiere $1 [-e])";
+    var _MSG_DATA_HINT    = "dsa aktualisiere [thema] [-e] [-s]";
+    var _MSG_DATA_HELP    = "dsa aktualisiere $1 [-e] [-s]";
 
     // Variables
     var DidYouMean        = null;

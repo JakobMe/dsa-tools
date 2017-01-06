@@ -5,7 +5,7 @@
 var Dice = (function() {
 
     // Message-constants
-    var _MSG_ATTR_HINT   = "(z.B. 11/13/12)";
+    var _MSG_ATTR_HINT   = "z.B. 11/13/12";
     var _MSG_ATTR_ERROR  = "Probe im falschen Format!";
     var _MSG_SKILL_SLIP  = "Patzer (automatisch misslungen)";
     var _MSG_SKILL_FAIL  = "Nach misslungenen Proben Malus kumulativ +1";
