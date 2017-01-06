@@ -19,6 +19,7 @@
     "commander": "^2.9.0",
     "crawler": "^1.0.1",
     "didyoumean": "^1.2.1",
+    "entities": "^1.1.1",
     "fuzzysearch": "^1.0.3",
     "jsonfile": "^2.4.0",
     "terminal-kit": "^0.26.1"

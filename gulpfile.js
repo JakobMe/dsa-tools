@@ -32,7 +32,6 @@ gulp.task("jshint", function() {
 gulp.task("js", ["jshint"], function() {
     return gulp.src([
             "src/modules.js",
-            "src/globals.js",
             "src/utility.js",
             "src/string.js",
             "src/log.js",

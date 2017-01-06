@@ -53,8 +53,7 @@ var Log = (function() {
      */
     function list(list) {
         list.forEach(function(item, i) {
-            line((Str.indent(i + 1, list.length) +
-                 G.STR.BULLET).grey.dim + item);
+            line((Str.indent(i + 1, list.length) + ". ").grey.dim + item);
         });
     }
 
@@ -68,12 +67,11 @@ var Log = (function() {
      * @param {Number}  [below]   Number of empty lines below
      */
     function shout(content, size, error, success, above, below) {
-        var spaces  = " ".repeat(G.STR.BULLET.length);
         var icon    = Str.indent("‼", size || 0);
             error   = error   || false;
             success = success || false;
             icon    = error ? icon.red : success ? icon.green : icon.grey.dim;
-        spaced(icon + spaces + content, above, below);
+        spaced(icon + "  " + content, above, below);
     }
 
     /**

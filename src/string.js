@@ -58,7 +58,7 @@ var Str = (function() {
         ints.forEach(function(int) {
             output.push(roll(int, int, good, bad));
         });
-        return output.join(G.STR.DELIMITER);
+        return output.join("/");
     }
 
     /**
@@ -68,7 +68,7 @@ var Str = (function() {
      * @returns {String} Formatted string
      */
     function dice(n, m) {
-        return n.toString() + "d" + m.toString() + " ";
+        return n.toString() + "w" + m.toString() + " ";
     }
 
     /**
@@ -77,7 +77,7 @@ var Str = (function() {
      * @returns {String}   Formatted string
      */
     function attr(ints) {
-        return enclose(ints.join(G.STR.DELIMITER), "(", ") ");
+        return enclose(ints.join("/"), "(", ") ");
     }
 
     /**
@@ -187,8 +187,46 @@ var Str = (function() {
         return Str.brackets(" " + fill.cyan + blank + " ") + finish.magenta;
     }
 
+    /**
+     * Insert linebreaks in a string to fit a max number of chars per line.
+     * @param   {String}        str      String to insert linebreaks into
+     * @param   {String|Object} ignore   String/Regex to ignore
+     * @param   {Number}        maxchars Max number of chars per line
+     * @returns {String}        New string with linebreaks
+     */
+    function linebreaks(str, ignore, maxchars) {
+        var paragraphs = [];
+        str.split("\n").forEach(function(paragraph) {
+            var lines = [""], i = 0;
+            paragraph.split(" ").forEach(function(word) {
+                if (!squeeze(word, lines[i], ignore, maxchars)) {
+                    lines[++i] = "";
+                }
+                lines[i] += word + " ";
+            });
+            lines.forEach(function(line, i) { lines[i] = line.trim(); });
+            paragraphs.push(lines.join("\n"));
+        });
+        return paragraphs.join("\n");
+    }
+
+    /**
+     * Check if a word can be squeezed in a line.
+     * @param   {String}        word    Word to be squeezed in line
+     * @param   {String}        line    Line to squeeze word into
+     * @param   {String|Object} ignore  String/Regex to ignore
+     * @param   {Number}        maxchars Max number of chars per line
+     * @returns {Boolean}       Word fits in line or not
+     */
+    function squeeze(word, line, ignore, maxchars) {
+        return (word.replace(ignore, "").length +
+                line.replace(ignore, "").length) <= maxchars;
+    }
+
     // Public interface
     return {
+        squeeze     : squeeze,
+        linebreaks  : linebreaks,
         percent     : percent,
         progressbar : progressbar,
         indent      : indent,

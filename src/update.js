@@ -5,35 +5,32 @@
 var Update = (function() {
 
     // Message constants
-    var _MSG_CONFIG        = "Konfigurationsfehler!";
-    var _MSG_ERROR         = "Verbindungsfehler!";
-    var _MSG_FOUND         = "neue Begriffe gefunden";
-    var _MSG_FAIL          = "Thema existiert nicht, folgende sind verfügbar:";
-    var _MSG_HINT          = "(dsa aktualisiere [thema] [-e])";
+    var _MSG_CONFIG     = "Konfigurationsfehler!";
+    var _MSG_CONNECT    = "Verbindungsfehler!";
+    var _MSG_FOUND      = "neue Begriffe gefunden";
+    var _MSG_FAIL       = "Thema existiert nicht, folgende sind verfügbar:";
+    var _MSG_HINT       = "(dsa aktualisiere [thema] [-e] [-s])";
 
     // HTML constants
-    var _HTML_SEL_H        = "h1";
-    var _HTML_SEL_B        = "strong";
-    var _HTML_SEL_I        = "em";
-    var _HTML_SEL_P        = "p";
-    var _HTML_SEL_BR       = "br";
-    var _HTML_HREF         = "href";
+    var _HTML_FORBID    = "*:not(h1):not(strong):not(em):not(br):not(p)";
+    var _HTML_HREF      = "href";
 
     // Modules
-    var Connect            = null;
-    var Crawler            = null;
+    var Connect         = null;
+    var Crawler         = null;
+    var Entities        = null;
 
     // Variables
-    var _topic             = false;
-    var _force             = false;
-    var _config            = false;
-    var _data              = false;
+    var _topic          = false;
+    var _force          = false;
+    var _config         = false;
+    var _data           = false;
 
     // Counters
-    var _countTopics       = 0;
-    var _totalTopics       = 0;
-    var _countTerms        = 0;
-    var _totalTerms        = 0;
+    var _countTopics    = 0;
+    var _totalTopics    = 0;
+    var _countTerms     = 0;
+    var _totalTerms     = 0;
 
     /**
      * Start update; peforms web crawls to collect and save data.
@@ -43,12 +40,12 @@ var Update = (function() {
     function start(topic, options) {
         Data.config(function(config) {
             _checkConfig(config, function() {
-                Connect = require("dns");
-                Crawler = require("crawler");
-                _config = config;
-                _quick  = options.schnell   || false;
-                _force  = options.erzwingen || false;
-                _topic  = _checkTopic(topic || "");
+                Connect  = require("dns");
+                Crawler  = require("crawler");
+                Entities = require("entities");
+                _quick   = options.schnell   || false;
+                _force   = options.erzwingen || false;
+                _topic   = _checkTopic(topic || "");
 
                 // Continue on valid topic value
                 if (_topic) {
@@ -73,6 +70,7 @@ var Update = (function() {
             config.hasOwnProperty("protocol")) {
 
             // Continue on valid config
+            _config = config;
             callback();
 
         // Else log error message
@@ -124,7 +122,7 @@ var Update = (function() {
 
             // Log error message on failed connection
             if (error) {
-                Log.error(_MSG_ERROR, 0, 1, 0);
+                Log.error(_MSG_CONNECT, 0, 1, 0);
                 Log.hint(domain, 0, 0, 1);
                 callback(false);
 
@@ -173,7 +171,7 @@ var Update = (function() {
                         // Get terms
                         var $terms = res.$(_config.btn).filter(function() {
                             return !data[topic].hasOwnProperty(
-                                _cleanTermName(res.$(this).text().trim())
+                                _cleanName(res.$(this).text().trim())
                             );
                         });
 
@@ -184,7 +182,7 @@ var Update = (function() {
                         // Iterate all found terms
                         $terms.each(function() {
                             var $t      = res.$(this);
-                            var term    = _cleanTermName($t.text().trim());
+                            var term    = _cleanName($t.text().trim());
                             var urlTerm = encodeURI($t.attr(_HTML_HREF));
 
                             // Push to queue
@@ -196,7 +194,7 @@ var Update = (function() {
 
                                     // Clean and set data
                                     data[topic][term] =
-                                        _cleanTermContent(
+                                        _cleanContent(
                                             res.$, res.$(_config.text));
 
                                     // Save data, log status
@@ -271,8 +269,8 @@ var Update = (function() {
      * @param   {String} term Name of term
      * @returns {String} Cleaned term name
      */
-    function _cleanTermName(term) {
-        return term.replace(G.REGEX.REMOVE, "").trim();
+    function _cleanName(term) {
+        return term.replace(/I-.*(I|V|X)|\(\*\)|\.\.\.|\*/g, "").trim();
     }
 
     /**
@@ -281,55 +279,16 @@ var Update = (function() {
      * @param   {Object} $content Content element
      * @returns {String} Cleaned content string
      */
-    function _cleanTermContent($, $content) {
+    function _cleanContent($, $content) {
         if (!$content.length) { return ""; }
-        _cleanup($, $content);
-        _replace($, $content, _HTML_SEL_BR, "\n");
-        _enclose($, $content, _HTML_SEL_B, G.STR.BOLD_L, G.STR.BOLD_R);
-        _enclose($, $content, _HTML_SEL_I, G.STR.ITAL_L, G.STR.ITAL_R);
-        _enclose($, $content, _HTML_SEL_H, G.STR.HEAD_L, G.STR.HEAD_R, "\n");
-        _enclose($, $content, _HTML_SEL_P, "\n", "\n");
-        return $content.text().trim();
-    }
-
-    /**
-     * Replace HTML entities with a string.
-     * @param {Object}  $        jQuery object
-     * @param {Object}  $parent  Parent element
-     * @param {String}  selector Search selector
-     * @param {String}  string   Replace string
-     */
-    function _replace($, $parent, selector, string) {
-        $parent.find(selector).replaceWith(string);
-    }
-
-    /**
-     * Replace and enclose HTML entities in strings.
-     * @param {Object}  $        jQuery object
-     * @param {Object}  $parent  Parent element
-     * @param {String}  selector Search selector
-     * @param {String}  l        Left enclose string
-     * @param {Boolean} r        Right enclose string
-     * @param {String}  [append] Appended string to right
-     */
-    function _enclose($, $parent, selector, l, r, append) {
-        $parent.find(selector).each(function() {
-            var $el = $(this);
-            $el.replaceWith(Str.enclose($el.text(), l, r + (append || "")));
-        });
-    }
-
-    /**
-     * Remove unwanted HTML entities.
-     * @param {Object}  $       jQuery object
-     * @param {Object}  $parent Parent element
-     */
-    function _cleanup($, $parent) {
-        $parent.contents().filter(function() {
+        $content.contents().filter(function() {
             var wrong = this.nodeType === 3;
             var empty = $(this).text().trim().length === 0;
             return empty || wrong;
-        }).remove();
+        }).remove().find(_HTML_FORBID).each(function() {
+            var $el = $(this); $el.replaceWith($el.html().trim());
+        });
+        return Entities.decodeXML($content.html().trim());
     }
 
     // Public interface

@@ -59,17 +59,15 @@ var Dice = (function() {
      * @param {String} value      Skill value
      * @param {Object} options    Command options
      */
-    function skill(attributes, value, options) {
+    function skill(attr, val, options) {
 
         // Initialize command arguments and options
-            value       = Math.max(Util.toInt(value), 0);
-            attributes  = _attributes(attributes);
+        var attributes  = _attributes(attr);
+        var value       = Math.max(Util.toInt(val), 0);
         var mod         = Util.toInt(options.mod);
         var prob        = options.wahrscheinlich || false;
-        var repeat      = Math.max(Util.toInt(options.sammel), 1);
-            repeat      = prob ? 0 : repeat;
-        var probability = _probability(attributes, value, mod);
-            probability = Str.percent(probability);
+        var repeat      = prob ? 0 : Math.max(Util.toInt(options.sammel), 1);
+        var probability = Str.percent(_probability(attributes, value, mod));
         var repeated    = repeat > 1;
         var failed      = false;
         var slipped     = false;
@@ -169,7 +167,7 @@ var Dice = (function() {
      */
     function _attributes(attributes) {
         var values = [];
-        attributes.split(G.STR.DELIMITER).forEach(function(value) {
+        attributes.split("/").forEach(function(value) {
             values.push(Math.max(Util.toInt(value), 0));
         });
         return values;

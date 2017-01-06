@@ -16,7 +16,6 @@ var Search = (function() {
     var _MSG_DATA_ERROR   = "Keine Daten gefunden!";
     var _MSG_DATA_HINT    = "(dsa aktualisiere [thema] [-e])";
     var _MSG_DATA_HELP    = "(dsa aktualisiere $1 [-e])";
-    var _NUM_CHARS_LINE   = 80;
 
     // Variables
     var DidYouMean        = null;
@@ -83,8 +82,8 @@ var Search = (function() {
         var found   = false;
         var similar = [];
         var title   = blank ? _MSG_PHRASE_ALL : _MSG_PHRASE_LIST;
-        var hint    = _MSG_PHRASE_HINT.replace(G.STR.PH, topic);
-        var help    = _MSG_DATA_HELP.replace(G.STR.PH, topic);
+        var hint    = _MSG_PHRASE_HINT.replace("$1", topic);
+        var help    = _MSG_DATA_HELP.replace("$1", topic);
 
         // Find match and similar terms
         terms.forEach(function(term) {
@@ -168,42 +167,16 @@ var Search = (function() {
      * @returns {String} Formatted content
      */
     function _format(term) {
-        term = _linebreaks(term);
-        term = term.replace(G.REGEX.HEAD, G.STR.PH.green);
-        term = term.replace(G.REGEX.BOLD, G.STR.PH.magenta);
-        term = term.replace(G.REGEX.ITAL, G.STR.PH.cyan);
-        return term;
-    }
 
-    /**
-     * Insert linebreaks into a string to prevent breaking words.
-     * @param   {String} str String to format
-     * @returns {String} Formatted string
-     */
-    function _linebreaks(str) {
-        var paragraphs = [];
-        str.split("\n").forEach(function(paragraph) {
-            var lines = [""], i = 0;
-            paragraph.split(" ").forEach(function(word) {
-                if (!_squeeze(word, lines[i])) { lines[++i] = ""; }
-                lines[i] += word + " ";
-            });
-            lines.forEach(function(line, i) { lines[i] = line.trim(); });
-            paragraphs.push(lines.join("\n"));
-        });
-        return paragraphs.join("\n");
-    }
+        // Replace and insert linebreaks
+        var output =
+            Str.linebreaks(term.replace(/<br\s*[\/]?>|<\/?p[^>]*>/gi, "\n"),
+                /<[^>]*>/gi, 80);
 
-    /**
-     * Check if a string can be queezed in a line, ignoring some chars.
-     * @param   {String}  str  String to squeeze in line
-     * @param   {String}  line Line to squeeze string into
-     * @returns {Boolean} String fits in line
-     */
-    function _squeeze(str, line) {
-        var put  = str.replace(G.REGEX.IGNORE, "");
-        var host = line.replace(G.REGEX.IGNORE, "");
-        return (put.length + host.length) <= _NUM_CHARS_LINE;
+        // Replace tags with colors and return
+        return output.replace(/<h1>([\s\S]*?)<\/h1>/gi, "$1\n".green)
+                     .replace(/<strong>([\s\S]*?)<\/strong>/gi, "$1".magenta)
+                     .replace(/<em>([\s\S]*?)<\/em>/gi, "$1".cyan).trim();
     }
 
     // Public interface
