@@ -17,7 +17,7 @@ var Update = (function() {
     var _HTML_SEL_I        = "em";
     var _HTML_SEL_P        = "p";
     var _HTML_SEL_BR       = "br";
-    var _HTML_ATTR_HREF    = "href";
+    var _HTML_HREF         = "href";
 
     // Modules
     var Connect            = null;
@@ -27,6 +27,13 @@ var Update = (function() {
     var _topic             = false;
     var _force             = false;
     var _config            = false;
+    var _data              = false;
+
+    // Counters
+    var _countTopics       = 0;
+    var _totalTopics       = 0;
+    var _countTerms        = 0;
+    var _totalTerms        = 0;
 
     /**
      * Start update; peforms web crawls to collect and save data.
@@ -39,11 +46,16 @@ var Update = (function() {
                 Connect = require("dns");
                 Crawler = require("crawler");
                 _config = config;
+                _quick  = options.schnell   || false;
                 _force  = options.erzwingen || false;
                 _topic  = _checkTopic(topic || "");
 
                 // Continue on valid topic value
-                if (_topic) { _checkConnection(_loadData); }
+                if (_topic) {
+                    _checkConnection(function(connected) {
+                        if (connected) { Data.load(_initCrawls); }
+                    });
+                }
             });
         });
     }
@@ -59,7 +71,11 @@ var Update = (function() {
             config.hasOwnProperty("topics") &&
             config.hasOwnProperty("domain") &&
             config.hasOwnProperty("protocol")) {
+
+            // Continue on valid config
             callback();
+
+        // Else log error message
         } else { Log.error(_MSG_CONFIG); }
     }
 
@@ -94,7 +110,7 @@ var Update = (function() {
             return false;
         }
 
-        // Return match
+        // Else return match
         return matched;
     }
 
@@ -105,21 +121,16 @@ var Update = (function() {
     function _checkConnection(callback) {
         var domain = _config.domain.replace("/", "");
         Connect.lookup(domain, function(error) {
+
+            // Log error message on failed connection
             if (error) {
                 Log.error(_MSG_ERROR, 0, 1, 0);
                 Log.hint(domain, 0, 0, 1);
                 callback(false);
+
+            // Else continue
             } else { callback(true); }
         });
-    }
-
-    /**
-     * Load data.
-     * @param {Boolean} connected Working connection
-     */
-    function _loadData(connected) {
-        if (!connected) { return; }
-        Data.load(_initCrawls);
     }
 
     /**
@@ -130,69 +141,67 @@ var Update = (function() {
 
         // Initialize crawler options
         var options = {
-            maxConnections : 1,
-            rateLimit      : 0
+            rateLimit      : 0,
+            maxConnections : _quick ? 10 : 1
         };
 
-        // Initialize crawler, queues and data
-        var c           = [];
+        // Initialize crawlers and queues
         var queueTerms  = [];
         var queueTopics = [];
         var crawlTerms  = new Crawler(options);
         var crawlTopics = new Crawler(options);
+        var urlBase     = _config.protocol + _config.domain;
 
         // Iterate defined topics
-        _topic.forEach(function(config, n) {
+        _topic.forEach(function(config) {
 
-            // Initialize topic name, create data object
+            // Get topic name, reset data on force
             var topic = config.name;
-            var force = typeof data[topic] === "undefined" || _force;
-            if (force) { data[topic] = {}; }
-            Data.save(data);
-            c[n] = [];
+            if (!data.hasOwnProperty(topic) || _force) { data[topic] = {}; }
 
-            // Iterate defined url-list for topic
-            config.urls.forEach(function(address, m) {
-                c[n][m] = 0;
+            // Iterate defined url list for topic
+            config.urls.forEach(function(urlTopic) {
 
-                // Push to queue
+                // Increment topic total, push to queue
+                _totalTopics++;
                 queueTopics.push({
-                    uri: _config.protocol + _config.domain + address,
+                    uri: urlBase + urlTopic,
                     callback: function(err, res, done) {
-                        if (err) { return; }
+                        _countTopics++;
+                        if (err) { done(); return false; }
 
-                        // Initialize dom
-                        var $      = res.$;
-                        var $terms = $(_config.btn).filter(function() {
-                            var term = _cleanTermName($(this).text().trim());
-                                term = data[topic][term];
-                            return typeof term === "undefined";
+                        // Get terms
+                        var $terms = res.$(_config.btn).filter(function() {
+                            return !data[topic].hasOwnProperty(
+                                _cleanTermName(res.$(this).text().trim())
+                            );
                         });
 
-                        // Update counter, log message
-                        c[n][m] = $terms.length;
-                        _logTopic(n, m, c);
+                        // Log message
+                        _totalTerms += $terms.length;
+                        _logTopic();
 
                         // Iterate all found terms
-                        $terms.each(function(i) {
-                            var term = $(this).text().trim();
-                                term = _cleanTermName(term);
-                            var url  = $(this).attr(_HTML_ATTR_HREF);
-                                url  = encodeURI(url);
+                        $terms.each(function() {
+                            var $t      = res.$(this);
+                            var term    = _cleanTermName($t.text().trim());
+                            var urlTerm = encodeURI($t.attr(_HTML_HREF));
 
                             // Push to queue
                             queueTerms.push({
-                                uri: _config.protocol + _config.domain + url,
+                                uri: urlBase + urlTerm,
                                 callback: function(err, res, done) {
-                                    if (err) { return; }
+                                    _countTerms++;
+                                    if (err) { done(); return false; }
 
                                     // Clean and set data
-                                    data[topic][term] = _cleanTermContent(
-                                        res.$, res.$(_config.text));
+                                    data[topic][term] =
+                                        _cleanTermContent(
+                                            res.$, res.$(_config.text));
 
                                     // Save data, log status
+                                    _logTerm(topic, term);
                                     Data.save(data);
-                                    _logTerm(i, n, m, c, topic, term);
                                     done();
                                 }
                             });
@@ -220,11 +229,7 @@ var Update = (function() {
         var size = crawlers.length;
         if (size === queues.length) {
             crawlers.forEach(function(crawler, i) {
-
-                // Start first crawler
                 if (i === 0) { crawler.queue(queues[i]); }
-
-                // Start next crawler
                 crawler.on("drain", function() {
                     if (i + 1 < size) {
                         crawlers[i + 1].queue(queues[i + 1]);
@@ -236,60 +241,27 @@ var Update = (function() {
 
     /**
      * Log message of current downloaded topic.
-     * @param {Number} n     Index of topic
-     * @param {Number} m     Sub-index of topic
-     * @param {Number} count Total number of terms
      */
-    function _logTopic(n, m, count) {
-
-        // Caluclate current index and total number of steps and terms
-        var total = 0;
-        var found = 0;
-        var index = 1 + m;
-        count.forEach(function(sums, x) {
-            total += sums.length;
-            index += x < n ? sums.length : 0;
-            sums.forEach(function(sum, y) {
-                found += sum;
-            });
-        });
-
-        // Log message
-        var message  = found + " " + _MSG_FOUND;
-        var progress = Str.progressbar(index, total);
-        Log.empty(index === 1 ? 2 : 0);
-        Log.back(index === 1 ? 0 : 3);
+    function _logTopic() {
+        var message  = _totalTerms + " " + _MSG_FOUND;
+        var progress = Str.progressbar(_countTopics, _totalTopics);
+        Log.empty(_countTopics === 1 ? 2 : 0);
+        Log.back(_countTopics === 1 ? 0 : 3);
         Log.success(message, 0, 0, 0);
         Log.shout(progress, 0, false, false, 0, 1);
     }
 
     /**
      * Log message of current downloaded term.
-     * @param {Number} i     Index of term
-     * @param {Number} n     Index of topic
-     * @param {Number} m     Sub-index of topic
-     * @param {Number} count Total number of terms
      * @param {String} topic Name of topic
      * @param {String} term  Name of term
      */
-    function _logTerm(i, n, m, count, topic, term) {
-
-        // Calculate current index and total sum
-        var total = 0;
-        var index = 1 + i;
-        count.forEach(function(sums, x) {
-            sums.forEach(function(sum, y) {
-                total += sum;
-                index += ((x === n && y < m) || (x < n)) ? sum : 0;
-            });
-        });
-
-        // Log message
-        var now      = index + "/" + total + " ";
+    function _logTerm(topic, term) {
+        var now      = _countTerms + "/" + _totalTerms + " ";
         var message  = topic + " " + Str.quote(term);
-        var progress = Str.progressbar(index, total);
-        Log.empty(index === 1 ? 1 : 0);
-        Log.back(index === 1 ? 0 : 3);
+        var progress = Str.progressbar(_countTerms, _totalTerms);
+        Log.empty(_countTerms === 1 ? 1 : 0);
+        Log.back(_countTerms === 1 ? 0 : 3);
         Log.success(now + message, 0, 0, 0);
         Log.shout(progress, 0, false, false, 0, 1);
     }

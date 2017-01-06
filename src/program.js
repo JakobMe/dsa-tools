@@ -40,6 +40,7 @@
         .command("aktualisiere [thema]")
         .description("Daten aktualisieren")
         .option("-e, --erzwingen", "Aktualisierung erzwingen")
+        .option("-s, --schnell", "Mehr Verbindungen erlauben")
         .action(function(topic, options) {
             Update.start(topic, options);
         })
@@ -81,8 +82,9 @@
                 Log.line("    $ dsa probe 12/13/11 4 --wahrscheinlich");
                 break;
             case "update":
-                Log.line("    $ dsa aktualisiere --erzwingen");
                 Log.line("    $ dsa aktualisiere vorteil");
+                Log.line("    $ dsa aktualisiere kampf -s");
+                Log.line("    $ dsa aktualisiere --erzwingen");
                 break;
             case "search":
                 Log.line("    $ dsa suche");
