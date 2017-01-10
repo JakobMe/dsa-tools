@@ -245,7 +245,7 @@ var Update = (function() {
         var progress = Str.progressbar(_countTopics, _totalTopics);
         Log.empty(_countTopics === 1 ? 2 : 0);
         Log.back(_countTopics === 1 ? 0 : 3);
-        Log.success(message, 0, 0, 0);
+        Log.success(Str.shorten(message, 78), 0, 0, 0);
         Log.shout(progress, 0, false, false, 0, 1);
     }
 
@@ -260,7 +260,7 @@ var Update = (function() {
         var progress = Str.progressbar(_countTerms, _totalTerms);
         Log.empty(_countTerms === 1 ? 1 : 0);
         Log.back(_countTerms === 1 ? 0 : 3);
-        Log.success(now + message, 0, 0, 0);
+        Log.success(Str.shorten(now + message, 78), 0, 0, 0);
         Log.shout(progress, 0, false, false, 0, 1);
     }
 

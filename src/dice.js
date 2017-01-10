@@ -50,7 +50,8 @@ var Dice = (function() {
         // Log results
         Log.spaced(Str.dice(n, m) + Str.mod(mod));
         Log.list(results);
-        Log.spaced(add ? Str.sum(sum + mod, true) : "", add ? 1 : 0);
+        Log.spaced(add ? Str.sum(sum + mod, true) : "",
+                   add ? 1 : 0, add ? 1 : 0);
     }
 
     /**

@@ -223,9 +223,23 @@ var Str = (function() {
                 line.replace(ignore, "").length) <= maxchars;
     }
 
+    /**
+     * Shorten a string with ellipsis.
+     * @param   {String} str String to shorten
+     * @param   {Number} max Maximum number of chars
+     * @returns {String} Shortened string
+     */
+    function shorten(str, max) {
+        if (!squeeze(str, "...", "", max)) {
+            return str.substr(0, max - 4) + "...";
+        }
+        return str;
+    }
+
     // Public interface
     return {
         squeeze     : squeeze,
+        shorten     : shorten,
         linebreaks  : linebreaks,
         percent     : percent,
         progressbar : progressbar,
