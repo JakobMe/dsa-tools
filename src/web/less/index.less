@@ -1,0 +1,364 @@
+/*!
+ * Stylesheet.
+ * @author Jakob Metzger <jakob.me@gmail.com>
+ * @copyright 2017 Jakob Metzger
+ * @license MIT
+ */
+
+// Colors
+@color-background:         #f4f4f7;
+@color-foreground:         #ffffff;
+@color-text:               #415155;
+@color-shadow:             #000000;
+@color-highlight:          #4280a6;
+
+// Fades
+@fade-border:              12%;
+@fade-shadow:              20%;
+@fade-pale:                40%;
+
+// Sizes
+@size-padding-huge:        48px;
+@size-padding-big:         32px;
+@size-padding-medium:      16px;
+@size-padding-small:       8px;
+@size-padding-tiny:        4px;
+@size-padding-micro:       2px;
+@size-border:              1px;
+@size-shadow:              2px;
+@size-radius:              2px;
+@size-font-medium:         16px;
+@size-font-large:          32px;
+@size-font-big:            38px;
+@size-font-small:          12px;
+
+// Misc
+@time-transition:          0.2s;
+
+// Fonts
+@font-main:                "Gentium Book Basic", serif;
+
+// Mixin: Box
+.box(@background: @color-foreground) {
+    background: @background;
+    box-shadow: 0 @size-shadow @size-shadow 0 fade(@color-shadow, @fade-shadow),
+                0 0 0 @size-border fade(@color-shadow, @fade-border);
+}
+
+// Body
+.body {
+    -webkit-font-smoothing: subpixel-antialiased;
+    margin: 0;
+    padding: 0;
+    color: @color-text;
+    width: 100%;
+    height: 100%;
+    background: @color-background;
+    font-family: @font-main;
+    font-size: @size-font-medium;
+}
+
+// Search
+.search {
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    margin: 0;
+    max-width: 100%;
+    width: 40%;
+    height: 100%;
+    padding: @size-padding-huge;
+    overflow-y: auto;
+    background: url("background.jpg") bottom center no-repeat;
+    background-size: cover;
+
+    // Gradient
+    &:before {
+        display: block;
+        position: fixed;
+        content: "";
+        top: 0;
+        left: 0;
+        height: 50%;
+        width: 100%;
+        z-index: 50;
+        background-image: linear-gradient(to bottom, fade(@color-shadow, @fade-pale),
+                                                     fade(@color-shadow, 0%));
+    }
+
+    // Title
+    &-title {
+        position: relative;
+        z-index: 100;
+        text-align: center;
+        padding: 0;
+        line-height: 1;
+        margin: 0 0 @size-padding-huge 0;
+        color: @color-foreground;
+        font-size: @size-font-big;
+        text-shadow: 0 0 @size-padding-medium fade(@color-shadow, @fade-pale),
+                     0 @size-shadow @size-shadow fade(@color-shadow, @fade-shadow),
+                     @size-border @size-border 0 fade(@color-shadow, @fade-border),
+                     @size-border -(@size-border) 0 fade(@color-shadow, @fade-border),
+                     -(@size-border) @size-border 0 fade(@color-shadow, @fade-border),
+                     -(@size-border) -(@size-border) 0 fade(@color-shadow, @fade-border);
+    }
+
+    // Input
+    &-input {
+        z-index: 100;
+        position: relative;
+        -webkit-appearance: none;
+        box-sizing: border-box;
+        font-family: @font-main;
+        display: block;
+        outline: none;
+        border: none;
+        width: 100%;
+        margin: 0;
+        font-size: @size-font-medium;
+        color: fade(@color-text, @fade-pale);
+        height: @size-padding-huge;
+        padding: @size-padding-small @size-padding-medium;
+        border-radius: @size-radius;
+        background: @color-foreground;
+        .box();
+
+        // Placeholder
+        &::-webkit-input-placeholder { color: fade(@color-text, @fade-pale); }
+
+        // Hover
+        &:hover, &:focus {
+            box-shadow: 0 (@size-shadow * 2) (@size-shadow * 2) 0
+                        fade(@color-shadow, @fade-shadow),
+                        0 0 0 @size-border fade(@color-shadow, @fade-border);
+        }
+
+        // Focus
+        &:focus { color: @color-text; }
+    }
+
+    // Tags
+    &-tags {
+        z-index: 100;
+        font-size: 0;
+        text-align: center;
+        position: relative;
+        margin: @size-padding-medium 0;
+        padding: (@size-padding-medium - @size-padding-tiny);
+        border-radius: @size-radius;
+        line-height: 1;
+        .box(@color-background);
+
+        // Arrow
+        &:before {
+            display: block;
+            content: "";
+            width: @size-padding-medium;
+            height: @size-padding-medium;
+            background: @color-background;
+            position: absolute;
+            top: -(@size-padding-medium / 2);
+            left: 50%;
+            transform: translate3d(-50%, 0, 0) rotate(-135deg);
+            box-shadow: @size-border @size-border 0 fade(@color-shadow, @fade-border);
+        }
+
+        // Empty
+        &:empty { display: none; }
+
+        // Tag
+        &-tag {
+            font-size: @size-font-small;
+            display: inline-block;
+            white-space: nowrap;
+            color: fade(@color-text, @fade-pale);
+            padding: @size-padding-tiny;
+
+            // Selected
+            &.selected {
+                z-index: 100;
+                color: @color-highlight;
+            }
+
+            // Hashtag
+            &:before { content: "#"; }
+        }
+    }
+
+    // Result
+    &-result {
+        position: relative;
+        z-index: 100;
+        list-style: none;
+        margin: @size-padding-medium 0;
+        padding: @size-padding-small 0;
+        border-radius: @size-radius;
+        .box();
+
+        // Empty
+        &:empty:after {
+            display: block;
+            font-style: italic;
+            color: fade(@color-text, @fade-pale);
+            padding: @size-padding-small @size-padding-medium;
+            content: "Nichts gefunden...";
+        }
+
+        // Item
+        &-item {
+            margin: 0;
+            cursor: pointer;
+            position: relative;
+            color: fade(@color-text, @fade-pale);
+            line-height: @size-padding-medium;
+            padding: @size-padding-small @size-padding-medium;
+
+            // Hover
+            &:hover {
+                //color: @color-text;
+                background: @color-background;
+            }
+
+            // Selected
+            &.selected {
+                z-index: 100;
+                color: @color-foreground;
+                margin: 0 -(@size-padding-small);
+                border-radius: @size-radius;
+                background: @color-highlight;
+                padding: @size-padding-small (@size-padding-medium + @size-padding-small);
+                text-shadow: 0 @size-border 0 fade(@color-shadow, @fade-border);
+                box-shadow: 0 (@size-shadow * 2) (@size-shadow * 2) 0
+                            fade(@color-shadow, @fade-border);
+            }
+        }
+
+        // Label
+        &-label {
+            box-sizing: border-box;
+            display: inline-block;
+            max-width: 80%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding-right: @size-padding-small;
+        }
+
+        // Tag
+        &-tag {
+            position: absolute;
+            max-width: 20%;
+            font-size: @size-font-small;
+            right: @size-padding-medium;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            // Hashtag
+            &:before { content: "#"; }
+        }
+
+        // Selected Tag
+        &-item.selected &-tag { right: (@size-padding-medium + @size-padding-small); }
+    }
+}
+
+// Content
+.content {
+    position: fixed;
+    top: 0;
+    right: 0;
+    box-sizing: border-box;
+    padding: @size-padding-huge;
+    width: 60%;
+    height: 100%;
+    color: @color-text;
+    line-height: 1.6;
+    font-family: @font-main;
+    overflow-y: auto;
+    .box();
+
+    // Empty
+    &:empty:before {
+        display: block;
+        position: absolute;
+        text-align: center;
+        top: 50%;
+        left: 50%;
+        content: "Nichts gefunden...";
+        color: fade(@color-text, @fade-pale);
+        font-style: italic;
+        line-height: 1;
+        transform: translate3d(-50%, -50%, 0);
+    }
+
+    // Heading
+    h1 {
+        margin: 0 0 @size-padding-big 0;
+        color: @color-highlight;
+        font-size: @size-font-big;
+        font-weight: bold;
+        font-style: normal;
+        line-height: 1.1;
+        width: 100%;
+        hyphens: auto;
+        -webkit-hyphens: auto;
+    }
+
+    // Lines
+    h1:after, p:last-child:after {
+        content: "";
+        display: block;
+        height: 0;
+        width: 100%;
+        border-bottom: @size-shadow solid @color-background;
+        margin-top: @size-padding-big;
+    }
+
+    // Paragraphs
+    p {
+        color: @color-text;
+        margin: 0 0 @size-padding-medium 0;
+
+        // Last
+        &:last-child { margin-bottom: 0; }
+    }
+
+    // Tables
+    table {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        white-space: nowrap;
+        margin-bottom: @size-padding-medium;
+        overflow-x: auto;
+        padding: @size-padding-small 0;
+        background: @color-background;
+        border-radius: @size-radius;
+
+        // Body
+        tbody {
+            display: table;
+            width: 100%;
+        }
+
+        // Columns
+        td {
+            text-align: center;
+            padding: @size-padding-tiny @size-padding-small;
+
+            // First
+            &:first-child {
+                text-align: left;
+                padding-left: @size-padding-medium;
+            }
+
+            // Last
+            &:last-child {
+                padding-right: @size-padding-medium;
+            }
+        }
+    }
+}

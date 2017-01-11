@@ -1,6 +1,6 @@
 {
     "btn": "td > a",
-    "text": "#main .ce_text",
+    "text": "#main .mod_article",
     "protocol": "http://",
     "domain": "www.ulisses-regelwiki.de/",
     "topics": [

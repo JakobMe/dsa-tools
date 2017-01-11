@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <title>Aventurische Enzyklopädie</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="index.css" type="text/css">
+    </head>
+    <body class="body">
+        <main class="search">
+            <h1 class="search-title">
+                Aventurische<br/>Enzyklopädie
+            </h1>
+            <input class="search-input" autocomplete="off" type="text"
+                   spellcheck="false" data-main="input" placeholder="Suche">
+            <div class="search-tags" data-main="tags"></div>
+            <ul class="search-result" data-main="result"></ul>
+        </main>
+        <article class="content" data-main="content"></article>
+        <script type="text/javascript" src="index.js"></script>
+        <script id="tmpl-result" type="text/html">
+            {{#.}}
+            <li class="search-result-item" data-main="item">
+                <span class="search-result-label">{{label}}</span>
+                <span class="search-result-tag">{{tag}}</span>
+            </li>
+            {{/.}}
+        </script>
+        <script id="tmpl-tags" type="text/html">
+            {{#.}}
+            <span class="search-tags-tag">{{.}}</span>
+            {{/.}}
+        </script>
+    </body>
+</html>

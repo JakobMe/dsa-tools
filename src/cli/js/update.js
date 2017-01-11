@@ -12,8 +12,10 @@ var Update = (function() {
     var _MSG_HINT       = "dsa aktualisiere [thema] [-e] [-s]";
 
     // HTML constants
-    var _HTML_FORBID    = "*:not(h1):not(strong):not(em):not(br):not(p)";
+    var _HTML_ALL       = "*";
     var _HTML_HREF      = "href";
+    var _HTML_FORBID    = "*:not(h1):not(strong):not(em):not(br):not(p)" +
+                          ":not(table):not(tr):not(td):not(tbody)";
 
     // Modules
     var Connect         = null;
@@ -281,12 +283,20 @@ var Update = (function() {
      */
     function _cleanContent($, $content) {
         if (!$content.length) { return ""; }
-        $content.contents().filter(function() {
+        $content.children().contents().filter(function() {
             var wrong = this.nodeType === 3;
             var empty = $(this).text().trim().length === 0;
             return empty || wrong;
-        }).remove().find(_HTML_FORBID).each(function() {
-            var $el = $(this); $el.replaceWith($el.html().trim());
+        }).remove();
+        while ($content.find(_HTML_FORBID).length > 0) {
+            var $el = $content.find(_HTML_FORBID).eq(0);
+            $el.replaceWith($el.html().trim());
+        }
+        $content.find(_HTML_ALL).each(function() {
+            var $el = $(this);
+            Object.keys(this.attribs).forEach(function(attr) {
+                $el.removeAttr(attr);
+            });
         });
         return Entities.decodeXML($content.html().trim());
     }

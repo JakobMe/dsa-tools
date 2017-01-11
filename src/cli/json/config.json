@@ -1,0 +1,122 @@
+{
+    "btn": "td > a",
+    "text": "#main .mod_article",
+    "protocol": "http://",
+    "domain": "www.ulisses-regelwiki.de/",
+    "topics": [
+        {
+            "name": "vorteil",
+            "urls": [
+                "index.php/vorteile.html"
+            ]
+        },
+        {
+            "name": "nachteil",
+            "urls": [
+                "index.php/nachteile.html"
+            ]
+        },
+        {
+            "name": "zauber",
+            "urls": [
+                "index.php/za_zaubersprueche.html",
+                "index.php/za_rituale.html",
+                "index.php/Zauber_Zaubertricks.html",
+                "index.php/ESF_Elfenlieder.html",
+                "index.php/verelfenl.html",
+                "index.php/herituel.html",
+                "index.php/HSF_Hexenflueche.html"
+            ]
+        },
+        {
+            "name": "magie",
+            "urls": [
+                "index.php/Ahnenzeichen.html",
+                "index.php/SF_Magie.html",
+                "index.php/ErweiterteZaubersonderfertigkeiten.html",
+                "index.php/Zauberstilsonderfertigkeiten.html",
+                "index.php/SSF_Stabzauber.html",
+                "index.php/bannundschutz.html",
+                "index.php/VSF_Vertrautentricks.html",
+                "index.php/drituale.html"
+            ]
+        },
+        {
+            "name": "liturgie",
+            "urls": [
+                "index.php/lt_liturgien.html",
+                "index.php/Lit_Segnungen.html",
+                "index.php/lt_zeremonien.html"
+            ]
+        },
+        {
+            "name": "geweiht",
+            "urls": [
+                "index.php/SF_karmal.html"
+            ]
+        },
+        {
+            "name": "kampf",
+            "urls": [
+                "index.php/SF_Erweitertekampfstilsonderfertigkeiten.html",
+                "index.php/SF_Pruegelsonderfertigkeiten.html",
+                "index.php/sf_kampfsonderfertigkeiten.html",
+                "index.php/SF_Tier.html",
+                "index.php/Befehls_SF.html",
+                "index.php/SF_Kampfstilsonderfertigkeiten.html"
+            ]
+        },
+        {
+            "name": "sf",
+            "urls": [
+                "index.php/sf_allgemeine_sonderfertigkeiten.html",
+                "index.php/SF_Schick.html"
+            ]
+        },
+        {
+            "name": "spezies",
+            "urls": [
+                "index.php/spezies.html"
+            ]
+        },
+        {
+            "name": "kultur",
+            "urls": [
+                "index.php/Kul_Zwerge.html",
+                "index.php/Kul_Elfen.html",
+                "index.php/Kul_Menschen.html"
+            ]
+        },
+        {
+            "name": "kreatur",
+            "urls": [
+                "index.php/Best_Dämonen.html",
+                "index.php/geister.html",
+                "index.php/Best_Tiere.html",
+                "index.php/Elementare.html",
+                "index.php/Best_Kulturschaffende.html",
+                "index.php/Ungeheuer.html",
+                "index.php/Best_Feen.html",
+                "index.php/Best_Untote.html"
+            ]
+        },
+        {
+            "name": "pflanze",
+            "urls": [
+                "index.php/herbarium.html"
+            ]
+        },
+        {
+            "name": "gift",
+            "urls": [
+                "index.php/GR_Gifte.html"
+            ]
+        },
+        {
+            "name": "krankheit",
+            "urls": [
+                "index.php/GR_Krankheiten.html"
+            ]
+        }
+    ]
+}
