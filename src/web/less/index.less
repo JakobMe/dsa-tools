@@ -6,11 +6,11 @@
  */
 
 // Colors
-@color-background:         #f4f4f7;
+@color-background:         #f4f7f6;
 @color-foreground:         #ffffff;
-@color-text:               #415155;
+@color-text:               #41554e;
 @color-shadow:             #000000;
-@color-highlight:          #4280a6;
+@color-highlight:          #42a663;
 
 // Fades
 @fade-border:              12%;
@@ -18,6 +18,7 @@
 @fade-pale:                40%;
 
 // Sizes
+@size-padding-responsive:  4vw;
 @size-padding-huge:        48px;
 @size-padding-big:         32px;
 @size-padding-medium:      16px;
@@ -28,7 +29,7 @@
 @size-shadow:              2px;
 @size-radius:              2px;
 @size-font-medium:         16px;
-@size-font-large:          32px;
+@size-font-large:          3vw;
 @size-font-big:            38px;
 @size-font-small:          12px;
 
@@ -66,10 +67,11 @@
     box-sizing: border-box;
     margin: 0;
     max-width: 100%;
-    width: 40%;
+    width: 50%;
     height: 100%;
-    padding: @size-padding-huge;
+    padding: @size-padding-responsive;
     overflow-y: auto;
+    overflow-x: hidden;
     background: url("background.jpg") bottom center no-repeat;
     background-size: cover;
 
@@ -91,10 +93,11 @@
     &-title {
         position: relative;
         z-index: 100;
+        text-transform: uppercase;
         text-align: center;
         padding: 0;
         line-height: 1;
-        margin: 0 0 @size-padding-huge 0;
+        margin: 0 0 @size-padding-responsive 0;
         color: @color-foreground;
         font-size: @size-font-big;
         text-shadow: 0 0 @size-padding-medium fade(@color-shadow, @fade-pale),
@@ -103,6 +106,25 @@
                      @size-border -(@size-border) 0 fade(@color-shadow, @fade-border),
                      -(@size-border) @size-border 0 fade(@color-shadow, @fade-border),
                      -(@size-border) -(@size-border) 0 fade(@color-shadow, @fade-border);
+
+        // Text
+        span {
+            display: inline-block;
+
+            // Lines
+            &:before, &:after {
+                display: block;
+                content: "";
+                width: 100%;
+                border-radius: @size-radius;
+                height: @size-padding-tiny;
+                .box();
+            }
+
+            // Lines
+            &:before { margin-bottom: @size-padding-small; }
+            &:after { margin-top: @size-padding-small; }
+        }
     }
 
     // Input
@@ -192,7 +214,7 @@
         position: relative;
         z-index: 100;
         list-style: none;
-        margin: @size-padding-medium 0;
+        margin: @size-padding-medium 0 0 0;
         padding: @size-padding-small 0;
         border-radius: @size-radius;
         .box();
@@ -271,13 +293,14 @@
     top: 0;
     right: 0;
     box-sizing: border-box;
-    padding: @size-padding-huge;
-    width: 60%;
+    padding: @size-padding-responsive;
+    width: 50%;
     height: 100%;
     color: @color-text;
     line-height: 1.6;
     font-family: @font-main;
     overflow-y: auto;
+    overflow-x: hidden;
     .box();
 
     // Empty
@@ -294,6 +317,9 @@
         transform: translate3d(-50%, -50%, 0);
     }
 
+    // Last
+    *:last-child { margin-bottom: 0; }
+
     // Heading
     h1 {
         margin: 0 0 @size-padding-big 0;
@@ -305,16 +331,9 @@
         width: 100%;
         hyphens: auto;
         -webkit-hyphens: auto;
-    }
 
-    // Lines
-    h1:after, p:last-child:after {
-        content: "";
-        display: block;
-        height: 0;
-        width: 100%;
-        border-bottom: @size-shadow solid @color-background;
-        margin-top: @size-padding-big;
+        // Margin
+        &:not(:first-child) { margin-top: @size-padding-responsive; }
     }
 
     // Paragraphs
@@ -322,21 +341,24 @@
         color: @color-text;
         margin: 0 0 @size-padding-medium 0;
 
-        // Last
-        &:last-child { margin-bottom: 0; }
+        // Cite
+        &.cite {
+            font-style: italic;
+            color: fade(@color-text, @fade-pale);
+        }
     }
 
     // Tables
     table {
         display: block;
         box-sizing: border-box;
-        width: 100%;
         white-space: nowrap;
-        margin-bottom: @size-padding-medium;
+        margin: @size-padding-responsive -(@size-padding-responsive * 1.05);
         overflow-x: auto;
-        padding: @size-padding-small 0;
+        padding: @size-padding-responsive 0;
         background: @color-background;
-        border-radius: @size-radius;
+        box-shadow: inset 0 0 0 @size-border fade(@color-shadow, @fade-border),
+                    inset 0 @size-shadow @size-shadow 0 fade(@color-shadow, @fade-shadow);
 
         // Body
         tbody {
@@ -347,17 +369,17 @@
         // Columns
         td {
             text-align: center;
-            padding: @size-padding-tiny @size-padding-small;
+            padding: @size-padding-tiny (@size-padding-small * 1.5);
 
             // First
             &:first-child {
                 text-align: left;
-                padding-left: @size-padding-medium;
+                padding-left: (@size-padding-responsive * 1.05);
             }
 
             // Last
             &:last-child {
-                padding-right: @size-padding-medium;
+                padding-right: (@size-padding-responsive * 1.05);
             }
         }
     }

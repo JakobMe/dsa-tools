@@ -10,7 +10,8 @@ var Main = (function() {
     var _PATH_FILE             = "../data.json";
     var _TMPL_RESULT           = "#tmpl-result";
     var _TMPL_TAGS             = "#tmpl-tags";
-    var _MAX_RESULTS           = 12;
+    var _TEXT_CITE             = "Publikation:";
+    var _MAX_RESULTS           = 10;
     var _KEY_UP                = 38;
     var _KEY_DOWN              = 40;
 
@@ -28,6 +29,7 @@ var Main = (function() {
 
     // Class constants
     var _CLASS_SELECTED        = "selected";
+    var _CLASS_CITE            = "cite";
 
     // Variables
     var _selected              = false;
@@ -153,7 +155,14 @@ var Main = (function() {
      */
     function _renderContent() {
         var content = _selected === false ? "" : _found[_selected].content;
-        _$content.html(content.trim() || "");
+        _$content.html(content.trim() || "").promise().done(function() {
+            _$content.children().each(function() {
+                var $el = $(this);
+                if ($el.text().indexOf(_TEXT_CITE) >= 0) {
+                    $el.addClass(_CLASS_CITE);
+                }
+            });
+        });
     }
 
     /**

@@ -113,6 +113,12 @@
             ]
         },
         {
+            "name": "trank",
+            "urls": [
+                "index.php/Elixier.html"
+            ]
+        },
+        {
             "name": "krankheit",
             "urls": [
                 "index.php/GR_Krankheiten.html"
