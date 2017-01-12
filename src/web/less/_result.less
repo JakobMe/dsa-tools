@@ -1,0 +1,101 @@
+/**
+ * Result.
+ * @author Jakob Metzger <jakob.me@gmail.com>
+ * @copyright 2017 Jakob Metzger
+ * @license MIT
+ */
+
+// Result
+.result {
+    padding: 0;
+    margin: @size-margin-medium 0 0 0;
+    .box();
+
+    // Heading
+    &__heading {
+        border-radius: @size-radius @size-radius 0 0;
+    }
+
+    // List
+    &__list {
+        margin: 0;
+        position: relative;
+        list-style: none;
+        height: (@size-list * 5);
+        padding: @size-margin-small 0;
+        overflow-y: scroll;
+        .transition();
+
+        // Message
+        &:after {
+            display: block;
+            overflow: hidden;
+            box-sizing: border-box;
+            font-style: italic;
+            color: @color-text-pale;
+            height: 0;
+            padding: 0;
+            opacity: 0;
+            padding: 0 @size-margin-medium;
+            line-height: @size-list;
+            content: "Nichts gefunden";
+            .transition();
+        }
+
+        // Empty
+        &:empty {
+            height: @size-list;
+
+            // Message
+            &:after {
+                opacity: 1;
+                height: @size-list;
+            }
+        }
+    }
+
+    // Item
+    &__item {
+        cursor: pointer;
+        position: relative;
+        color: @color-text-pale;
+        line-height: @size-list;
+        height: @size-list;
+        border-radius: @size-radius;
+        margin: 0 @size-margin-small;
+        padding: 0 (@size-margin-medium - @size-margin-small);
+        .transition();
+
+        // Hover
+        &:hover {
+            color: @color-text;
+            background: @color-background;
+        }
+
+        // Selected
+        &&--selected {
+            .highlight();
+        }
+    }
+
+    // Label
+    &__label {
+        box-sizing: border-box;
+        display: inline-block;
+        max-width: 80%;
+        padding-right: @size-margin-small;
+        .ellipsis();
+    }
+
+    // Tag
+    &__tag {
+        position: absolute;
+        max-width: 20%;
+        font-size: @font-small;
+        right: @size-margin-medium;
+        .ellipsis();
+
+        // Hashtag
+        &:before { content: "#"; }
+    }
+}

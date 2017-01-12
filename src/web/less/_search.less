@@ -1,0 +1,123 @@
+/**
+ * Search.
+ * @author Jakob Metzger <jakob.me@gmail.com>
+ * @copyright 2017 Jakob Metzger
+ * @license MIT
+ */
+
+// Form
+.search {
+    overflow: hidden;
+    height: @size-label + @size-input;
+    .transition();
+    .box();
+
+    // Tag badge
+    &:after {
+        display: block;
+        content: "#";
+        opacity: 0;
+        box-sizing: border-box;
+        position: absolute;
+        text-align: center;
+        width: @size-badge;
+        height: @size-badge;
+        line-height: @size-badge + @size-shadow;
+        font-size: @font-medium;
+        right: ((@size-input - @size-badge) / 2);
+        top: @size-label + ((@size-input - @size-badge) / 2);
+        transform: translate3d(200%, 0, 0);
+        .transition();
+        .highlight();
+    }
+
+    // With tags
+    &&--tag {
+        height: (@size-label * 2) + @size-input;
+
+        // Tag badge
+        &:after {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    // With tags tags
+    &&--tag &__tags { opacity: 1; }
+
+    // Heading
+    &__heading { cursor: pointer; }
+
+    // Input
+    &__input {
+        -webkit-appearance: none;
+        box-sizing: border-box;
+        display: block;
+        outline: none;
+        border: none;
+        width: 100%;
+        margin: 0;
+        font-size: @font-medium;
+        color: @color-text;
+        height: @size-input;
+        padding: @size-margin-small @size-margin-medium;
+        background: @color-foreground;
+        .transition();
+        .font();
+
+        // Placeholder
+        &::-webkit-input-placeholder {
+            color: @color-text-pale;
+            font-style: italic;
+        }
+
+        // Hover & Focus
+        &:focus, &:hover { color: @color-highlight; }
+    }
+
+    // Tags
+    &__tags {
+        opacity: 0;
+        z-index: 100;
+        font-size: 0;
+        line-height: 0;
+        position: relative;
+        overflow-x: auto;
+        overflow-y: hidden;
+        height: @size-label;
+        white-space: nowrap;
+        padding: 0 ((@size-label - @size-badge) / 2);
+        background: @color-background;
+        box-shadow: 0 -(@size-border) 0 0 @color-border;
+        .transition();
+
+        // Hide scrollbar
+        &::-webkit-scrollbar { display: none; }
+    }
+
+    // Tag
+    &__tag {
+        z-index: 150;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        font-size: @font-small;
+        display: inline-block;
+        white-space: nowrap;
+        color: @color-text-pale;
+        padding: 0 @size-margin-small;
+        height: @size-badge;
+        margin: ((@size-label - @size-badge) / 2) 0;
+        line-height: @size-badge + @size-border;
+        .transition();
+
+        // Hover
+        &:hover { color: @color-text; }
+
+        // Selected
+        &&--selected { .highlight(); }
+
+        // Hashtag
+        &:before { content: "#"; }
+    }
+}

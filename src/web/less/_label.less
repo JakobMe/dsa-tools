@@ -1,0 +1,32 @@
+/**
+ * Label.
+ * @author Jakob Metzger <jakob.me@gmail.com>
+ * @copyright 2017 Jakob Metzger
+ * @license MIT
+ */
+
+// Label
+.label {
+    z-index: 100;
+    display: block;
+    position: relative;
+    height: @size-label;
+    line-height: @size-label + @size-shadow;
+    background: @color-background;
+    padding: 0 @size-margin-medium;
+    font-size: @font-small;
+    color: @color-text-pale;
+    box-shadow: 0 @size-border 0 0 @color-border;
+
+    // Main
+    &__main { font-weight: bold; }
+
+    // Side
+    &__side {
+        position: absolute;
+        display: inline-block;
+        font-style: italic;
+        font-weight: normal;
+        right: @size-margin-medium;
+    }
+}

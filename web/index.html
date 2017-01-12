@@ -1,36 +1,86 @@
 <!DOCTYPE html>
 <html lang="de">
+
+    <!-- Head-->
     <head>
         <title>Aventurische Enzyklopädie</title>
         <meta charset="utf-8">
         <link rel="stylesheet" href="index.css" type="text/css">
     </head>
+
+    <!-- Body -->
     <body class="body">
-        <main class="search">
-            <h1 class="search-title">
-                <span>
+
+        <!-- Main -->
+        <main class="main">
+
+            <!-- Title -->
+            <h1 class="main__title main__element">
+                <span class="main__title-text">
                     Aventurische<br/>Enzyklopädie
                 </span>
             </h1>
-            <input class="search-input" autocomplete="off" type="text"
-                   spellcheck="false" data-main="input" placeholder="Suche">
-            <div class="search-tags" data-main="tags"></div>
-            <ul class="search-result" data-main="result"></ul>
+
+            <!-- Search -->
+            <form class="search main__element" data-app="search">
+                <label class="search__heading label" for="search-input">
+                    <span class="label__main">Suchbegriff</span>
+                    <span class="label__side">#tag:Suchbegriff</span>
+                </label>
+                <input class="search__input" autocomplete="off" id="search-input"
+                       placeholder="z.B. #kampf:Wuchtschlag" type="text"
+                       spellcheck="false" data-app="search-input">
+                <aside class="search__tags" data-app="search-tags"></aside>
+            </form>
+
+            <!-- Result -->
+            <menu class="result main__element">
+                <label class="result__heading label">
+                    <span class="label__main">Suchergebnis</span>
+                    <span class="label__side">
+                        Gefunden: <span data-app="result-count">0</span>
+                    </span>
+                </label>
+                <ul class="result__list" data-app="result"></ul>
+            </menu>
+
         </main>
-        <article class="content" data-main="content"></article>
+
+        <!-- Article -->
+        <article class="article">
+
+            <!-- Content -->
+            <section class="article__content" data-app="article"></section>
+
+            <!-- Copyright -->
+            <footer class="article__copyright">
+                <a href="http://www.ulisses-regelwiki.de/" target="_blank">
+                    www.ulisses-regelwiki.de
+                </a>
+                © 2017 Ulisses Spiele GmbH
+            </footer>
+
+        </article>
+
+        <!-- Scripts -->
         <script type="text/javascript" src="index.js"></script>
+
+        <!-- Template: Result -->
         <script id="tmpl-result" type="text/html">
             {{#.}}
-            <li class="search-result-item" data-main="item">
-                <span class="search-result-label">{{label}}</span>
-                <span class="search-result-tag">{{tag}}</span>
+            <li class="result__item" data-app="result-item">
+                <span class="result__label">{{label}}</span>
+                <span class="result__tag">{{tag}}</span>
             </li>
             {{/.}}
         </script>
+
+        <!-- Template: Tags -->
         <script id="tmpl-tags" type="text/html">
             {{#.}}
-            <span class="search-tags-tag">{{.}}</span>
+            <span class="search__tag" data-app="search-tag">{{.}}</span>
             {{/.}}
         </script>
+
     </body>
 </html>

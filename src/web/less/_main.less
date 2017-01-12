@@ -1,0 +1,100 @@
+/**
+ * Main.
+ * @author Jakob Metzger <jakob.me@gmail.com>
+ * @copyright 2017 Jakob Metzger
+ * @license MIT
+ */
+
+// Body
+.body {
+    -webkit-font-smoothing: subpixel-antialiased;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    color: @color-text;
+    background: @color-text;
+    font-size: @font-medium;
+    .font();
+}
+
+// Main
+.main {
+    position: fixed;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    margin: 0;
+    width: @size-main;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: @size-margin-huge;
+    background: transparent url("background.jpg") no-repeat bottom center;
+    background-size: cover;
+
+    // Responsive
+    @media (max-width: @size-responsive) {
+        padding: @size-margin-medium;
+    }
+
+    // Overlay gradient
+    &:before {
+        display: block;
+        position: fixed;
+        content: "";
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 50%;
+        z-index: 50;
+        background-image: linear-gradient(
+            to bottom,
+            fade(@color-dark, 50%),
+            fade(@color-dark, 0%)
+        );
+    }
+
+    // Element
+    &__element {
+        z-index: 100;
+        position: relative;
+    }
+
+    // Title
+    &__title {
+        display: block;
+        text-align: center;
+        text-transform: uppercase;
+        padding: 0;
+        line-height: 1;
+        margin: 0 0 @size-margin-huge 0;
+        color: @color-foreground;
+        font-size: @font-huge;
+        .textshadow();
+
+        // Responsive
+        @media (max-width: @size-responsive) {
+            font-size: @font-big;
+            margin: 0 0 @size-margin-medium 0;
+        }
+
+        // Text
+        &-text {
+            display: inline-block;
+
+            // Lines
+            &:before, &:after {
+                display: block;
+                content: "";
+                width: 100%;
+                height: @size-margin-tiny;
+                .box();
+            }
+
+            // Lines
+            &:before { margin-bottom: @size-margin-small; }
+            &:after { margin-top: @size-margin-small; }
+        }
+    }
+}

@@ -1,0 +1,188 @@
+/**
+ * Article.
+ * @author Jakob Metzger <jakob.me@gmail.com>
+ * @copyright 2017 Jakob Metzger
+ * @license MIT
+ */
+
+// Article
+.article {
+    position: fixed;
+    top: 0;
+    right: 0;
+    box-sizing: border-box;
+    padding: 0 0 @size-copyright 0;
+    width: @size-article;
+    height: 100%;
+    .box(@color-foreground, 0);
+
+    // Content
+    &__content {
+        position: absolute;
+        box-sizing: border-box;
+        padding: @size-margin-huge;
+        overflow-y: auto;
+        overflow-x: hidden;
+        top: 0;
+        width: 100%;
+        color: @color-text;
+        bottom: @size-copyright;
+        line-height: 1.6;
+        .font();
+
+        // Responsive
+        @media (max-width: @size-responsive) {
+            padding: @size-margin-medium;
+            line-height: 1.3;
+        }
+
+        // Message
+        &:before {
+            display: block;
+            position: absolute;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            content: "Nichts gefunden";
+            color: @color-text-pale;
+            font-style: italic;
+            line-height: 1;
+            opacity: 0;
+            padding: @size-margin-small;
+            transform: translate3d(-50%, -50%, 0) scale(0);
+            transform-origin: 50% 50%;
+            .box(@color-background);
+            .transition();
+        }
+
+        // Empty
+        &:empty:before {
+            opacity: 1;
+            transform: translate3d(-50%, -50%, 0) scale(1);
+        }
+    }
+
+    // Copyright
+    &__copyright {
+        display: block;
+        position: fixed;
+        box-sizing: border-box;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        padding: 0;
+        width: @size-article;
+        text-align: center;
+        font-style: italic;
+        font-size: @font-small;
+        padding: 0 @size-margin-small;
+        height: @size-copyright;
+        line-height: @size-copyright;
+        color: @color-text-pale;
+        .box(@color-background, 0);
+        .ellipsis();
+
+        // Links
+        a {
+            text-decoration: none;
+            color: @color-text-pale;
+            .transition();
+
+            // Hover
+            &:hover { color: @color-text; }
+        }
+    }
+
+    // Last
+    *:last-child { margin-bottom: 0; }
+
+    // Heading
+    h1 {
+        margin: 0 0 @size-margin-big 0;
+        color: @color-highlight;
+        font-size: @font-huge;
+        font-weight: bold;
+        font-style: normal;
+        line-height: 1.1;
+        width: 100%;
+        hyphens: auto;
+        -webkit-hyphens: auto;
+
+        // Margin
+        &:not(:first-child) { margin-top: @size-margin-huge; }
+
+        // Responsive
+        @media (max-width: @size-responsive) {
+            font-size: @font-big;
+            margin-bottom: @size-margin-medium;
+            &:not(:first-child) { margin-top: @size-margin-medium; }
+        }
+    }
+
+    // Paragraphs
+    p {
+        color: @color-text;
+        margin: 0 0 @size-margin-medium 0;
+
+        // Cite
+        &.cite {
+            font-style: italic;
+            color: @color-text-pale;
+        }
+    }
+
+    // Tables
+    table {
+        display: block;
+        box-sizing: border-box;
+        white-space: nowrap;
+        margin: @size-margin-medium -(@size-margin-huge);
+        overflow-x: auto;
+        padding: @size-margin-medium 0;
+        background: @color-background;
+        box-shadow: 0 @size-border 0 0 @color-border,
+                    0 -(@size-border) 0 0 @color-border;
+
+        // Responsive
+        @media (max-width: @size-responsive) {
+            margin: @size-margin-medium -(@size-margin-medium);
+        }
+
+        // Body
+        tbody {
+            display: table;
+            width: 100%;
+        }
+
+        // Rows
+        tr:first-child td { padding-top: 0; }
+        tr:last-child td { padding-bottom: 0; }
+
+        // Columns
+        td {
+            text-align: center;
+            padding: @size-margin-tiny @size-margin-small;
+
+            // First
+            &:first-child {
+                text-align: left;
+                padding-left: @size-margin-huge;
+
+                // Responsive
+                @media (max-width: @size-responsive) {
+                    padding-left: @size-margin-medium;
+                }
+            }
+
+            // Last
+            &:last-child {
+                padding-right: @size-margin-huge;
+
+                // Responsive
+                @media (max-width: @size-responsive) {
+                    padding-right: @size-margin-medium;
+                }
+            }
+        }
+    }
+}
