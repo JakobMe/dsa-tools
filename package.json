@@ -1,7 +1,8 @@
 {
   "name": "dsa-tools",
+  "productName": "Aventurische Enzyklopädie",
   "version": "1.0.0",
-  "description": "Kommandozeilen-Tools für 'Das Schwarze Auge'",
+  "description": "Tools und App für 'Das Schwarze Auge'",
   "author": "Jakob Metzger",
   "license": "MIT",
   "private": true,
@@ -11,6 +12,19 @@
     "type": "git",
     "url": "git+https://github.com/JakobMe/dsa-tools.git"
   },
+  "scripts": {
+    "start": "./node_modules/.bin/electron .",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=res//icon.icns --prune=true --out=dist",
+    "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=res/icon.ico --prune=true --out=dist",
+    "package-all": "npm run package-win; npm run package-mac"
+  },
+  "version": "0.0.1",
+  "build": {
+    "appId": "com.jakobmetzger.aventurische-enzyklopaedie",
+    "dmg": {},
+    "win": {}
+  },
+  "main": "main.js",
   "bin": {
     "dsa": "./cli/cli.js"
   },
@@ -19,12 +33,17 @@
     "commander": "^2.9.0",
     "crawler": "^1.0.1",
     "didyoumean": "^1.2.1",
+    "electron": "^1.4.14",
+    "electron-squirrel-startup": "^1.0.0",
     "entities": "^1.1.1",
     "fuzzysearch": "^1.0.3",
     "jsonfile": "^2.4.0",
     "terminal-kit": "^0.26.1"
   },
   "devDependencies": {
+    "electron-builder": "^11.2.4",
+    "electron-packager": "^8.5.0",
+    "electron-prebuilt": "^1.4.13",
     "gulp": "^3.9.1",
     "gulp-chmod": "^2.0.0",
     "gulp-concat": "^2.6.1",

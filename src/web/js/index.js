@@ -7,7 +7,7 @@
 var App = (function() {
 
     // General constants
-    var _PATH_FILE              = "../data.json";
+    var _PATH_FILE              = "data.json";
     var _TMPL_RESULT            = "#tmpl-result";
     var _TMPL_TAGS              = "#tmpl-tags";
     var _TEXT_CITE              = "Publikation:";
@@ -150,13 +150,24 @@ var App = (function() {
         else if (tag && !keyword.length) { _found = _data.slice(0); }
         else { _found = _fuse.search(keyword); }
 
-        // Filter, sort and slice found items
-        _found = _found.filter(function(item) {
-            return tag === false ? true : item.tag === tag;
-        }).sort(function(a, b) {
-            return tag !== false && !keyword.length ?
-                   a.label.localeCompare(b.label) : 0;
-        }).slice(0, keyword.length ? _MAX_RESULTS : undefined);
+        // Filter found items on tag name
+        if (tag !== false) {
+            _found = _found.filter(function(item) {
+                return item.tag === tag;
+            });
+
+            // Sort found items on invalid keyword
+            if (!keyword.length) {
+                _found = _found.sort(function(a, b) {
+                    return a.label.localeCompare(b.label);
+                });
+            }
+        }
+
+        // Slice found items on valid keyword
+        if (keyword.length) {
+            _found = _found.slice(0, _MAX_RESULTS);
+        }
 
         // Reset selected item and render
         _selected = _found.length === 0 ? false : 0;
@@ -204,7 +215,8 @@ var App = (function() {
                                             : scr;
 
             // Animate scroll
-            _$result.animate({ scrollTop: mov }, _TIME_ANIMATION / 4);
+            _$result.scrollTop(mov);
+            //_$result.animate({ scrollTop: mov }, _TIME_ANIMATION / 4);
         }
     }
 
@@ -258,7 +270,8 @@ var App = (function() {
                                             : scr;
 
             // Animate scroll
-            _$tags.animate({ scrollLeft: mov }, _TIME_ANIMATION);
+            _$tags.scrollLeft(mov);
+            //_$tags.animate({ scrollLeft: mov }, _TIME_ANIMATION);
         }
     }
 

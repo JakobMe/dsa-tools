@@ -5,7 +5,7 @@
 var Data = (function() {
 
     // Constants
-    var _PATH_DATA   = "/../data.json";
+    var _PATH_DATA   = "/../web/data.json";
     var _PATH_CONFIG = "/config.json";
 
     // Modules/variables

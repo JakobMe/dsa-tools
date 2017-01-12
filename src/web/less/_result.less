@@ -21,7 +21,7 @@
         margin: 0;
         position: relative;
         list-style: none;
-        height: (@size-list * 5);
+        height: (@size-list * 10);
         padding: @size-margin-small 0;
         overflow-y: scroll;
         .transition();
@@ -38,7 +38,7 @@
             opacity: 0;
             padding: 0 @size-margin-medium;
             line-height: @size-list;
-            content: "Nichts gefunden";
+            content: @str-notfound;
             .transition();
         }
 
@@ -64,7 +64,6 @@
         border-radius: @size-radius;
         margin: 0 @size-margin-small;
         padding: 0 (@size-margin-medium - @size-margin-small);
-        .transition();
 
         // Hover
         &:hover {
@@ -96,6 +95,6 @@
         .ellipsis();
 
         // Hashtag
-        &:before { content: "#"; }
+        &:before { content: @str-tag; }
     }
 }
