@@ -34,6 +34,7 @@ var App = (function() {
     var _EVT_INPUT              = "input";
     var _EVT_CLICK              = "click";
     var _EVT_SUBMIT             = "submit";
+    var _EVT_DRAG               = "dragover drop";
 
     // Class constants
     var _CLASS_APP_LOADED       = "app--loaded";
@@ -59,6 +60,7 @@ var App = (function() {
     var _$result                = null;
     var _$count                 = null;
     var _$window                = null;
+    var _$document              = null;
 
     // Templates
     var _tmplResult             = "";
@@ -71,14 +73,15 @@ var App = (function() {
     function init() {
 
         // Initialize DOM elements
-        _$window  = $(window);
-        _$app     = $(_SEL_APP);
-        _$tags    = $(_SEL_SEARCH_TAGS);
-        _$search  = $(_SEL_SEARCH);
-        _$input   = $(_SEL_SEARCH_INPUT);
-        _$article = $(_SEL_ARTICLE);
-        _$result  = $(_SEL_RESULT);
-        _$count   = $(_SEL_RESULT_COUNT);
+        _$window   = $(window);
+        _$document = $(document);
+        _$app      = $(_SEL_APP);
+        _$tags     = $(_SEL_SEARCH_TAGS);
+        _$search   = $(_SEL_SEARCH);
+        _$input    = $(_SEL_SEARCH_INPUT);
+        _$article  = $(_SEL_ARTICLE);
+        _$result   = $(_SEL_RESULT);
+        _$count    = $(_SEL_RESULT_COUNT);
 
         // Focus input
         _$input.focus();
@@ -100,6 +103,7 @@ var App = (function() {
         // Bindings
         _$input.on(_EVT_INPUT, _search);
         _$search.on(_EVT_SUBMIT, _prevent);
+        _$document.on(_EVT_DRAG, _prevent);
         _$window.on(_EVT_KEYDOWN, _navigate);
         _$result.on(_EVT_CLICK, _SEL_RESULT_ITEM, _select);
         _$tags.on(_EVT_CLICK, _SEL_SEARCH_TAG, _tag);
