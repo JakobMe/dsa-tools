@@ -9,7 +9,7 @@
 .result {
     padding: 0;
     margin: @size-margin-medium 0 0 0;
-    .box();
+    .box(@color-foreground, 0);
 
     // Heading
     &__heading {
@@ -25,6 +25,7 @@
         padding: @size-margin-small 0;
         overflow-y: scroll;
         .transition();
+        .no-select();
 
         // Message
         &:after {
@@ -40,6 +41,7 @@
             line-height: @size-list;
             content: @str-notfound;
             .transition();
+            .no-select();
         }
 
         // Empty
@@ -64,6 +66,7 @@
         border-radius: @size-radius;
         margin: 0 @size-margin-small;
         padding: 0 (@size-margin-medium - @size-margin-small);
+        .no-select();
 
         // Hover
         &:hover {

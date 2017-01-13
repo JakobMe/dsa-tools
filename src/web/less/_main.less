@@ -20,7 +20,7 @@
     padding: @size-margin-huge;
     background: @color-text url(@str-background) no-repeat top left;
     background-size: cover;
-    .transition();
+    .transition(opacity);
 
     // Loaded
     .app--loaded & { opacity: 1; }
@@ -56,11 +56,8 @@
 
     // Title
     &__title {
-        -webkit-touch-callout:none;
-        -webkit-user-select:none;
         z-index: 100;
         cursor: default;
-        user-select: none;
         position: relative;
         display: block;
         text-align: center;
@@ -71,6 +68,7 @@
         color: @color-foreground;
         font-size: @font-huge;
         .textshadow();
+        .no-select();
 
         // Responsive
         @media (max-width: @size-responsive) {

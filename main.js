@@ -20,8 +20,8 @@ var Main = (function(require, process) {
     var _PATH_INDEX            = "/web/index.html";
 
     // Window constants
-    var _WINDOW_WIDTH          = 640;
-    var _WINDOW_HEIGHT         = 480;
+    var _WINDOW_WIDTH          = 840;
+    var _WINDOW_HEIGHT         = 560;
     var _WINDOW_MINWIDTH       = 640;
     var _WINDOW_MINHEIGHT      = 480;
     var _WINDOW_CENTER         = true;

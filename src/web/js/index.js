@@ -99,7 +99,7 @@ var App = (function() {
 
         // Bindings
         _$input.on(_EVT_INPUT, _search);
-        _$search.on(_EVT_SUBMIT, _search);
+        _$search.on(_EVT_SUBMIT, _prevent);
         _$window.on(_EVT_KEYDOWN, _navigate);
         _$result.on(_EVT_CLICK, _SEL_RESULT_ITEM, _select);
         _$tags.on(_EVT_CLICK, _SEL_SEARCH_TAG, _tag);
@@ -334,6 +334,15 @@ var App = (function() {
     function _tag() {
         _$input.val(_CHAR_TAG + $(this).text() + _CHAR_SPECIFY)
                .trigger(_EVT_INPUT).focus();
+    }
+
+    /**
+     * Prevent default event behaviour.
+     * @param {Object} event Event to prevent
+     */
+    function _prevent(event) {
+        event.preventDefault();
+        return false;
     }
 
     // Public interface

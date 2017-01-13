@@ -8,15 +8,13 @@
 // Form
 .search {
     overflow: hidden;
-    height: @size-label + @size-input;
-    .transition();
-    .box();
+    .box(@color-foreground, 0);
 
     // Tag badge
     &:after {
         display: block;
-        content: @str-tag;
         opacity: 0;
+        content: @str-tag;
         box-sizing: border-box;
         position: absolute;
         text-align: center;
@@ -32,18 +30,16 @@
     }
 
     // With tags
-    &&--tag {
-        height: (@size-label * 2) + @size-input;
-
-        // Tag badge
-        &:after {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-        }
+    &&--tag:after {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
     }
 
     // With tags tags
-    &&--tag &__tags { opacity: 1; }
+    &&--tag &__tags {
+        opacity: 1;
+        height: @size-label;
+    }
 
     // Heading
     &__heading { cursor: pointer; }
@@ -62,7 +58,6 @@
         height: @size-input;
         padding: @size-margin-small @size-margin-medium;
         background: @color-foreground;
-        .transition();
         .font();
 
         // Placeholder
@@ -77,6 +72,7 @@
 
     // Tags
     &__tags {
+        height: 0;
         opacity: 0;
         z-index: 100;
         font-size: 0;
@@ -84,7 +80,6 @@
         position: relative;
         overflow-x: auto;
         overflow-y: hidden;
-        height: @size-label;
         white-space: nowrap;
         padding: 0 ((@size-label - @size-badge) / 2);
         background: @color-background;
@@ -109,6 +104,7 @@
         height: @size-badge;
         margin: ((@size-label - @size-badge) / 2) 0;
         line-height: @size-badge + @size-border;
+        .no-select();
 
         // Hover
         &:hover { color: @color-text; }

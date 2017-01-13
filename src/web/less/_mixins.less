@@ -44,6 +44,13 @@
 }
 
 // Transition
-.transition() {
-    transition: all 0.2s;
+.transition(@type: all) {
+    transition: @type 0.2s;
+}
+
+// No select
+.no-select() {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
