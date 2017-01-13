@@ -17,9 +17,9 @@ var App = (function() {
     var _KEY_UP                 = 38;
     var _KEY_DOWN               = 40;
     var _KEY_ESCAPE             = 27;
-    var _TIME_ANIMATION         = 200;
 
     // DOM selectors
+    var _SEL_APP                = "[data-app='app']";
     var _SEL_SEARCH_TAGS        = "[data-app='search-tags']";
     var _SEL_SEARCH_TAG         = "[data-app='search-tag']";
     var _SEL_SEARCH             = "[data-app='search']";
@@ -33,8 +33,11 @@ var App = (function() {
     var _EVT_KEYDOWN            = "keydown";
     var _EVT_INPUT              = "input";
     var _EVT_CLICK              = "click";
+    var _EVT_SUBMIT             = "submit";
 
     // Class constants
+    var _CLASS_APP_LOADED       = "app--loaded";
+    var _CLASS_ARTICLE_LOADED   = "article--loaded";
     var _CLASS_SEARCH_TAG       = "search--tag";
     var _CLASS_RESULT_SELECTED  = "result__item--selected";
     var _CLASS_TAG_SELECTED     = "search__tag--selected";
@@ -48,6 +51,7 @@ var App = (function() {
     var _fuse                   = null;
 
     // DOM elements
+    var _$app                   = null;
     var _$tags                  = null;
     var _$input                 = null;
     var _$search                = null;
@@ -68,6 +72,7 @@ var App = (function() {
 
         // Initialize DOM elements
         _$window  = $(window);
+        _$app     = $(_SEL_APP);
         _$tags    = $(_SEL_SEARCH_TAGS);
         _$search  = $(_SEL_SEARCH);
         _$input   = $(_SEL_SEARCH_INPUT);
@@ -94,6 +99,7 @@ var App = (function() {
 
         // Bindings
         _$input.on(_EVT_INPUT, _search);
+        _$search.on(_EVT_SUBMIT, _search);
         _$window.on(_EVT_KEYDOWN, _navigate);
         _$result.on(_EVT_CLICK, _SEL_RESULT_ITEM, _select);
         _$tags.on(_EVT_CLICK, _SEL_SEARCH_TAG, _tag);
@@ -120,6 +126,7 @@ var App = (function() {
             // Initialize fuse, insert tags
             _tags = Object.keys(data).sort();
             _fuse = new Fuse(_data, { keys: ["label", "content"] });
+            _$app.addClass(_CLASS_APP_LOADED);
             _$tags.html(Mustache.render(_tmplTags, _tags).trim());
         });
     }
@@ -128,11 +135,11 @@ var App = (function() {
      * Perform search; analyzes search query and filters
      * data by keyword and tag, renders results.
      */
-    function _search() {
+    function _search(event) {
 
         // Initialize variables
         var tag     = false;
-        var query   = $(this).val();
+        var query   = _$input.val();
         var keyword = query.substr(0);
 
         // Tag searching
@@ -173,6 +180,10 @@ var App = (function() {
         _selected = _found.length === 0 ? false : 0;
         _renderTags(tag);
         _renderResult();
+
+        // Prevent default
+        event.preventDefault();
+        return false;
     }
 
     /**
@@ -216,7 +227,6 @@ var App = (function() {
 
             // Animate scroll
             _$result.scrollTop(mov);
-            //_$result.animate({ scrollTop: mov }, _TIME_ANIMATION / 4);
         }
     }
 
@@ -271,7 +281,6 @@ var App = (function() {
 
             // Animate scroll
             _$tags.scrollLeft(mov);
-            //_$tags.animate({ scrollLeft: mov }, _TIME_ANIMATION);
         }
     }
 

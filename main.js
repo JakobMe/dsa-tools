@@ -20,16 +20,18 @@ var Main = (function(require, process) {
     var _PATH_INDEX            = "/web/index.html";
 
     // Window constants
-    var _WINDOW_WIDTH          = 1152;
-    var _WINDOW_HEIGHT         = 640;
+    var _WINDOW_WIDTH          = 640;
+    var _WINDOW_HEIGHT         = 480;
     var _WINDOW_MINWIDTH       = 640;
     var _WINDOW_MINHEIGHT      = 480;
     var _WINDOW_CENTER         = true;
+    var _WINDOW_TITLE          = "hidden";
 
     // Misc constants
     var _PLATFORM_DARWIN       = "darwin";
 
     // Electron components
+
     var _Electron              = require("electron");
     var _App                   = _Electron.app;
     var _Ipc                   = _Electron.ipcMain;
@@ -66,11 +68,12 @@ var Main = (function(require, process) {
 
             // Create window
             _windowMain = new _Window({
-                width     : _WINDOW_WIDTH,
-                height    : _WINDOW_HEIGHT,
-                center    : _WINDOW_CENTER,
-                minWidth  : _WINDOW_MINWIDTH,
-                minHeight : _WINDOW_MINHEIGHT
+                width         : _WINDOW_WIDTH,
+                height        : _WINDOW_HEIGHT,
+                center        : _WINDOW_CENTER,
+                minWidth      : _WINDOW_MINWIDTH,
+                minHeight     : _WINDOW_MINHEIGHT,
+                titleBarStyle : _WINDOW_TITLE
             });
 
             // Load HTML
@@ -84,6 +87,13 @@ var Main = (function(require, process) {
      */
     function _closeWindow() {
         _windowMain.close();
+    }
+
+    /**
+     * Reload main window.
+     */
+    function _reloadWindow() {
+        _windowMain.reload();
     }
 
     /**
@@ -117,6 +127,11 @@ var Main = (function(require, process) {
                         label: "Fenster schließen",
                         accelerator: "Command+W",
                         click: _closeWindow
+                    },
+                    {
+                        label: "Fenster neu laden",
+                        accelerator: "Command+R",
+                        click: _reloadWindow
                     }
                 ]
             },

@@ -16,6 +16,9 @@
     height: 100%;
     .box(@color-foreground, 0);
 
+    & * { opacity: 0; .transition(); }
+    .app--loaded & * { opacity: 1; }
+
     // Content
     &__content {
         position: absolute;
@@ -27,13 +30,16 @@
         width: 100%;
         color: @color-text;
         bottom: @size-label;
-        line-height: 1.6;
+        line-height: 1.5;
         .font();
+
+        // No drag
+        * { -webkit-app-region: no-drag; }
 
         // Responsive
         @media (max-width: @size-responsive) {
             padding: @size-margin-medium;
-            line-height: 1.5;
+            line-height: 1.3;
         }
 
         // Message
@@ -64,6 +70,10 @@
 
     // Copyright
     &__copyright {
+        -webkit-touch-callout:none;
+        -webkit-user-select:none;
+        cursor: default;
+        user-select: none;
         display: block;
         position: fixed;
         box-sizing: border-box;
@@ -79,7 +89,8 @@
         height: @size-label;
         line-height: @size-label;
         color: @color-text-pale;
-        .box(@color-background, 0);
+        background: @color-background;
+        box-shadow: 0 -(@size-border) 0 0 @color-border;
         .ellipsis();
     }
 
