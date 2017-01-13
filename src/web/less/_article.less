@@ -79,7 +79,6 @@
         table {
             display: block;
             box-sizing: border-box;
-            white-space: nowrap;
             margin: @size-margin-medium -(@size-margin-huge);
             overflow-x: auto;
             padding: @size-margin-medium 0;
@@ -99,12 +98,12 @@
             }
 
             // Rows
-            tr:first-child td { padding-top: 0; }
+            tr:first-child td { padding-top: 0; white-space: nowrap; }
             tr:last-child td { padding-bottom: 0; }
 
             // Columns
             td {
-                text-align: center;
+                vertical-align: top;
                 padding: @size-margin-tiny @size-margin-small;
 
                 // First

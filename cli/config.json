@@ -119,9 +119,34 @@
             ]
         },
         {
+            "name": "artefakt",
+            "urls": [
+                "index.php/Artefakte.html"
+            ]
+        },
+        {
             "name": "krankheit",
             "urls": [
                 "index.php/GR_Krankheiten.html"
+            ]
+        },
+        {
+            "name": "waffe",
+            "urls": [
+                "index.php/ar_waffen.html"
+            ]
+        },
+        {
+            "name": "rüstung",
+            "urls": [
+                "index.php/ar_ruestungen.html"
+            ]
+        },
+        {
+            "name": "zustand",
+            "urls": [
+                "index.php/GR_Status.html",
+                "index.php/GR_Zustand.html"
             ]
         }
     ]

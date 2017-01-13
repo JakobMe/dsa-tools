@@ -20,10 +20,10 @@ var Main = (function(require, process) {
     var _PATH_INDEX            = "/web/index.html";
 
     // Window constants
-    var _WINDOW_WIDTH          = 840;
-    var _WINDOW_HEIGHT         = 560;
-    var _WINDOW_MINWIDTH       = 640;
-    var _WINDOW_MINHEIGHT      = 480;
+    var _WINDOW_WIDTH          = 1080;
+    var _WINDOW_HEIGHT         = 640;
+    var _WINDOW_MINWIDTH       = 680;
+    var _WINDOW_MINHEIGHT      = 530;
     var _WINDOW_CENTER         = true;
     var _WINDOW_TITLE          = "hidden";
 
@@ -31,7 +31,6 @@ var Main = (function(require, process) {
     var _PLATFORM_DARWIN       = "darwin";
 
     // Electron components
-
     var _Electron              = require("electron");
     var _App                   = _Electron.app;
     var _Ipc                   = _Electron.ipcMain;
