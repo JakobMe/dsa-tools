@@ -229,7 +229,7 @@ var Dice = (function() {
             for (var y = 1; y <= _DICE_ATTR; y++) {
                 for (var z = 1; z <= _DICE_ATTR; z++) {
                     if (_special([x, y, z], _VAL_CRIT)) { s++; }
-                    else if (!_special([x, y, z], _VAL_CRIT)) {
+                    else if (!_special([x, y, z], _VAL_SLIP)) {
                         var p = _points([x, y, z], attr, val, mod, 0);
                         s += p >= 0 ? 1 : 0;
                     }
