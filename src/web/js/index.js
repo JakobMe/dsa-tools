@@ -13,7 +13,7 @@ var App = (function() {
     var _TEXT_CITE              = "Publikation:";
     var _CHAR_SPECIFY           = ":";
     var _CHAR_TAG               = "#";
-    var _MAX_RESULTS            = 10;
+    var _MAX_RESULTS            = 20;
     var _KEY_UP                 = 38;
     var _KEY_DOWN               = 40;
     var _KEY_ESCAPE             = 27;
@@ -129,7 +129,7 @@ var App = (function() {
 
             // Initialize fuse, insert tags
             _tags = Object.keys(data).sort();
-            _fuse = new Fuse(_data, { keys: ["label", "content"] });
+            _fuse = new Fuse(_data, { keys: ["label"] });
             _$app.addClass(_CLASS_APP_LOADED);
             _$tags.html(Mustache.render(_tmplTags, _tags).trim());
         });

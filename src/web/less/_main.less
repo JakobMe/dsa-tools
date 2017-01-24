@@ -18,7 +18,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: @size-margin-huge;
-    background: @color-text url(@str-background) no-repeat top left;
+    background: @color-text url("background.jpg") no-repeat top left;
     background-size: cover;
     .transition(opacity);
 
@@ -37,7 +37,7 @@
         content: "";
         top: 0;
         left: 0;
-        width: 50%;
+        width: @size-main;
         height: 50%;
         z-index: 50;
         background-image: linear-gradient(
