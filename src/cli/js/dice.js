@@ -264,8 +264,9 @@ var Dice = (function() {
      */
     function _points(res, attr, val, mod, malus) {
         var points = val + 0;
-        res.forEach(function(x, i) {
-            points -= Math.max(0, x - (attr[i] + mod - malus));
+        res.forEach(function(result, i) {
+            var goal = Math.max(0, attr[i] + mod - malus);
+            points  -= Math.max(0, result - goal);
         });
         return points;
     }
