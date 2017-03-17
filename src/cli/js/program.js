@@ -1,7 +1,7 @@
 (function(){
 
     // Command 'roll dice'
-    [3, 4, 6, 8, 10, 12, 20, 100].forEach(function(m) {
+    [2, 3, 4, 6, 8, 10, 12, 20, 100].forEach(function(m) {
         Program
             .command("w" + m + " [n]")
             .description("N w" + m + " würfeln")
