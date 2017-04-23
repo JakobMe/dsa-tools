@@ -83,6 +83,7 @@ gulp.task("js-cli", ["jshint-cli"], function() {
             "src/cli/js/data.js",
             "src/cli/js/update.js",
             "src/cli/js/dice.js",
+            "src/cli/js/cost.js",
             "src/cli/js/search.js",
             "src/cli/js/program.js"
         ])

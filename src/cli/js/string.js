@@ -155,6 +155,26 @@ var Str = (function() {
     }
 
     /**
+     * Format a value raise from start to end.
+     * @param   {Number} start Start value
+     * @param   {Number} end   End value
+     * @returns {String} Formatted string
+     */
+    function raise(start, end) {
+        var output = start.toString() + " -> " + end.toString();
+        return Str.brackets(output).grey.dim;
+    }
+
+    /**
+     * Format a cost string.
+     * @param   {Number} value Cost value
+     * @returns {String} Formatted string
+     */
+    function cost(value) {
+        return (value.toString() + " AP").green;
+    }
+
+    /**
      * Format a quoted string.
      * @param   {String} string String to format
      * @returns {String} Formatted string
@@ -253,8 +273,10 @@ var Str = (function() {
         mod         : mod,
         times       : times,
         sum         : sum,
+        cost        : cost,
         quality     : quality,
         points      : points,
+        raise       : raise,
         quote       : quote
     };
 

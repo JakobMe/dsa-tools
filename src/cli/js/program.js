@@ -24,6 +24,15 @@
         })
         .on("--help", function() { help("skill"); });
 
+    // Command 'calculate cost'
+    Program
+        .command("kosten <spalte> <endwert> [startwert]")
+        .description("Steigerungskosten berechnen")
+        .action(function(column, end, start) {
+            Cost.calculate(column, end, start);
+        })
+        .on("--help", function() { help("cost"); });
+
     // Command 'search for keyword in topic'
     Program
         .command("suche [thema] [begriff]")
@@ -80,6 +89,10 @@
                 Log.line("    $ dsa probe 13/16/14 6 -m -1");
                 Log.line("    $ dsa probe 14/13/15 9 -s 7 --mod 1");
                 Log.line("    $ dsa probe 12/13/11 4 --wahrscheinlich");
+                break;
+            case "cost":
+                Log.line("    $ dsa kosten e 15");
+                Log.line("    $ dsa kosten b 14 12");
                 break;
             case "update":
                 Log.line("    $ dsa aktualisiere vorteil");
