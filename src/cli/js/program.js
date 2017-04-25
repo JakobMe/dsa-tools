@@ -24,12 +24,13 @@
         })
         .on("--help", function() { help("skill"); });
 
-    // Command 'calculate cost'
+    // Command 'calculate experience cost'
     Program
-        .command("kosten <spalte> <endwert> [startwert]")
+        .command("ap <spalte> <wert>")
         .description("Steigerungskosten berechnen")
-        .action(function(column, end, start) {
-            Cost.calculate(column, end, start);
+        .option("-s, --start <x>", "Startwert")
+        .action(function(column, value, options) {
+            Cost.calculate(column, value, options);
         })
         .on("--help", function() { help("cost"); });
 
@@ -62,6 +63,7 @@
         .on("--help", function() {
             help("dice");
             help("skill", true);
+            help("cost", true);
             help("update", true);
             help("search", true);
         })
@@ -91,8 +93,9 @@
                 Log.line("    $ dsa probe 12/13/11 4 --wahrscheinlich");
                 break;
             case "cost":
-                Log.line("    $ dsa kosten e 15");
-                Log.line("    $ dsa kosten b 14 12");
+                Log.line("    $ dsa ap e 15");
+                Log.line("    $ dsa ap b 14 -s 12");
+                Log.line("    $ dsa ap c 17 --start 0");
                 break;
             case "update":
                 Log.line("    $ dsa aktualisiere vorteil");

@@ -4,8 +4,8 @@
  */
 var Cost = (function() {
 
-    // Message-constants
-    var _MSG_HINT              = "z.B. 'dsa kosten b 12 9'";
+    // Message constants
+    var _MSG_HINT              = "z.B. 'dsa ap b 12 -s 9'";
     var _MSG_ERROR_COLUMN      = "Steigerungsspalte existiert nicht!";
     var _MSG_ERROR_VALUES      = "Werte sind ungültig!";
 
@@ -21,16 +21,15 @@ var Cost = (function() {
     /**
      * Calculate experience costs.
      * @param {String} column  Cost column
-     * @param {Number} end     End value
-     * @param {Number} [start] Start value
+     * @param {Number} value   End value
+     * @param {Object} options Command options
      */
-    function calculate(column, end, start) {
+    function calculate(column, value, options) {
 
         // Initialize command arguments
         var cost    = 0;
+        var start   = options.start || value - 1;
             column  = column.toLowerCase();
-            end     = Util.toInt(end);
-            start   = start || end - 1;
 
         // Abort if column does not exist
         if (!_COSTS.hasOwnProperty(column)) {
@@ -40,48 +39,35 @@ var Cost = (function() {
         }
 
         // Abort if values are incorrect
-        if (end <= start) {
+        if (isNaN(start) || isNaN(value)) {
             Log.error(_MSG_ERROR_VALUES, 0, 1, 0);
             Log.hint(_MSG_HINT, 0, 0, 1);
             return false;
         }
 
         // Calculate cost sum
-        for (var i = Util.toInt(start) + 1; i <= end; i++) {
+        for (var i = Util.toInt(start) + 1; i <= Util.toInt(value); i++) {
             cost += _getCost(i, column);
         }
 
         // Log result
         Log.shout(
             Str.brackets(column.toUpperCase()).magenta +
-            Str.raise(start, end) +  Str.cost(cost)
+            Str.raise(start, value) +  Str.cost(cost)
         );
     }
 
     /**
-     * Get cost of specifif end value.
+     * Get cost of specific end value in column.
      * @param   {Number} value  End value
      * @param   {String} column Cost column
      * @returns {Number} Caluclated cost
      */
     function _getCost(value, column) {
         if (_COSTS.hasOwnProperty(column)) {
-
-            // Get threshold and basic cost values
-            var threshold  = _COSTS[column].threshold;
-            var basicCost  = _COSTS[column].basicCost;
-            var calculated = basicCost + 0;
-
-            // If new value is above threshold
-            if (value > threshold) {
-                calculated = (value - threshold + 1) * basicCost;
-            }
-
-            // Return calculated cost
-            return calculated;
+            return (Math.max(value - _COSTS[column].threshold, 0) + 1) *
+                   _COSTS[column].basicCost;
         }
-
-        // Return false on error
         return 0;
     }
 
