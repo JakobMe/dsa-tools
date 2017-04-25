@@ -9,66 +9,73 @@ var Cost = (function() {
     var _MSG_ERROR_COLUMN      = "Steigerungsspalte existiert nicht!";
     var _MSG_ERROR_VALUES      = "Werte sind ungültig!";
 
-    // Costs constant
-    var _COSTS = {
-        "a" : { "threshold": 12, "basicCost": 1 },
-        "b" : { "threshold": 12, "basicCost": 2 },
-        "c" : { "threshold": 12, "basicCost": 3 },
-        "d" : { "threshold": 12, "basicCost": 4 },
-        "e" : { "threshold": 14, "basicCost": 15 },
+    // Cost constant
+    var _C = {
+        "a" : { "t": 12, "b":  1 },
+        "b" : { "t": 12, "b":  2 },
+        "c" : { "t": 12, "b":  3 },
+        "d" : { "t": 12, "b":  4 },
+        "e" : { "t": 14, "b": 15 }
     };
 
     /**
      * Calculate experience costs.
-     * @param {String} column  Cost column
-     * @param {Number} value   End value
+     * @param {String} col     Cost column
+     * @param {Number} val     End value
      * @param {Object} options Command options
      */
-    function calculate(column, value, options) {
+    function calculate(col, val, options) {
 
-        // Initialize command arguments
-        var cost    = 0;
-        var start   = options.start || value - 1;
-            column  = column.toLowerCase();
+        // Initialize command arguments and options
+        var min = options.start || val - 1;
+            col = col.toLowerCase();
 
         // Abort if column does not exist
-        if (!_COSTS.hasOwnProperty(column)) {
+        if (!_C.hasOwnProperty(col)) {
             Log.error(_MSG_ERROR_COLUMN, 0, 1, 0);
             Log.hint(_MSG_HINT, 0, 0, 1);
             return false;
         }
 
         // Abort if values are incorrect
-        if (isNaN(start) || isNaN(value)) {
+        if (isNaN(min) || isNaN(val)) {
             Log.error(_MSG_ERROR_VALUES, 0, 1, 0);
             Log.hint(_MSG_HINT, 0, 0, 1);
             return false;
         }
 
-        // Calculate cost sum
-        for (var i = Util.toInt(start) + 1; i <= Util.toInt(value); i++) {
-            cost += _getCost(i, column);
-        }
-
-        // Log result
+        // Calculate and log result
         Log.shout(
-            Str.brackets(column.toUpperCase()).magenta +
-            Str.raise(start, value) +  Str.cost(cost)
+            Str.brackets(col.toUpperCase()).magenta + Str.raise(min, val) +
+            Str.cost(_sum(parseInt(val), parseInt(min), _C[col].t, _C[col].b))
         );
     }
 
     /**
-     * Get cost of specific end value in column.
-     * @param   {Number} value  End value
-     * @param   {String} column Cost column
-     * @returns {Number} Caluclated cost
+     * Calculate cost of value.
+     * @param   {Number} x New value
+     * @param   {Number} t Threshold value
+     * @param   {Number} b Basic cost
+     * @returns {Number} Calculated cost
      */
-    function _getCost(value, column) {
-        if (_COSTS.hasOwnProperty(column)) {
-            return (Math.max(value - _COSTS[column].threshold, 0) + 1) *
-                   _COSTS[column].basicCost;
+    function _cost(x, t, b) {
+        return (Math.max(x - t, 0) + 1) * b;
+    }
+
+    /**
+     * Calculate sum of costs from minimum to value.
+     * @param   {Number} x New value
+     * @param   {Number} m Minimum value
+     * @param   {Number} t Threshold value
+     * @param   {Number} b Basic cost
+     * @returns {Number} Calculated cost
+     */
+    function _sum(x, m, t, b) {
+        var s = 0;
+        for (var i = m + 1; i <= x; i++) {
+            s += _cost(i, t, b);
         }
-        return 0;
+        return s;
     }
 
     // Public interface
