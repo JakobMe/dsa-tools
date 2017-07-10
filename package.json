@@ -16,7 +16,8 @@
     "start": "./node_modules/.bin/electron .",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=res//icon.icns --prune=true --out=dist",
     "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=res/icon.ico --prune=true --out=dist",
-    "package-all": "npm run package-win; npm run package-mac"
+    "package-all": "npm run package-win; npm run package-mac",
+    "copy-app-local": "/bin/cp -rf './dist/Aventurische Enzyklopädie-darwin-x64/Aventurische Enzyklopädie.app' ~/Applications"
   },
   "build": {
     "appId": "com.jakobmetzger.aventurische-enzyklopaedie",
