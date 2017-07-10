@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 // Modules
 var gulp = require("gulp");
 var jshint = require("gulp-jshint");
