@@ -25,20 +25,29 @@
                 "index.php/ESF_Elfenlieder.html",
                 "index.php/verelfenl.html",
                 "index.php/herituel.html",
-                "index.php/HSF_Hexenflueche.html"
+                "index.php/HSF_Hexenflueche.html",
+                "index.php/jrjrZaubermelodien.html",
+                "index.php/Zaubertaenze.html"
             ]
         },
         {
             "name": "magie",
             "urls": [
                 "index.php/Ahnenzeichen.html",
+                "index.php/hhGewandzauber.html",
                 "index.php/SF_Magie.html",
                 "index.php/ErweiterteZaubersonderfertigkeiten.html",
+                "index.php/Steckenzaub.html",
+                "index.php/Bannsch.html",
+                "index.php/frfInstrumentzauber.html",
                 "index.php/Zauberstilsonderfertigkeiten.html",
+                "index.php/hnfrnj.html",
                 "index.php/SSF_Stabzauber.html",
                 "index.php/bannundschutz.html",
                 "index.php/VSF_Vertrautentricks.html",
-                "index.php/drituale.html"
+                "index.php/drituale.html",
+                "index.php/dsfdsfdsfdsfdsfds.html",
+                "index.php/SF_Paktgeschenke.html"
             ]
         },
         {
@@ -52,7 +61,13 @@
         {
             "name": "geweiht",
             "urls": [
-                "index.php/SF_karmal.html"
+                "index.php/SF_karmal.html",
+                "index.php/fdfdfdg.html",
+                "index.php/SF_Vision.html",
+                "index.php/SF_ErweiterteLST.html",
+                "index.php/SF_Liturgiestilsonderfertigkeiten.html",
+                "index.php/SF_ZeremGgst.html",
+                "index.php/SF_Predigt.html"
             ]
         },
         {
