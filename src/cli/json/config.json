@@ -1,167 +1,186 @@
 {
-    "btn": "td > a",
+    "btn": ".ulSubMenu",
     "text": "#main .mod_article",
     "protocol": "http://",
     "domain": "www.ulisses-regelwiki.de/",
+    "path": "index.php/",
+    "extension": ".html",
     "topics": [
         {
             "name": "vorteil",
             "urls": [
-                "index.php/vorteile.html"
+                "vorteile"
             ]
         },
         {
             "name": "nachteil",
             "urls": [
-                "index.php/nachteile.html"
+                "nachteile"
             ]
         },
         {
             "name": "zauber",
             "urls": [
-                "index.php/za_zaubersprueche.html",
-                "index.php/za_rituale.html",
-                "index.php/Zauber_Zaubertricks.html",
-                "index.php/ESF_Elfenlieder.html",
-                "index.php/verelfenl.html",
-                "index.php/herituel.html",
-                "index.php/HSF_Hexenflueche.html",
-                "index.php/jrjrZaubermelodien.html",
-                "index.php/Zaubertaenze.html"
+                "za_zaubersprueche",
+                "za_rituale",
+                "Zauber_Zaubertricks",
+                "ESF_Elfenlieder",
+                "verelfenl",
+                "herituel",
+                "HSF_Hexenflueche",
+                "jrjrZaubermelodien",
+                "Zaubertaenze"
             ]
         },
         {
             "name": "magie",
             "urls": [
-                "index.php/Ahnenzeichen.html",
-                "index.php/hhGewandzauber.html",
-                "index.php/SF_Magie.html",
-                "index.php/ErweiterteZaubersonderfertigkeiten.html",
-                "index.php/Steckenzaub.html",
-                "index.php/Bannsch.html",
-                "index.php/frfInstrumentzauber.html",
-                "index.php/Zauberstilsonderfertigkeiten.html",
-                "index.php/hnfrnj.html",
-                "index.php/SSF_Stabzauber.html",
-                "index.php/bannundschutz.html",
-                "index.php/VSF_Vertrautentricks.html",
-                "index.php/drituale.html",
-                "index.php/dsfdsfdsfdsfdsfds.html",
-                "index.php/SF_Paktgeschenke.html"
+                "Ahnenzeichen",
+                "hhGewandzauber",
+                "SF_Magie",
+                "ErweiterteZaubersonderfertigkeiten",
+                "Steckenzaub",
+                "Bannsch",
+                "frfInstrumentzauber",
+                "Zauberstilsonderfertigkeiten",
+                "hnfrnj",
+                "SSF_Stabzauber",
+                "bannundschutz",
+                "VSF_Vertrautentricks",
+                "drituale",
+                "dsfdsfdsfdsfdsfds",
+                "SF_Paktgeschenke"
             ]
         },
         {
             "name": "liturgie",
             "urls": [
-                "index.php/lt_liturgien.html",
-                "index.php/Lit_Segnungen.html",
-                "index.php/lt_zeremonien.html"
+                "lt_liturgien",
+                "Lit_Segnungen",
+                "lt_zeremonien"
             ]
         },
         {
             "name": "geweiht",
             "urls": [
-                "index.php/SF_karmal.html",
-                "index.php/fdfdfdg.html",
-                "index.php/SF_Vision.html",
-                "index.php/SF_ErweiterteLST.html",
-                "index.php/SF_Liturgiestilsonderfertigkeiten.html",
-                "index.php/SF_ZeremGgst.html",
-                "index.php/SF_Predigt.html"
+                "SF_karmal",
+                "fdfdfdg",
+                "SF_Vision",
+                "SF_ErweiterteLST",
+                "SF_Liturgiestilsonderfertigkeiten",
+                "SF_Predigt",
+                "ZG_Aves1",
+                "ZG_Hesinde1",
+                "efferdbart-efferd",
+                "ZG_Nandus1",
+                "ZG_Firun1",
+                "gruene-handschuhe-peraine",
+                "ZG_Travia1",
+                "ZG_Ifirn1",
+                "ZG_Ingerimm1",
+                "ZG_Kor1",
+                "ZG_Phex1",
+                "ZG_Namenloser1",
+                "ZG_Tsa1",
+                "ZG_Boron1",
+                "ZG_Rondra1",
+                "ZG_Rahja1",
+                "ZG_Praios1",
+                "ZG_Swafnir1"
             ]
         },
         {
             "name": "kampf",
             "urls": [
-                "index.php/SF_Erweitertekampfstilsonderfertigkeiten.html",
-                "index.php/SF_Pruegelsonderfertigkeiten.html",
-                "index.php/sf_kampfsonderfertigkeiten.html",
-                "index.php/SF_Tier.html",
-                "index.php/Befehls_SF.html",
-                "index.php/SF_Kampfstilsonderfertigkeiten.html"
+                "SF_Erweitertekampfstilsonderfertigkeiten",
+                "SF_Pruegelsonderfertigkeiten",
+                "sf_kampfsonderfertigkeiten",
+                "SF_Tier",
+                "Befehls_SF",
+                "SF_Kampfstilsonderfertigkeiten"
             ]
         },
         {
             "name": "sf",
             "urls": [
-                "index.php/sf_allgemeine_sonderfertigkeiten.html",
-                "index.php/SF_Schick.html"
+                "sf_allgemeine_sonderfertigkeiten",
+                "SF_Schick"
             ]
         },
         {
             "name": "spezies",
             "urls": [
-                "index.php/spezies.html"
+                "spezies"
             ]
         },
         {
             "name": "kultur",
             "urls": [
-                "index.php/Kul_Zwerge.html",
-                "index.php/Kul_Elfen.html",
-                "index.php/Kul_Menschen.html"
+                "Kul_Zwerge",
+                "Kul_Elfen",
+                "Kul_Menschen"
             ]
         },
         {
             "name": "kreatur",
             "urls": [
-                "index.php/Best_Dämonen.html",
-                "index.php/geister.html",
-                "index.php/Best_Tiere.html",
-                "index.php/Elementare.html",
-                "index.php/Best_Kulturschaffende.html",
-                "index.php/Ungeheuer.html",
-                "index.php/Best_Feen.html",
-                "index.php/Best_Untote.html"
+                "Best_Dämonen",
+                "geister",
+                "Best_Tiere",
+                "Elementare",
+                "Best_Kulturschaffende",
+                "Ungeheuer",
+                "Best_Feen",
+                "Best_Untote"
             ]
         },
         {
             "name": "pflanze",
             "urls": [
-                "index.php/herbarium.html"
+                "herbarium"
             ]
         },
         {
             "name": "gift",
             "urls": [
-                "index.php/GR_Gifte.html"
+                "GR_Gifte"
             ]
         },
         {
             "name": "trank",
             "urls": [
-                "index.php/Elixier.html"
+                "Elixier"
             ]
         },
         {
             "name": "artefakt",
             "urls": [
-                "index.php/Artefakte.html"
+                "Artefakte"
             ]
         },
         {
             "name": "krankheit",
             "urls": [
-                "index.php/GR_Krankheiten.html"
+                "GR_Krankheiten"
             ]
         },
         {
             "name": "waffe",
             "urls": [
-                "index.php/ar_waffen.html"
+                "ar_waffen"
             ]
         },
         {
             "name": "rüstung",
             "urls": [
-                "index.php/ar_ruestungen.html"
+                "ar_ruestungen"
             ]
         },
         {
             "name": "zustand",
             "urls": [
-                "index.php/GR_Status.html",
-                "index.php/GR_Zustand.html"
+                "GR_Status",
+                "GR_Zustand"
             ]
         }
     ]

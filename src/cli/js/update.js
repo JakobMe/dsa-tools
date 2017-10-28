@@ -165,7 +165,7 @@ var Update = (function() {
                 // Increment topic total, push to queue
                 _totalTopics++;
                 queueTopics.push({
-                    uri: urlBase + urlTopic,
+                    uri: urlBase + _config.path + urlTopic + _config.extension,
                     callback: function(err, res, done) {
                         _countTopics++;
                         if (err) { done(); return false; }
