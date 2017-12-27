@@ -160,12 +160,16 @@ var Update = (function() {
             if (!data.hasOwnProperty(topic) || _force) { data[topic] = {}; }
 
             // Iterate defined url list for topic
-            config.urls.forEach(function(urlTopic) {
+            config.urls.forEach(function(url) {
 
-                // Increment topic total, push to queue
+                // Increment topic total, combine topic URL
                 _totalTopics++;
+                var urlTopic = encodeURI(
+                    urlBase + _config.path + url + _config.extension);
+
+                // Push to queue
                 queueTopics.push({
-                    uri: urlBase + _config.path + urlTopic + _config.extension,
+                    uri: urlTopic,
                     callback: function(err, res, done) {
                         _countTopics++;
                         if (err) { done(); return false; }
