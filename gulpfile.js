@@ -90,7 +90,8 @@ gulp.task("js-cli", ["jshint-cli"], function() {
             "src/cli/js/program.js"
         ])
         .pipe(concat("cli.js"))
-        .pipe(uglify({ preserveComments: "license" }))
+        .pipe(uglify())
+        .on("error", e => console.log(e))
         .pipe(chmod(0o755))
         .pipe(gulp.dest("./cli"))
         .pipe(notify({
