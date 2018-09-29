@@ -26,8 +26,8 @@
                 "Zauber_Zaubertricks",
                 "ESF_Elfenlieder",
                 "verelfenl",
-                "herituel",
                 "HSF_Hexenflueche",
+                "SST_Schelmenstreiche",
                 "jrjrZaubermelodien",
                 "Zaubertaenze"
             ]
@@ -45,9 +45,16 @@
                 "Zauberstilsonderfertigkeiten",
                 "hnfrnj",
                 "SSF_Stabzauber",
+                "KZ_Magierkugel",
+                "KPZ_Kappenzauber",
+                "HK_Kesselzauber",
+                "SPZ_Spielzeugzauber",
                 "bannundschutz",
                 "VSF_Vertrautentricks",
+                "SAZ_Schalenzauber",
+                "KZ_Zauberkugel",
                 "drituale",
+                "herituel",
                 "dsfdsfdsfdsfdsfds",
                 "SF_Paktgeschenke"
             ]
@@ -124,14 +131,18 @@
         {
             "name": "kreatur",
             "urls": [
+                "Best_Chimären",
+                "Best_Daimonid",
+                "Best_Drachen",
                 "Best_Dämonen",
-                "geister",
-                "Best_Tiere",
                 "Elementare",
-                "Best_Kulturschaffende",
-                "Ungeheuer",
                 "Best_Feen",
-                "Best_Untote"
+                "geister",
+                "Best_Kulturschaffende",
+                "Best-Typus_Pflanzen",
+                "Best_Tiere",
+                "Best_Untote",
+                "Best_Uebernatürliche_Wesen"
             ]
         },
         {
