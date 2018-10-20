@@ -16,16 +16,28 @@ function watch() {
     gulp.watch("src/web/js/*.js", scriptsWeb);
     gulp.watch("src/web/html/*.html", htmlWeb);
     gulp.watch("src/web/less/*.less", lessWeb);
+    gulp.watch("src/web/img/*.jpg", imgWeb);
 }
 
 function htmlWeb() {
     return gulp.src("src/web/html/*.html")
-        .pipe(gulp.dest("web/"))
+        .pipe(gulp.dest("build/"))
         .pipe(notify({
             sound: false,
             icon: "Terminal Icon",
             title: "Gulp",
             message: "HTML: Copied <%= file.relative %>.",
+        }));
+}
+
+function imgWeb() {
+    return gulp.src("src/web/img/*.jpg")
+        .pipe(gulp.dest("build/"))
+        .pipe(notify({
+            sound: false,
+            icon: "Terminal Icon",
+            title: "Gulp",
+            message: "IMG: Copied <%= file.relative %>.",
         }));
 }
 
@@ -101,7 +113,7 @@ function jsWeb() {
         ])
         .pipe(concat("index.js"))
         .pipe(uglify())
-        .pipe(gulp.dest("./web/"))
+        .pipe(gulp.dest("./build/"))
         .pipe(notify({
             sound: false,
             icon: "Terminal Icon",
@@ -122,7 +134,7 @@ function lessWeb() {
             wait: true
         }))
         .pipe(cssmin())
-        .pipe(gulp.dest("web/"))
+        .pipe(gulp.dest("build/"))
         .pipe(notify({
             sound: false,
             icon: "Terminal Icon",
@@ -133,7 +145,7 @@ function lessWeb() {
 
 var scriptsWeb = gulp.series(jshintWeb, jsWeb);
 var scriptsCli = gulp.series(jshintCli, jsCli);
-var build = gulp.series(scriptsCli, scriptsWeb, jsonCli, htmlWeb, lessWeb);
+var build = gulp.series(scriptsCli, scriptsWeb, jsonCli, htmlWeb, lessWeb, imgWeb);
 
 gulp.task("default", watch);
 gulp.task("build", build);

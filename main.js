@@ -17,7 +17,7 @@ var Main = (function(require, process) {
 
     // Path constants
     var _PATH_FILE             = "file://";
-    var _PATH_INDEX            = "/web/index.html";
+    var _PATH_INDEX            = "/build/index.html";
 
     // Window constants
     var _WINDOW_WIDTH          = 1080;
