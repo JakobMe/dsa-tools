@@ -36,6 +36,7 @@
             "name": "magie",
             "urls": [
                 "Ahnenzeichen",
+                "mSF-AlhanischeZauberzeichen",
                 "hhGewandzauber",
                 "SF_Magie",
                 "ErweiterteZaubersonderfertigkeiten",
@@ -59,7 +60,9 @@
                 "drituale",
                 "herituel",
                 "dsfdsfdsfdsfdsfds",
-                "SF_Paktgeschenke"
+                "SF_Paktgeschenke",
+                "lykanthropische-gaben",
+                "sikaryan-raub-sonderfertigkeiten"
             ]
         },
         {
@@ -88,6 +91,7 @@
                 "ZG_Travia1",
                 "ZG_Ifirn1",
                 "ZG_Ingerimm1",
+                "knochenkeule-der-schamanen-tairach",
                 "ZG_Kor1",
                 "ZG_Phex1",
                 "ZG_Namenloser1",
@@ -114,13 +118,37 @@
             "name": "sf",
             "urls": [
                 "sf_allgemeine_sonderfertigkeiten",
-                "SF_Schick"
+                "SF_Schick",
+                "Erweiterte_Talentsonderfertigkeiten",
+                "Talentstilsonderfertigkeiten"
             ]
         },
         {
             "name": "spezies",
             "urls": [
                 "spezies"
+            ]
+        },
+        {
+            "name": "profession",
+            "urls": [
+                "Pro_Geweihte",
+                "Pro_Kämpfer",
+                "Pro_Ordensleute",
+                "Pro_Profane",
+                "Pro_Druiden",
+                "Pro_Elfen",
+                "gildenlose-magier",
+                "graue-gilde-graue-gilde-des-geistes",
+                "schwarze-gilde",
+                "weisse-gilde-bund-des-weissen-pentagramms",
+                "Pro_Hexen",
+                "PRO_MAGIEDILETTANTEN",
+                "PRO_SCHARLATANE",
+                "schelme",
+                "za",
+                "ZB",
+                "PRO_ZAUBERTAENZER"
             ]
         },
         {
@@ -141,6 +169,7 @@
                 "Elementare",
                 "Best_Feen",
                 "geister",
+                "Best_Golems",
                 "Best_Kulturschaffende",
                 "Best-Typus_Pflanzen",
                 "Best_Tiere",
@@ -163,13 +192,16 @@
         {
             "name": "trank",
             "urls": [
-                "Elixier"
+                "Elixier",
+                "alchimika"
             ]
         },
         {
             "name": "artefakt",
             "urls": [
-                "Artefakte"
+                "Artefakte",
+                "ruestungen",
+                "waffen"
             ]
         },
         {
@@ -181,13 +213,42 @@
         {
             "name": "waffe",
             "urls": [
-                "ar_waffen"
+                "armbrueste",
+                "blasrohre",
+                "boegen",
+                "diskusse",
+                "dolche",
+                "fechtwaffen",
+                "faecher",
+                "hiebwaffen",
+                "Ruest_Holzwaffen",
+                "kettenwaffen",
+                "lanzen",
+                "peitschen",
+                "raufen",
+                "schilde",
+                "schleudern",
+                "schwerter",
+                "spiesswaffen",
+                "stangenwaffen",
+                "wurfwaffen",
+                "zweihandhiebwaffen",
+                "zweihandschwerter",
+                "RS_Waffenausruestung"
             ]
         },
         {
             "name": "rüstung",
             "urls": [
-                "ar_ruestungen"
+                "RS_Helme",
+                "RS_Ruestung",
+                "RS_Ruestungsausstattung"
+            ]
+        },
+        {
+            "name": "ausrüstung",
+            "urls": [
+                "RK_Ausruestung"
             ]
         },
         {
