@@ -15,7 +15,8 @@ var Update = (function() {
     var _HTML_ALL       = "*";
     var _HTML_HREF      = "href";
     var _HTML_FORBID    = "*:not(h1):not(strong):not(em):not(br):not(p)" +
-                          ":not(table):not(tr):not(td):not(tbody)";
+                          ":not(table):not(tr):not(td):not(tbody)" +
+                          ":not(thead):not(th):not(b):not(i)";
 
     // Modules
     var Connect         = null;

@@ -92,17 +92,22 @@
             }
 
             // Body
-            tbody {
-                display: table;
+            tbody, thead {
                 width: 100%;
             }
 
-            // Rows
-            tr:first-child td { padding-top: 0; white-space: nowrap; }
-            tr:last-child td { padding-bottom: 0; }
+            // First row
+            tr:first-child {
+              th, td { padding-top: 0; white-space: nowrap; }
+            }
+
+            // Last row
+            tr:last-child {
+              th, td { padding-bottom: 0; }
+            }
 
             // Columns
-            td {
+            th, td {
                 vertical-align: top;
                 padding: @size-margin-tiny @size-margin-small;
 
@@ -126,6 +131,11 @@
                         padding-right: @size-margin-medium;
                     }
                 }
+            }
+
+            // Head column
+            th {
+              font-weight: bold;
             }
         }
 
