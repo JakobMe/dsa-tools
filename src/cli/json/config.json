@@ -1,262 +1,236 @@
 {
-    "btn": ".ulSubMenu",
-    "text": "#main .mod_article",
-    "protocol": "http://",
-    "domain": "www.ulisses-regelwiki.de/",
-    "path": "index.php/",
-    "extension": ".html",
-    "topics": [
-        {
-            "name": "vorteil",
-            "urls": [
-                "vorteile"
-            ]
-        },
-        {
-            "name": "nachteil",
-            "urls": [
-                "nachteile"
-            ]
-        },
-        {
-            "name": "zauber",
-            "urls": [
-                "za_zaubersprueche",
-                "za_rituale",
-                "Zauber_Zaubertricks",
-                "ESF_Elfenlieder",
-                "verelfenl",
-                "HSF_Hexenflueche",
-                "SST_Schelmenstreiche",
-                "jrjrZaubermelodien",
-                "Zaubertaenze"
-            ]
-        },
-        {
-            "name": "magie",
-            "urls": [
-                "Ahnenzeichen",
-                "mSF-AlhanischeZauberzeichen",
-                "hhGewandzauber",
-                "SF_Magie",
-                "ErweiterteZaubersonderfertigkeiten",
-                "Steckenzaub",
-                "Bannsch",
-                "frfInstrumentzauber",
-                "gildenmagier",
-                "druiden-5736",
-                "elfen",
-                "hexen",
-                "hnfrnj",
-                "SSF_Stabzauber",
-                "KZ_Magierkugel",
-                "KPZ_Kappenzauber",
-                "HK_Kesselzauber",
-                "SPZ_Spielzeugzauber",
-                "bannundschutz",
-                "VSF_Vertrautentricks",
-                "SAZ_Schalenzauber",
-                "KZ_Zauberkugel",
-                "drituale",
-                "herituel",
-                "dsfdsfdsfdsfdsfds",
-                "SF_Paktgeschenke",
-                "lykanthropische-gaben",
-                "sikaryan-raub-sonderfertigkeiten"
-            ]
-        },
-        {
-            "name": "liturgie",
-            "urls": [
-                "lt_liturgien",
-                "Lit_Segnungen",
-                "lt_zeremonien"
-            ]
-        },
-        {
-            "name": "geweiht",
-            "urls": [
-                "SF_karmal",
-                "fdfdfdg",
-                "SF_Vision",
-                "SF_ErweiterteLST",
-                "SF_Liturgiestilsonderfertigkeiten",
-                "SF_Predigt",
-                "ZG_Aves1",
-                "ZG_Hesinde1",
-                "efferdbart-efferd",
-                "ZG_Nandus1",
-                "ZG_Firun1",
-                "gruene-handschuhe-peraine",
-                "ZG_Travia1",
-                "ZG_Ifirn1",
-                "ZG_Ingerimm1",
-                "knochenkeule-der-schamanen-tairach",
-                "ZG_Kor1",
-                "ZG_Phex1",
-                "ZG_Namenloser1",
-                "ZG_Tsa1",
-                "ZG_Boron1",
-                "ZG_Rondra1",
-                "ZG_Rahja1",
-                "ZG_Praios1",
-                "ZG_Swafnir1"
-            ]
-        },
-        {
-            "name": "kampf",
-            "urls": [
-                "SF_Erweitertekampfstilsonderfertigkeiten",
-                "SF_Pruegelsonderfertigkeiten",
-                "sf_kampfsonderfertigkeiten",
-                "SF_Tier",
-                "Befehls_SF",
-                "SF_Kampfstilsonderfertigkeiten"
-            ]
-        },
-        {
-            "name": "sf",
-            "urls": [
-                "sf_allgemeine_sonderfertigkeiten",
-                "SF_Schick",
-                "Erweiterte_Talentsonderfertigkeiten",
-                "Talentstilsonderfertigkeiten"
-            ]
-        },
-        {
-            "name": "spezies",
-            "urls": [
-                "spezies"
-            ]
-        },
-        {
-            "name": "profession",
-            "urls": [
-                "Pro_Geweihte",
-                "Pro_Kämpfer",
-                "Pro_Ordensleute",
-                "Pro_Profane",
-                "Pro_Druiden",
-                "Pro_Elfen",
-                "gildenlose-magier",
-                "graue-gilde-graue-gilde-des-geistes",
-                "schwarze-gilde",
-                "weisse-gilde-bund-des-weissen-pentagramms",
-                "Pro_Hexen",
-                "PRO_MAGIEDILETTANTEN",
-                "PRO_SCHARLATANE",
-                "schelme",
-                "za",
-                "ZB",
-                "PRO_ZAUBERTAENZER"
-            ]
-        },
-        {
-            "name": "kultur",
-            "urls": [
-                "Kul_Zwerge",
-                "Kul_Elfen",
-                "Kul_Menschen"
-            ]
-        },
-        {
-            "name": "kreatur",
-            "urls": [
-                "Best_Chimären",
-                "Best_Daimonid",
-                "Best_Drachen",
-                "Best_Dämonen",
-                "Elementare",
-                "Best_Feen",
-                "geister",
-                "Best_Golems",
-                "Best_Kulturschaffende",
-                "Best-Typus_Pflanzen",
-                "Best_Tiere",
-                "Best_Untote",
-                "Best_Uebernatürliche_Wesen"
-            ]
-        },
-        {
-            "name": "pflanze",
-            "urls": [
-                "herbarium"
-            ]
-        },
-        {
-            "name": "gift",
-            "urls": [
-                "GR_Gifte"
-            ]
-        },
-        {
-            "name": "trank",
-            "urls": [
-                "Elixier",
-                "alchimika"
-            ]
-        },
-        {
-            "name": "artefakt",
-            "urls": [
-                "Artefakte",
-                "ruestungen",
-                "waffen"
-            ]
-        },
-        {
-            "name": "krankheit",
-            "urls": [
-                "GR_Krankheiten"
-            ]
-        },
-        {
-            "name": "waffe",
-            "urls": [
-                "armbrueste",
-                "blasrohre",
-                "boegen",
-                "diskusse",
-                "dolche",
-                "fechtwaffen",
-                "faecher",
-                "hiebwaffen",
-                "Ruest_Holzwaffen",
-                "kettenwaffen",
-                "lanzen",
-                "peitschen",
-                "raufen",
-                "schilde",
-                "schleudern",
-                "schwerter",
-                "spiesswaffen",
-                "stangenwaffen",
-                "wurfwaffen",
-                "zweihandhiebwaffen",
-                "zweihandschwerter",
-                "RS_Waffenausruestung"
-            ]
-        },
-        {
-            "name": "rüstung",
-            "urls": [
-                "RS_Helme",
-                "RS_Ruestung",
-                "RS_Ruestungsausstattung"
-            ]
-        },
-        {
-            "name": "ausrüstung",
-            "urls": [
-                "RK_Ausruestung"
-            ]
-        },
-        {
-            "name": "zustand",
-            "urls": [
-                "GR_Status",
-                "GR_Zustand"
-            ]
-        }
-    ]
+  "btn": ".ulSubMenu",
+  "text": "#main .mod_article",
+  "protocol": "http://",
+  "domain": "www.ulisses-regelwiki.de/",
+  "path": "index.php/",
+  "extension": ".html",
+  "topics": [
+    {
+      "name": "vorteil",
+      "urls": ["vorteile"]
+    },
+    {
+      "name": "nachteil",
+      "urls": ["nachteile"]
+    },
+    {
+      "name": "zauber",
+      "urls": [
+        "za_zaubersprueche",
+        "za_rituale",
+        "Zauber_Zaubertricks",
+        "MH_Animistenkraefte",
+        "ESF_Elfenlieder",
+        "mh_Geodenrituale",
+        "herituel",
+        "HSF_Hexenflueche",
+        "SST_Schelmenstreiche",
+        "verelfenl",
+        "jrjrZaubermelodien",
+        "Zaubertaenze",
+        "mh_Zibiljarituale"
+      ]
+    },
+    {
+      "name": "magie",
+      "urls": [
+        "SF_Magie",
+        "bannundschutz",
+        "ErweiterteZaubersonderfertigkeiten",
+        "lykanthropische-gaben",
+        "dsfdsfdsfdsfdsfds",
+        "SF_Paktgeschenke",
+        "sikaryan-raub-sonderfertigkeiten",
+        "Animistenwaffe",
+        "Bannsch",
+        "drituale",
+        "drusichel",
+        "hhGewandzauber",
+        "KZ_Magierkugel",
+        "frfInstrumentzauber",
+        "KPZ_Kappenzauber",
+        "HK_Kesselzauber",
+        "Lebensring",
+        "SAZ_Schalenzauber",
+        "KZ_Zauberkugel",
+        "Sippenchronik",
+        "SPZ_Spielzeugzauber",
+        "SSF_Stabzauber",
+        "Steckenzaub",
+        "druiden-5736",
+        "elfen",
+        "geoden",
+        "gildenmagier",
+        "hexen",
+        "Ahnenzeichen",
+        "mSF-AlhanischeZauberzeichen",
+        "VSF_Vertrautentricks"
+      ]
+    },
+    {
+      "name": "liturgie",
+      "urls": ["lt_liturgien", "Lit_Segnungen", "lt_zeremonien"]
+    },
+    {
+      "name": "geweiht",
+      "urls": [
+        "SF_karmal",
+        "SF_ErweiterteLST",
+        "fdfdfdg",
+        "SF_Liturgiestilsonderfertigkeiten",
+        "SF_Predigt",
+        "SF_Vision",
+        "ZG_Aves1",
+        "ZG_Hesinde1",
+        "efferdbart-efferd",
+        "ZG_Nandus1",
+        "ZG_Firun1",
+        "gruene-handschuhe-peraine",
+        "ZG_Travia1",
+        "ZG_Ifirn1",
+        "ZG_Ingerimm1",
+        "knochenkeule-der-schamanen-tairach",
+        "ZG_Kor1",
+        "ZG_Phex1",
+        "ZG_Namenloser1",
+        "ZG_Tsa1",
+        "ZG_Boron1",
+        "ZG_Rondra1",
+        "ZG_Rahja1",
+        "ZG_Praios1",
+        "ZG_Swafnir1"
+      ]
+    },
+    {
+      "name": "kampf",
+      "urls": [
+        "Befehls_SF",
+        "SF_Erweitertekampfstilsonderfertigkeiten",
+        "sf_kampfsonderfertigkeiten",
+        "SF_Kampfstilsonderfertigkeiten",
+        "SF_Pruegelsonderfertigkeiten",
+        "SF_Tier"
+      ]
+    },
+    {
+      "name": "sf",
+      "urls": [
+        "sf_allgemeine_sonderfertigkeiten",
+        "Erweiterte_Talentsonderfertigkeiten",
+        "SF_Schick",
+        "Talentstilsonderfertigkeiten"
+      ]
+    },
+    {
+      "name": "spezies",
+      "urls": ["spezies"]
+    },
+    {
+      "name": "profession",
+      "urls": [
+        "Pro_Geweihte",
+        "Pro_Kämpfer",
+        "Pro_Ordensleute",
+        "Pro_Profane",
+        "animisten",
+        "Pro_Druiden",
+        "Pro_Elfen",
+        "_geoden",
+        "gildenlose-magier",
+        "graue-gilde-graue-gilde-des-geistes",
+        "schwarze-gilde",
+        "weisse-gilde-bund-des-weissen-pentagramms",
+        "Pro_Hexen",
+        "PRO_MAGIEDILETTANTEN",
+        "PRO_SCHARLATANE",
+        "schelme",
+        "za",
+        "ZB",
+        "PRO_ZAUBERTAENZER",
+        "Zibilja"
+      ]
+    },
+    {
+      "name": "kultur",
+      "urls": ["Kul_Zwerge", "Kul_Elfen", "Kul_Menschen"]
+    },
+    {
+      "name": "kreatur",
+      "urls": [
+        "Best_Chimären",
+        "Best_Daimonid",
+        "Best_Drachen",
+        "Best_Dämonen",
+        "Elementare",
+        "Best_Feen",
+        "geister",
+        "Best_Golems",
+        "Best_Kulturschaffende",
+        "Best-Typus_Pflanzen",
+        "Best_Tiere",
+        "Best_Untote",
+        "Best_Uebernatürliche_Wesen"
+      ]
+    },
+    {
+      "name": "pflanze",
+      "urls": ["herbarium"]
+    },
+    {
+      "name": "gift",
+      "urls": ["GR_Gifte"]
+    },
+    {
+      "name": "trank",
+      "urls": ["Elixier", "alchimika"]
+    },
+    {
+      "name": "artefakt",
+      "urls": ["Artefakte", "ruestungen", "waffen"]
+    },
+    {
+      "name": "krankheit",
+      "urls": ["GR_Krankheiten"]
+    },
+    {
+      "name": "waffe",
+      "urls": [
+        "armbrueste",
+        "blasrohre",
+        "boegen",
+        "diskusse",
+        "dolche",
+        "fechtwaffen",
+        "faecher",
+        "hiebwaffen",
+        "Ruest_Holzwaffen",
+        "kettenwaffen",
+        "lanzen",
+        "peitschen",
+        "raufen",
+        "schilde",
+        "schleudern",
+        "schwerter",
+        "spiesswaffen",
+        "stangenwaffen",
+        "wurfwaffen",
+        "zweihandhiebwaffen",
+        "zweihandschwerter",
+        "RS_Waffenausruestung"
+      ]
+    },
+    {
+      "name": "rüstung",
+      "urls": ["RS_Helme", "RS_Ruestung", "RS_Ruestungsausstattung"]
+    },
+    {
+      "name": "ausrüstung",
+      "urls": ["RK_Ausruestung"]
+    },
+    {
+      "name": "zustand",
+      "urls": ["GR_Status", "GR_Zustand"]
+    }
+  ]
 }
