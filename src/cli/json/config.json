@@ -175,11 +175,11 @@
     },
     {
       "name": "pflanze",
-      "urls": ["herbarium"]
+      "urls": ["her_Pflanzen"]
     },
     {
       "name": "gift",
-      "urls": ["GR_Gifte"]
+      "urls": ["gift_alchimie", "gift_mineral", "gift_pflanzen", "gift_tier"]
     },
     {
       "name": "trank",
