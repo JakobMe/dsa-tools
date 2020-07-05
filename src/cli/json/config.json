@@ -196,7 +196,14 @@
     },
     {
       "name": "trank",
-      "urls": ["Elixier", "alchimika"]
+      "urls": [
+        "Elixier",
+        "her_Pflanzliche_Hilfsmittel",
+        "her_pflanzliche_rauschmittel",
+        "her_Alternative_Wirkungen_durch_Haltbarmachung",
+        "her_a_elixiere",
+        "her_a_rauschmittel"
+      ]
     },
     {
       "name": "artefakt",
